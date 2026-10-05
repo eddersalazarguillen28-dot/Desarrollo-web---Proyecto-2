@@ -55,6 +55,5 @@ if __name__ == "_main_":
     print("asistente de reabastecimiento")
     print("="* 60 + "\n")
     print(obtener_recomendacion())
+
     
-
-
