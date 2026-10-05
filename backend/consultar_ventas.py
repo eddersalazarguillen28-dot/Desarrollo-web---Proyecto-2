@@ -14,11 +14,12 @@ cursor.execute('''
 ''')
 
 ventas = cursor.fetchall()
+
 print("--- HISTORIAL DE VENTAS EN OCTO ERP ---")
 if ventas:
     for v in ventas:
         print(f"Venta #{v[0]} | Cliente: {v[1]} | Total: ₡{v[2]:,.2f} | Fecha: {v[3]}")
-      else:
+else:
     print("No se han registrado ventas aún.")
 
 conexion.close()
