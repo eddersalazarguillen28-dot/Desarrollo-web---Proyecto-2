@@ -9,6 +9,6 @@ productos = cursor.fetchall()
 # Mostrar cada producto en la pantalla
 print ("--- LISTA DE PRODUCTOS EN OCTO ERP ---")
 for producto in productos:
-  print(f"ID: {producto[0]} | Nombre: {producto[1]} | Precio: ${producto[2]} | Stock: {producto[3]}")
+  print(f"ID: {producto[0]} | Nombre: {producto[1]} | Precio: ₡{producto[2]} | Stock: {producto[3]}")
 # Cerrar conexion
 conexion.close()
