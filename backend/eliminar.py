@@ -1,5 +1,5 @@
-Import sqlite3
-Import os
+import sqlite3
+import os
 
 #Definir la ruta exacta de la base de datos dentro de backend/
 
