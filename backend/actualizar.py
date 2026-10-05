@@ -1,17 +1,24 @@
 import sqlite3
 import os
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, 'octo.db')
+# Definir la ruta de la base de datos
+DB_PATH = os.path.join('backend', 'octo.db')
 
 conexion = sqlite3.connect(DB_PATH)
 cursor = conexion.cursor()
 
-cursor.execute("SELECT * FROM productos")
-productos = cursor.fetchall()
+print("--- ACTUALIZAR PRODUCTO EN OCTO ERP ---")
+producto_id = int(input("Ingresa el ID del producto a modificar: "))
+nuevo_precio = float(input("Ingresa el nuevo precio en colones (₡): "))
+nuevo_stock = int(input("Ingresa la nueva cantidad en stock: "))
 
-print("--- LISTA DE PRODUCTOS EN OCTO ERP ---")
-for producto in productos:
-    print(f"ID: {producto[0]} | Nombre: {producto[1]} | Precio: ₡{producto[2]:,.2f} | Stock: {producto[3]}")
+# Actualizar el precio y el stock en la base de datos
+cursor.execute(
+    "UPDATE productos SET precio = ?, stock = ? WHERE id = ?",
+    (nuevo_precio, nuevo_stock, producto_id)
+)
 
+conexion.commit()
 conexion.close()
+
+print("¡Producto actualizado correctamente!")
