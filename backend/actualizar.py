@@ -1,21 +1,17 @@
 import sqlite3
+import os
 
-# Conectar a la base de datos dentro de backend/
-conexion = sqlite3.connect('backend/octo.db')
+BASE_DIR = os.path.dirname(os.path.abspath(_file_))
+DB_PATH = os.path.join(BASE_DIR, 'octo.db')
+
+conexion = sqlite3.connect(DB_PATH)
 cursor = conexion.cursor()
-print ("--- ACTUALIZAR PRODUCTO EN OCTO ERP ---")
-producto_id = int(input("Ingresa el ID del producto a modificar:"))
-nuevo_precio = float(input("Ingresa el nuevo precio en colones(₡): "))
-nuevo_stock = int (input("Ingresa la nueva cantidad en stock:"))
 
-# Actualizar el precio y stock del producto seleccionado
-cursor.execute (
-  "UPDATE productos SET precio = ?, stock = ? WHERE id = ?", (nuevo_precio, nuevo_stock, producto_id)
-)
+cursor.execute("SELECT * FROM productos")
+productos = cursor.fetchall()
 
-# Guardar cambios y cerrar conexión 
-conexion.commit()
+print("--- LISTA DE PRODUCTOS EN OCTO ERP ---")
+for producto in productos:
+    print(f"ID: {producto[0]} | Nombre: {producto[1]} | Precio: ₡{producto[2]:,.2f} | Stock: {producto[3]}")
+
 conexion.close()
-
-print("¡Producto actualizado correctamente!")
-
