@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard OctoERP</title>
+
+    <link rel="stylesheet" href="style/style.css">
+
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script defer src="js/datos.js"></script>
+    <script defer src="js/dashboard.js"></script>
+</head>
+
+<body>
+    <header class="encabezado">
+        <h1>Dashboard OctoERP</h1>
+        <p>Resumen de ventas e inventario de la empresa</p>
+    </header>
+    
+    <main class="contenedor">
+        <section class="controles" aria-label="Controles del dashboard">
+                <div>
+                    <label for="mes">Seleccionar mes:</label>
+                        <select id="mes">
+                            <option value="todos">Todos los meses</option>
+                            <option value="1">Enero</option>
+                            <option value="2">Febrero</option>
+                            <option value="3">Marzo</option>
+                            <option value="4">Abril</option>
+                            <option value="5">Mayo</option>
+                            <option value="6">Junio</option>
+                            <option value="7">Julio</option>
+                            <option value="8">Agosto</option>
+                            <option value="9">Septiembre</option>
+                            <option value="10">Octubre</option>
+                            <option value="11">Noviembre</option>
+                            <option value="12">Diciembre</option>
+                        </select>
+                </div>
+
+                <button id="actualizar" type="button">actualizar dashboard</button>
+        </section>
+        <p class="aviso">Datos de demostración <br> Moneda. colones costarricenses</p>
+
+        <!--Indicar clave de rendimiento (KPIs) -->
+            <section class="indicadores" aria-label="indicadores de la empresa">
+                <article class="tarjeta">
+                    <h2>Ventas del periodo</h2>    
+                    <p id="total-ventas">₡0</p>
+                </article>
+
+                <article class="tarjeta">
+                    <h2>Cantidad de ventas</h2>    
+                    <p id="cantidad-ventas">0</p>
+                </article>
+                <article class="tarjeta">
+                    <h2>Ticket promedio</h2>    
+                    <p id="ticket-promedio">₡0</p>
+                </article>
+                <article class="tarjeta">
+                    <h2>Productos con stock bajo</h2>    
+                    <p id="cantidad-stock-bajo">0</p>
+                </article>
+            </section>
+            <!--Gráficos-->
+            <section class="graficos" aria-label="Gráficos de ventas">
+                <article class="panel">
+                    <h2>Ventas por mes</h2>
+                    <div class="contenedor-grafico">
+                        <canvas id="grafico-ventas" role="img" aria-label="Gráfico de ingresos por mes"></canvas>
+                    </div>
+                </article>
+            </section>
+
+            <section class="panel">
+                <h2>Productos más vendidos</h2>
+                <div class="contenedor-grafico">
+                    <canvas id="grafico-productos" role="img" aria-label="Gráfico de unidades vendidas por producto"></canvas>
+                </div>
+            </section>
+<br>
+            <!--Alertas de inventario-->
+            <section class="panel" aria-labelledby="titulo-alertas">
+                <h2 id="titulo-alertas">Alertas de stock bajo</h2>
+                <p>Productos con existencia iguales o inferiores al minimo</p>
+
+                <div class="contenedor-tabla">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">Producto</th>
+                                <th scope="col">Stock actual</th>
+                                <th scope="col">Minimo</th>
+                                <th scope="col">Estado</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tabla-stock">
+                            <!-- JavaScript agregará los productos aquí-->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <p id="ultima-actualizacion" role="status"></p>
+    </main>
+
+    <footer>
+        <p>Proyecto 2 Modulo 2: Dashboard Analítico</p>
+    </footer>
+</body>
+</html>
