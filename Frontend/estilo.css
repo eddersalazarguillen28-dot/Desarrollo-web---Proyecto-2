@@ -1,0 +1,155 @@
+body{
+    background-color: #19196C;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+#contenedor{
+    margin: 100px;
+    background-color:white;
+    width: 600px;
+    height: 500px;
+    border-radius: 70px;
+    text-align: center;
+    display: flex;
+    flex-direction:column;
+    align-items: center;
+
+}
+
+img{
+    margin: 10px;
+    width: 200px;
+    height: 90px;
+    
+}
+
+h3{
+    font-family:Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: black;
+    margin-bottom: 7px;
+    
+}
+
+.subtitulo{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    color: black;
+    margin-bottom: 31px;
+}
+
+/*Formulario*/
+
+form{
+    width: 100%;
+}
+
+.grupoInput{
+    width: 100%;
+    margin-bottom: 11px;
+}
+
+.grupoInput input{
+    width: 90%;
+    height: 40px;
+    padding: 0 10px;
+    border: 1px solid #525252;
+    border-radius: 13px;
+    outline: none;
+    font-size: 13px;
+    color: black;
+}
+
+.grupoInput input:focus{
+    border-color: #19196C;
+}
+
+/*Texto de contraseña olvidada*/
+
+.contraOlvidada{
+    width: 95%;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1px;
+    margin-bottom: 35px;
+
+}
+
+.contraOlvidada a{
+    font-family: Arial, Helvetica, sans-serif;
+    color: #553FCB;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.contraOlvidada a:hover{
+    text-decoration: underline;
+}
+
+/*Botón Ingresar*/
+
+.btnIngresar{
+    width: 94%;
+    height: 44px;
+    display: block;
+    margin: 0 auto;
+    border: none;
+    border-radius: 11px;
+    background-color: #553FCB;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: Arial, Helvetica, sans-serif;
+    cursor: pointer;
+    transition: background-color 0.2s ease,transform 0.1s ease;
+}
+
+.btnIngresar:hover{
+    background-color: #5134f9;
+}
+
+.btnIngresar:active{
+    transform: scale(0.99);
+}
+
+/*Texto crear cuenta*/
+
+.crearCuenta{
+    margin-top: 15px;
+    color:#553FCB;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: Arial, Helvetica, sans-serif;
+    text-decoration: none;
+}
+
+.crearCuenta:hover{
+    text-decoration: underline;
+}
+
+/*Crear cuenta*/
+
+#preguntaCuenta{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    color: #553FCB;
+    margin-bottom: 2px;
+}
+
+#contenedorCuenta{
+    margin: 100px;
+    background-color:white;
+    width: 600px;
+    height: 525px;
+    border-radius: 70px;
+    text-align: center;
+    display: flex;
+    flex-direction:column;
+    align-items: center;
+
+    
+}
