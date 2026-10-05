@@ -1,10 +1,8 @@
 import sqlite3
 import os
 
-# Usamos la carpeta 'backend' de forma directa para evitar errores de escritura
 DB_PATH = os.path.join('backend', 'octo.db')
 
-# Si existe una versión vieja, la eliminamos
 if os.path.exists(DB_PATH):
     os.remove(DB_PATH)
 
@@ -51,7 +49,6 @@ cursor.execute('''
     )
 ''')
 
-# Productos en colones (₡)
 cursor.execute("INSERT INTO productos (nombre, precio, stock) VALUES ('Laptop HP', 335000.00, 10)")
 cursor.execute("INSERT INTO productos (nombre, precio, stock) VALUES ('Mouse Inalambrico', 8000.00, 25)")
 cursor.execute("INSERT INTO productos (nombre, precio, stock) VALUES ('Teclado Mecanico', 23000.00, 8)")
