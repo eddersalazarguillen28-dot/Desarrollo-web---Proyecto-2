@@ -1,18 +1,16 @@
 import sqlite3
 import os
 
-# Obtener la ruta exacta del directorio donde esta este archivo
+# Usamos doble guion bajo en _file_
 BASE_DIR = os.path.dirname(os.path.abspath(_file_))
 DB_PATH = os.path.join(BASE_DIR, 'octo.db')
 
-# Si la base de datos existe, la borramos para recrearla limpia en colones
 if os.path.exists(DB_PATH):
     os.remove(DB_PATH)
 
 conexion = sqlite3.connect(DB_PATH)
 cursor = conexion.cursor()
 
-# Crear tablas
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS productos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -53,7 +51,6 @@ cursor.execute('''
     )
 ''')
 
-# Insertar productos de prueba en colones
 cursor.execute("INSERT INTO productos (nombre, precio, stock) VALUES ('Laptop HP', 335000.00, 10)")
 cursor.execute("INSERT INTO productos (nombre, precio, stock) VALUES ('Mouse Inalambrico', 8000.00, 25)")
 cursor.execute("INSERT INTO productos (nombre, precio, stock) VALUES ('Teclado Mecanico', 23000.00, 8)")
