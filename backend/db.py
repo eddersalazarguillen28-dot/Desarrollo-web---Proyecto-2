@@ -1,10 +1,15 @@
 import sqlite3
+import os
 
-# Crear la conexion a la base de datos de OCTO ERP
-conexion = sqlite3.connect('octo.db')
+# Borrar la base de datos previa si existe para forzar la actualización a colones
+if os.path.exists('backend/octo.db'):
+    os.remove('backend/octo.db')
+
+# Conectar y crear la base de datos dentro de backend/
+conexion = sqlite3.connect('backend/octo.db')
 cursor = conexion.cursor()
 
-# Crear tabla de productos para el inventario
+# Crear tabla de productos
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS productos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -48,15 +53,15 @@ cursor.execute('''
     )
 ''')
 
-# Insertar productos de prueba si la tabla esta vacia
-cursor.execute("SELECT COUNT(*) FROM productos")
-if cursor.fetchone()[0] == 0:
-    cursor.execute("INSERT INTO productos (nombre, precio, stock) VALUES ('Laptop HP', 650.00, 10)")
-    cursor.execute("INSERT INTO productos (nombre, precio, stock) VALUES ('Mouse Inalambrico', 15.50, 25)")
-    cursor.execute("INSERT INTO productos (nombre, precio, stock) VALUES ('Teclado Mecanico', 45.00, 8)")
+# Insertar productos de prueba en colones (₡)
+cursor.execute("INSERT INTO productos (nombre, precio, stock) VALUES ('Laptop HP', 335000.00, 10)")
+cursor.execute("INSERT INTO productos (nombre, precio, stock) VALUES ('Mouse Inalambrico', 8000.00, 25)")
+cursor.execute("INSERT INTO productos (nombre, precio, stock) VALUES ('Teclado Mecanico', 23000.00, 8)")
 
 # Guardar cambios y cerrar conexion
 conexion.commit()
 conexion.close()
+
+print("Base de datos de OCTO ERP recreada exitosamente en colones (₡)")
 
 print("Base de datos de OCTO ERP creada correctamente")
