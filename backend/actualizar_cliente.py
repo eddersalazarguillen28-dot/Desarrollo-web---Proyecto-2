@@ -7,7 +7,8 @@ cursor = conexion.cursor()
 
 print("--- ACTUALIZAR CLIENTE EN OCTO ERP ---")
 
-cliente_id = int(input("Ingresa el ID del c liente a modificar."))
+cliente_id = int(input("Ingresa el ID del cliente a modificar."))
+nuevo_nombre= input("Ingresa el nombre del cliente:")
 nuevo_correo = input("Ingresa el nuevo correo electrónico:")
 nuevo_telefono = input("Ingresa el nuevo número de teléfono:")
 
