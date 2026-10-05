@@ -13,8 +13,27 @@ cursor.execute('''
         stock INTEGER NOT NULL
     )
 ''')
+
 # Crear tabla de clientes
-cursor.execute (''' CREATE TABLE IF NOT EXISTS clientes( id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT NOT NULL, correo TEXT UNIQUE, telefono TEXT)''')
+cursor.execute (''' 
+CREATE TABLE IF NOT EXISTS clientes( 
+id INTEGER PRIMARY KEY AUTOINCREMENT, 
+nombre TEXT NOT NULL,
+correo TEXT UNIQUE, telefono TEXT
+)
+''')
+
+#Crear tabla de ventas 
+cursor.execute ('''
+CREATE TABLE IF NOT EXISTS ventas ( id INTEGER PRIMARY KEY AUTOINCREMENT, 
+cliente_id INTEGER NOT NULL, 
+total REAL NOT NULL,
+fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+FOREIGN KEY (cliente_id) REFERENCES clientes(id) 
+)
+''')
+
+
 
 # Guardar cambios y cerrar conexion
 conexion.commit()
