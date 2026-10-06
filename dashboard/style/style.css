@@ -11,20 +11,45 @@ body{
 }
 
 .encabezado{
-    padding: 30px 20px;
-    background-color: #16345c;
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr) 180px;
+    align-items: center;
+    gap: 8px 20px;
+    padding: 24px;
+    background-color: #19196C;
     color: white;
     text-align: center;
 }
 
 .encabezado h1{
-    margin: 0 0 8px;
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
     font-size: 32px;
+    text-align: center;
 }
 
 .encabezado p{
+    grid-column: 2;
+    grid-row: 2;
     margin: 0;
     color: #d5e2f5;
+}
+
+.encabezado img{
+    grid-column: 1;
+    grid-row: 1 / 3;
+    width: 100%;
+    max-width: 160px;
+    height: auto;
+}
+
+#ultima-actualizacion{
+    grid-column: 3;
+    grid-row: 1 / 3;
+    font-size: 14px;
+    text-align: right;
+    overflow-wrap: anywhere;
 }
 
 .contenedor{
@@ -80,7 +105,7 @@ select:focus-visible{
 .aviso{
     margin: 18px 0;
     font-size: 14px;
-    color: #596a80;
+    color: black;
 }
 
 /*Tarjetas de indicadores*/
@@ -113,6 +138,13 @@ select:focus-visible{
     overflow-wrap: anywhere;
 }
 
+.tarjeta small {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #596a80;
+}
+
 .tarjeta:last-child{
     border-top-color: #db8b15;
 }
@@ -123,10 +155,10 @@ select:focus-visible{
 
 /*Paneles y Gráficos*/
 .graficos{
-    display: grid;
     grid-template-columns: repeat(2,minmax(0, 1fr));
     gap: 24px;
     margin-bottom: 24px;
+    
 }
 
 .panel{
@@ -157,6 +189,10 @@ select:focus-visible{
     overflow: auto;
 }
 
+.contenedor-tabla table {
+    min-width: 650px;
+}
+
 table{
     width: 100%;
     border-collapse: collapse;
@@ -173,20 +209,22 @@ th{
     background-color: #edf3fc;
     color: #16345c;
     font-size: 14px;
+    text-align: center;
 }
 
 td{
     font-size: 16px;
+    text-align: center;
 }
 
 tbody tr:hover{
     background-color: #f7f9fd;
 }
 
-/*Estados qe agregaremos con JavaScript*/
-.estados{
+/*Estados que agregaremos con JavaScript*/
+.estado{
     display: inline-block;
-    padding: 5px 10px;
+    padding: 6px 12px;
     border-radius: 6px;
     font-size: 14px;
     font-weight: bold;
@@ -195,83 +233,139 @@ tbody tr:hover{
 
 .stock-bajo{
     display: inline-block;
-    padding: 5px 10px;
+    padding: 5px 5px;
     border-radius: 6px;
     font-size: 14px;
+    background-color: #fff0cc;
+    color: #805000;
     font-weight: bold;
     white-space: nowrap;
 }
 
 .agotado{
+    display: inline-block;
+    padding: 5px 5px;
+    border-radius: 6px;
+    font-size: 14px;
     background-color: #ffe0e0;
     color: #a32020;
+    font-weight: bold;
+    white-space: nowrap;
 }
 
-.sin-alerta{
+.sin-alertas{
     text-align: center;
     color: #596a80;
 }
 
-#ultima-actualizacion{
-    margin-top: 20px;
-    font-size: 14px;
-    color: #596a80;
+.panel + .panel {
+    margin-top: 24px;
 }
 
-/*Pie de página*/
 footer{
     padding: 20px;
     text-align: center;
-    color: #596a80;
+    color: black;
     font-size: 14px;
+}
+
+#aviso-sin-ventas{
+    padding: 14px 18px;
+    background-color: #edf3fc;
+    color: #16345c;
+    border-left: 4px solid #245bd7;
+    border-radius: 6px;
 }
 
 /*Responsivo para tablets*/
 @media (max-width: 1000px) {
-    .indicadores{
-        grid-template-columns: repeat(21 minmax(0, 1fr));
-    }
-    .graficos{
+   .indicadores{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+   }
+
+   .graficos{
         grid-template-columns: 1fr;
+   }
+
+   .encabezado{
+        grid-template-columns: 120px;
+    }
+
+    .encabezado h1{
+       font-size: 26px;
+    }
+
+    #ultima-actualizacion{
+        grid-column: 1 / -1;
+        grid-row: 3;
+        text-align: center;
+        margin-top: 8px;
     }
 }
 
 /*Resposivo para telefonos*/
 @media (max-width: 600px){
-    .encabezado h1{
-        font-size: 26px;
+   .encabezado{
+        grid-template-columns: minmax(0, 1fr);
+        padding: 20px 16px;
     }
 
-    .controles{
+   .encabezado img {
+        grid-column: 1;
+        grid-row: 1;
+        width: 110px;
+        justify-content: center;
+   }
+
+   .encabezado h1 {
+        grid-column: 1;
+        grid-row: 2;
+        font-size: 22px;
+   }
+
+   .encabezado p {
+        grid-column: 1;
+        grid-row: 3;
+   }
+
+   #ultima-actualizacion {
+        grid-column: 1;
+        grid-row: 4;
+        font-size: 14px;
+        text-align: center;
+   }
+
+   .controles {
         flex-direction: column;
         align-items: stretch;
-    }
+   }
 
-    .controles label{
+   .controles label {
         display: block;
         margin-bottom: 8px;
-    }
+   }
 
-    select,
-    button{
+   select,
+   button {
         width: 100%;
-    }
+   }
 
-    .indicadores{
+   .indicadores {
         grid-template-columns: 1fr;
         gap: 16px;
-    }
-    .tarjeta,
-    .panel{
+   }
+
+   .tarjeta,
+   .panel{
         padding: 20px;
-    }
+   }
 
-    .contenedor-grafico{
+   .contenedor-grafico {
         height: 280px;
-    }
+   }
 
-    th,
-    td{
+   th,
+   td {
         padding: 12px;
-    }
+   }
 }

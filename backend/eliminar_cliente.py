@@ -7,7 +7,7 @@ conexion= sqlite3.connect(DB_PATH)
 cursor = conexion.cursor()
 
 print("--- ELIMINAR CLIENTE EN OCTO ERP ---")
-cliente_id = int(int(input("Ingresa el ID del cliente a eliminar."))
+cliente_id = int(int(input("Ingresa el ID del cliente a eliminar.")))
 
 confirmacion = input(f"¿Estás seguro de que deseas eliminar al cliente ID {cliente_id}? (s/n): ")
 

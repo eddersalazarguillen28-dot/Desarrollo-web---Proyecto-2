@@ -14,9 +14,12 @@
 </head>
 
 <body>
+
     <header class="encabezado">
+        <img src="Imagenes/Logo.png" alt="Logo">
         <h1>Dashboard OctoERP</h1>
         <p>Resumen de ventas e inventario de la empresa</p>
+        <p id="ultima-actualizacion" role="status"></p>
     </header>
     
     <main class="contenedor">
@@ -49,15 +52,18 @@
                 <article class="tarjeta">
                     <h2>Ventas del periodo</h2>    
                     <p id="total-ventas">₡0</p>
+                    <small>Ingresos del periodo seleccionado</small>
                 </article>
 
                 <article class="tarjeta">
                     <h2>Cantidad de ventas</h2>    
                     <p id="cantidad-ventas">0</p>
+                    <small>Ventas registradas en el periodo</small>
                 </article>
                 <article class="tarjeta">
                     <h2>Ticket promedio</h2>    
                     <p id="ticket-promedio">₡0</p>
+                    <small>Ingresos primedio por ventas</small>
                 </article>
                 <article class="tarjeta">
                     <h2>Productos con stock bajo</h2>    
@@ -65,9 +71,10 @@
                 </article>
             </section>
             <!--Gráficos-->
+            <p id="aviso-sin-ventas" hidden>No hay ventas registradas en el periodo seleccionado</p>
             <section class="graficos" aria-label="Gráficos de ventas">
                 <article class="panel">
-                    <h2>Ventas por mes</h2>
+                    <h2 id="titulo-ventas">Ventas por mes - Ingresos (₡)</h2>
                     <div class="contenedor-grafico">
                         <canvas id="grafico-ventas" role="img" aria-label="Gráfico de ingresos por mes"></canvas>
                     </div>
@@ -75,9 +82,30 @@
             </section>
 
             <section class="panel">
-                <h2>Productos más vendidos</h2>
+                <h2 id="titulo-productos">Productos más vendidos - Unidades vendidas</h2>
                 <div class="contenedor-grafico">
                     <canvas id="grafico-productos" role="img" aria-label="Gráfico de unidades vendidas por producto"></canvas>
+                </div>
+            </section>
+<br>
+            <section class="panel">
+                <h2>Detalles de ventas del periodo</h2>
+                <p>Cada fila respresenta una venta registrada</p>
+
+                <div class="contenedor-tabla">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">Ventas</th>
+                                <th scope="col">Fecha</th>
+                                <th scope="col">Producto</th>
+                                <th scope="col">Unidades</th>
+                                <th scope="col">Precio unitario</th>
+                                <th scope="col">Importe</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-ventas"></tbody>
+                    </table>
                 </div>
             </section>
 <br>
@@ -93,6 +121,7 @@
                                 <th scope="col">Producto</th>
                                 <th scope="col">Stock actual</th>
                                 <th scope="col">Minimo</th>
+                                <th scope="col">Faltan para el mínimo</th>
                                 <th scope="col">Estado</th>
                             </tr>
                         </thead>
@@ -103,12 +132,10 @@
                     </table>
                 </div>
             </section>
-
-            <p id="ultima-actualizacion" role="status"></p>
     </main>
 
     <footer>
-        <p>Proyecto 2 Modulo 2: Dashboard Analítico</p>
+        <p>©TODOS LOS DERECHOS RESERVADOS</p>
     </footer>
 </body>
 </html>

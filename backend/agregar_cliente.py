@@ -1,22 +1,9 @@
-import sqlite3
-import os
+import db_manager as db
 
-DB_PATH = os.path.join('backend', 'octo.db')
+print("--- AGREGAR CLIENTE ---")
+nombre = input("Nombre: ")
+correo = input("Correo: ")
+telefono = input("Teléfono: ")
 
-conexion = sqlite3.connect(DB_PATH)
-cursor = conexion.cursor()
-
-print("--- AGREGAR NUEVO CLIENTE EN OCTO ERP ---")
-nombre = input("Ingresa el nombre completo del cliente: ")
-correo = input("Ingresa el correo electrónico: ")
-telefono = input("Ingresa el número de teléfono: ")
-
-cursor.execute(
-    "INSERT INTO clientes (nombre, correo, telefono) VALUES (?, ?, ?)",
-    (nombre, correo, telefono)
-)
-
-conexion.commit()
-conexion.close()
-
-print("¡Cliente registrado correctamente!")
+c_id = db.agregar_cliente(nombre, correo, telefono)
+print(f"✅ Cliente agregado con ID: {c_id}")
