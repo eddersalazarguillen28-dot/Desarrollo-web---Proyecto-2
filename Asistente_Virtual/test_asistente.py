@@ -9,8 +9,8 @@ def test_analisis_local():
     print(f"Con alerta: {analisis['con_alerta']}\n")
 
     for p in analisis["productos"]:
-        seña = "x" if p["alerta_stock"] else "\/"
-        print(f"{seña}{p['nombre']:20} stock={p['stock_actual']:>3}"
+        sena = "x" if p["alerta_stock"] else "...."
+        print(f"{sena}{p['nombre']:20} stock={p['stock_actual']:>3}"
               f"min{p['stock_minimo']:>3} rotacion={p['rotacion']}")
 
 def test_recomendacion_completa():
