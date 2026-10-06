@@ -193,3 +193,24 @@ def obtener_datos_para_asistente_ia():
         "inventario": inventario,
         "ventas_resumen": ventas_resumen
     }
+
+def obtener_detalles_dashboard():
+    conn = obtener_conexion()
+    cursor = conn.cursos(dictionary=True)
+
+    try: 
+        cursor.execute("""
+        SELECT v.id AS id,
+        dv.id AS detalleId,
+        DATE_FORMAT(V.FECHA, '%d/%m/%Y') AS fecha,
+        dv.producto_id AS productoId,
+        dv.cantidad AS cantidad,
+        dv,subtotal AS subtotal,
+        dv.subtotal / NULLIF(dv.cantidad, 0) AS precioUnitario FROM ventas v JOIN detalle_ventas dv ON dv.venta_id = v.id ORDER BY v.fecha, v.id, dv.id
+        """)
+
+        return cursor.fetchall()
+
+    finally: 
+        cursor.close()
+        conn.close()
