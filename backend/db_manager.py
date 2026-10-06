@@ -194,40 +194,23 @@ def obtener_datos_para_asistente_ia():
         "ventas_resumen": ventas_resumen
     }
 
-# ==========================================
-# MÓDULO DE GESTIÓN DE USUARIOS
-# ==========================================
+def obtener_detalles_dashboard():
+    conn = obtener_conexion()
+    cursor = conn.cursos(dictionary=True)
 
-def crear_usuario(nombre, correo, password, rol='vendedor'):
-    """Registra un nuevo usuario en la base de datos MariaDB."""
-    conexion = obtener_conexion()
-    if not conexion:
-        return False
-    try:
-        cursor = conexion.cursor()
-        query = "INSERT INTO usuarios (nombre, correo, password, rol) VALUES (%s, %s, %s, %s)"
-        cursor.execute(query, (nombre, correo, password, rol))
-        conexion.commit()
-        return cursor.lastrowid
-    except mysql.connector.Error as err:
-        print(f" Error al crear usuario: {err}")
-        return None
-    finally:
-        conexion.close()
+    try: 
+        cursor.execute("""
+        SELECT v.id AS id,
+        dv.id AS detalleId,
+        DATE_FORMAT(V.FECHA, '%d/%m/%Y') AS fecha,
+        dv.producto_id AS productoId,
+        dv.cantidad AS cantidad,
+        dv,subtotal AS subtotal,
+        dv.subtotal / NULLIF(dv.cantidad, 0) AS precioUnitario FROM ventas v JOIN detalle_ventas dv ON dv.venta_id = v.id ORDER BY v.fecha, v.id, dv.id
+        """)
 
-def autenticar_usuario(correo, password):
-    """Autentica un usuario en la base de datos MariaDB."""
-    conexion = obtener_conexion()
-    if not conexion:
-        return False
-    try:
-        cursor = conexion.cursor(dictionary=True)
-        query = "SELECT * FROM usuarios WHERE correo = %s AND password = %s"
-        cursor.execute(query, (correo, password))
-        usuario = cursor.fetchone()
-        return usuario
-    except mysql.connector.Error as err:
-        print(f" Error al autenticar usuario: {err}")
-        return None
-    finally:
-        conexion.close()
+        return cursor.fetchall()
+
+    finally: 
+        cursor.close()
+        conn.close()
