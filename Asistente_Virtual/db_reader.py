@@ -101,3 +101,17 @@ if __name__ == "_main_":
                   f"stock={p['stock_actual']:>3}"
                   f"min={p['stock_minimo']:>3} "
                   f"vendidos_30d={p['vendidos_30d']:>3}"
+                  f"precio= {p['precio_venta']:,.2f}"
+            )
+    except FileNotFoundError as e:
+        print(f"X {e}")
+        print("\n Verifica la existencia del archivo 'backend/octo.db")
+        print(f"Ruta intentada {os.path.abspath(RUTA_DB)}")
+    except Exception as e:
+        print(f"X Error inesperado {e}")
+
+
+
+        
+
+
