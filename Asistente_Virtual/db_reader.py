@@ -8,16 +8,16 @@ if RUTA_RAIZ not in sys.path:
 
 from backend.db_manager import obtener_conexion
 
-def obtener_ventanas_ultimos_30d(cursor, producto_id):
+def obtener_ventas_ultimos_30d(cursor, producto_id):
     cursor.execute("""
-        SELECT COALESCE(SUM(div.cantidad), 0) AS total
-        From detalle_ventas dv
+        SELECT COALESCE(SUM(dv.cantidad), 0) AS total
+        FROM detalle_ventas dv
         JOIN ventas v ON v.id = dv.venta_id
-        WHERE dv.producto_id = ?
-            AND v.fecha >= datetime('now', '-30 days')
+        WHERE dv.producto_id = %s
+          AND v.fecha >= NOW() - INTERVAL 30 DAY
     """, (producto_id,))
-    fila = cursor.fetchone
-    return int(fila["total"]) if fila else 0
+    fila = cursor.fetchone()
+    return int(fila["total"]) if fila and fila.get("total") else 0
 
 def calcular_stock_minimo(vendidos_30d, stock_minimo_bd=None):
     if stock_minimo_bd is not None and stock_minimo_bd > 0:
@@ -41,7 +41,7 @@ def obtener_inventario_completo():
         precio = float(p["precio"])
         stock = int(p["stock"])
 
-        vendidos = obtener_ventanas_ultimos_30d(cursor, id_p)
+        vendidos = obtener_ventas_ultimos_30d(cursor, id_p)
         stock_min = calcular_stock_minimo(vendidos, p.get("stock_minimo"))
 
         productos.append({
@@ -65,7 +65,7 @@ def obtener_resumen_ventas():
     cursor = conn.cursor(dictionary=True)
 
     cursor.execute(
-        "SELECT COUNT(*) AS total COALESCE(SUM(total),0) AS ingresos FROM ventas"
+        "SELECT COUNT(*) AS total, COALESCE(SUM(total),0) AS ingresos FROM ventas"
     )
     fila = cursor.fetchone()
 
