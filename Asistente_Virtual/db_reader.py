@@ -1,16 +1,13 @@
 import os 
-import sqlite3
+import sys
 from datetime import datetime
 
-RUTA_DB = os.path.join(os.path.dirname(__file__), "..", "backend", "octo.db")
+RUTA_RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
+if RUTA_RAIZ not in sys.path:
+    sys.path.insert(0, RUTA_RAIZ)
 
-def conectar():
-    ruta_abs = os.path.abspath(RUTA_DB)
-    if not os.path.exists(ruta_abs):
-        raise FileExistsError(f"no se encontro la bd en: {ruta_abs}")
-    conn = sqlite3.connect(ruta_abs)
-    conn.row_factory = sqlite3.Row
-    return conn
+from backend.db_manager import obtener_conexion
+
 def obtener_ventanas_ultimos_30d(cursor, producto_id):
     cursor.execute("""
         SELECT COALESCE(SUM(div.cantidad), 0) AS total
@@ -22,14 +19,16 @@ def obtener_ventanas_ultimos_30d(cursor, producto_id):
     fila = cursor.fetchone
     return int(fila["total"]) if fila else 0
 
-def calcular_stock_minimo(vendidos_30d):
+def calcular_stock_minimo(vendidos_30d, stock_minimo_bd=None):
+    if stock_minimo_bd is not None and stock_minimo_bd > 0:
+        return int(stock_minimo_bd)
     if vendidos_30d == 0:
         return 2
     ventas_diarias = vendidos_30d / 30
     return max(2, round(ventas_diarias * 7))
 
 def obtener_inventario_completo():
-    conn = conectar()
+    conn = obtener_conexion()
     cursor = conn.cursor()
 
     cursor.execute("SELECT id, nombre, precio, stock FROM productos")
@@ -43,7 +42,7 @@ def obtener_inventario_completo():
         stock = int(p["stock"])
 
         vendidos = obtener_ventanas_ultimos_30d(cursor, id_p)
-        stock_min = calcular_stock_minimo(vendidos)
+        stock_min = calcular_stock_minimo(vendidos, p.get("stock_minimo"))
 
         productos.append({
             "id": id_p,
@@ -62,28 +61,30 @@ def obtener_inventario_completo():
     }
 
 def obtener_resumen_ventas():
-    conn = conectar()
-    cursor = conn.cursor()
+    conn = obtener_conexion()
+    cursor = conn.cursor(dictionary=True)
 
     cursor.execute(
         "SELECT COUNT(*) AS total COALESCE(SUM(total),0) AS ingresos FROM ventas"
     )
     fila = cursor.fetchone()
 
+    cursor.close()
     conn.close()
+    
     return{
         "total_ventas": int(fila["total"]),
         "ingresos_totales": float(fila["ingresos"]), 
     }
 
-if __name__ == "_main_":
+if __name__ == "__main__":
     print("=" * 60)
     print("Lectura de Inventario")
     print("=" * 60 + "\n")
 
     #busca la ruta
-    print(f"ruta calculada:{os.path.abspath(RUTA_DB)}")
-    print(f"EXISTE:{os.path.exists(RUTA_DB)}")
+    print(f"ruta calculada:{os.path.abspath(RUTA_RAIZ)}")
+    print(f"EXISTE:{os.path.exists(RUTA_RAIZ)}")
 
     try:
         datos = obtener_inventario_completo()
@@ -103,10 +104,7 @@ if __name__ == "_main_":
                   f"vendidos_30d={p['vendidos_30d']:>3}"
                   f"precio= {p['precio_venta']:,.2f}"
             )
-    except FileNotFoundError as e:
-        print(f"X {e}")
-        print("\n Verifica la existencia del archivo 'backend/octo.db")
-        print(f"Ruta intentada {os.path.abspath(RUTA_DB)}")
+
     except Exception as e:
         print(f"X Error inesperado {e}")
 
