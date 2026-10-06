@@ -12,14 +12,16 @@
         <h3>Iniciar sesión</h3>
         <p class="subtitulo">Accede a tu cuenta para continuar</p>
 
-        <form>
+        <form id="inicioSesion" novalidate>
 
             <div class="grupoInput">
                 <input type="email" id="email" placeholder="Correo electrónico" required>
+                <span class="error-message" id="errorEmail"></span>
             </div>
 
             <div class="grupoInput">
                 <input type="password" id="contrasena" placeholder="Contraseña"required>
+                <span class="error-message" id="errorContrasena"></span>
             </div>
 
             <div class="contraOlvidada">
@@ -30,8 +32,9 @@
 
         </form>
 
-        <a href="#" class="crearCuenta">Crear cuenta</a>
+        <a href="crearCuenta.html" class="crearCuenta">Crear cuenta</a>
 
     </div>
+    <script src="validacionesSesion.js"></script>
 </body>
 </html>

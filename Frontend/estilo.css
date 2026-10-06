@@ -131,7 +131,7 @@ form{
     text-decoration: underline;
 }
 
-/*Crear cuenta*/
+/*  Página crear cuenta*/
 
 #preguntaCuenta{
     font-family: Arial, Helvetica, sans-serif;
@@ -144,7 +144,7 @@ form{
     margin: 100px;
     background-color:white;
     width: 600px;
-    height: 525px;
+    height: 650px;
     border-radius: 70px;
     text-align: center;
     display: flex;
@@ -152,4 +152,37 @@ form{
     align-items: center;
 
     
+}
+
+/*JS cuenta*/
+/*Mensaje error*/
+.error{
+    
+    color: #19196C;
+    font-size: 11px;
+    margin-top: 5px;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 40px;
+    font-family: Arial, Helvetica, sans-serif;
+
+}
+
+#mensajeExito{
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+
+.error-message{
+    min-height: 16px;
+    margin-top: 5px;
+    margin-right: 40px;
+    color: #19196C;
+    font-size: 11px;
+    font-weight: 400;
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    justify-content: flex-end;
 }

@@ -1,0 +1,42 @@
+body{
+    width: 100%;
+    min-height: 100%;
+}
+
+.barraLateral{
+    width: 158px;
+    min-width: 158px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background: linear-gradient(180deg,#111b37 0%,#0d1730 100%);
+    border-radius: 0 0 0 0;
+    color: white;
+    padding: 18px 10px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 10px rgb(20,30,60,.08);
+    
+}
+
+.menu-item{
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-size: 13px;
+    font-family: Arial, Helvetica, sans-serif;
+    transition: .2s ease;
+    color: white;
+}
+
+.menu-item:hover{
+    color:beige;
+
+
+
+}
