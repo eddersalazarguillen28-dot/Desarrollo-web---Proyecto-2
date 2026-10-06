@@ -60,3 +60,44 @@ def obtener_inventario_completo():
         "fecha_analisis": datetime.now().strftime("%Y-%m-%d"),
         "productos": productos,
     }
+
+def obtener_resumen_ventas():
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT COUNT(*) AS total COALESCE(SUM(total),0) AS ingresos FROM ventas"
+    )
+    fila = cursor.fetchone()
+
+    conn.close()
+    return{
+        "total_ventas": int(fila["total"]),
+        "ingresos_totales": float(fila["ingresos"]), 
+    }
+
+if __name__ == "_main_":
+    print("=" * 60)
+    print("Lectura de Inventario")
+    print("=" * 60 + "\n")
+
+    #busca la ruta
+    print(f"ruta calculada:{os.path.abspath(RUTA_DB)}")
+    print(f"EXISTE:{os.path.exists(RUTA_DB)}")
+
+    try:
+        datos = obtener_inventario_completo()
+        resumen = obtener_resumen_ventas()
+
+        print(f"Fecha analisis: {datos['fecha_analisis']}")
+        print(f"Total productos: {len(datos['productos'])}")
+        print(f"Total Ventas registradas: {resumen['total_ventas']}")
+        print(f"Ingresos totales: {resumen['ingresos_totales']:,.2f}\n")
+
+        print("productos:")
+        for p in datos["productos"]:
+            sena = "x" if p["stock_actual"] < p["stock_minimo"] else "...."
+            print(f"{sena}{p['nombre']:25}" 
+                  f"stock={p['stock_actual']:>3}"
+                  f"min={p['stock_minimo']:>3} "
+                  f"vendidos_30d={p['vendidos_30d']:>3}"
