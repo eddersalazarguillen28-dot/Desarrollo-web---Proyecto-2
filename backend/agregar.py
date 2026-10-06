@@ -1,24 +1,9 @@
-import sqlite3
-import os
+import db_manager as db
 
-# Definir la ruta exacta de la base de datos dentro de backend/
-DB_PATH = os.path.join('backend', 'octo.db')
+print("--- AGREGAR PRODUCTO ---")
+nombre = input("Nombre: ")
+precio = float(input("Precio: "))
+stock = int(input("Stock: "))
 
-conexion = sqlite3.connect(DB_PATH)
-cursor = conexion.cursor()
-
-print("--- AGREGAR NUEVO PRODUCTO EN OCTO ERP ---")
-nombre = input("Ingresa el nombre del producto: ")
-precio = float(input("Ingresa el precio en colones (₡): "))
-stock = int(input("Ingresa la cantidad en stock: "))
-
-# Insertar el nuevo producto en la tabla
-cursor.execute(
-    "INSERT INTO productos (nombre, precio, stock) VALUES (?, ?, ?)",
-    (nombre, precio, stock)
-)
-
-conexion.commit()
-conexion.close()
-
-print("¡Producto agregado correctamente!")
+prod_id = db.agregar_producto(nombre, precio, stock)
+print(f"✅ Producto agregado con ID: {prod_id}")
