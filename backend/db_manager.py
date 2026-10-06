@@ -63,7 +63,7 @@ def eliminar_cliente(cliente_id):
     conn.execute("DELETE FROM clientes WHERE id = ?", (cliente_id,))
     conn.commit()
     conn.close()
-  # ==========================================
+# ==========================================
 # MÓDULO VENTAS Y FACTURACIÓN
 # ==========================================
 
