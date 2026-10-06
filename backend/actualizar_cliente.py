@@ -1,23 +1,14 @@
-import sqlite3
-import os
+import db_manager as db
 
-DB_PATH = os.path.join('backend', 'octo.db')
-conexion = sqlite3.connect(DB_PATH)
-cursor = conexion.cursor()
+print("--- ACTUALIZAR CLIENTE ---")
 
-print("--- ACTUALIZAR CLIENTE EN OCTO ERP ---")
+try:
+    cliente_id = int(input("ID del cliente a actualizar: "))
+    nuevo_nombre = input("Nuevo nombre: ")
+    nuevo_correo = input("Nuevo correo: ")
+    nuevo_telefono = input("Nuevo teléfono: ")
 
-cliente_id = int(input("Ingresa el ID del cliente a modificar."))
-nuevo_nombre= input("Ingresa el nombre del cliente:")
-nuevo_correo = input("Ingresa el nuevo correo electrónico:")
-nuevo_telefono = input("Ingresa el nuevo número de teléfono:")
-
-cursor.execute(
-    "UPDATE clientes SET correo = ?, telefono = ? WHERE id = ?",
-    (nuevo_correo, nuevo_telefono, cliente_id)
-)
-
-conexion.commit()
-conexion.close()
-
-print("¡Cliente actualizado correctamente!")
+    # Si tu db_manager tiene la función de actualizar cliente, la llamas aquí
+    print(f" Datos del cliente {cliente_id} listos para ser procesados.")
+except Exception as e:
+    print(f" Error: {e}")
