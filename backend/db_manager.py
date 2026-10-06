@@ -193,3 +193,41 @@ def obtener_datos_para_asistente_ia():
         "inventario": inventario,
         "ventas_resumen": ventas_resumen
     }
+
+# ==========================================
+# MÓDULO DE GESTIÓN DE USUARIOS
+# ==========================================
+
+def crear_usuario(nombre, correo, password, rol='vendedor'):
+    """Registra un nuevo usuario en la base de datos MariaDB."""
+    conexion = obtener_conexion()
+    if not conexion:
+        return False
+    try:
+        cursor = conexion.cursor()
+        query = "INSERT INTO usuarios (nombre, correo, password, rol) VALUES (%s, %s, %s, %s)"
+        cursor.execute(query, (nombre, correo, password, rol))
+        conexion.commit()
+        return cursor.lastrowid
+    except mysql.connector.Error as err:
+        print(f" Error al crear usuario: {err}")
+        return None
+    finally:
+        conexion.close()
+
+def autenticar_usuario(correo, password):
+    """Autentica un usuario en la base de datos MariaDB."""
+    conexion = obtener_conexion()
+    if not conexion:
+        return False
+    try:
+        cursor = conexion.cursor(dictionary=True)
+        query = "SELECT * FROM usuarios WHERE correo = %s AND password = %s"
+        cursor.execute(query, (correo, password))
+        usuario = cursor.fetchone()
+        return usuario
+    except mysql.connector.Error as err:
+        print(f" Error al autenticar usuario: {err}")
+        return None
+    finally:
+        conexion.close()
