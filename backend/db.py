@@ -56,4 +56,4 @@ cursor.execute("INSERT INTO productos (nombre, precio, stock) VALUES ('Teclado M
 conexion.commit()
 conexion.close()
 
-print("Base de datos de OCTO ERP creada exitosamente en colones (₡)")
+print("Base de datos de OCTO ERP creada exitosamente")
