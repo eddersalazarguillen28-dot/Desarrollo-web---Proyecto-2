@@ -11,6 +11,12 @@ const mensajeActualizacion = document.getElementById("ultima-actualizacion");
 let graficoVentas = null
 let graficoProductos = null
 
+if (typeof Chart !== "undefined") {
+    Chart.defaults.font.size = 14;
+    Chart.defaults.font.family = "Arial";
+    Chart.defaults.color = "#243247"
+}
+
 // Formato para cantidad como colones
 function formatearMoneda(valor) {
     return new Intl.NumberFormat("es-CR", {
@@ -23,7 +29,7 @@ function formatearMoneda(valor) {
 // Extraer el mes de una fecha 
 //Evita problemas de conversion por zona horaria
 function obtenerMes(fecha) {
-    return Number(fecha.split("-")[1]);
+    return Number(fecha.split("/")[1]);
 }
 function calcularIngreso(venta) {
     return venta.cantidad * venta.precioUnitario;
@@ -144,15 +150,22 @@ function actualizarGraficoProductos(ventasFiltradas) {
     }
 
     graficoProductos = new Chart(document.getElementById("grafico-productos"), {
-        type: "bar",
+        type: "doughnut",
         data: {
             labels: etiquetas,
             datasets: [
                 {
                     label: "Unidades vendidas",
                     data: cantidades,
-                    backgroundColor: "#163b86",
-                    borderRadius: 6
+                    backgroundColor: [
+                        "#245bd7",
+                        "#169b86",
+                        "#8b5cf6",
+                        "#ef4444",
+                        "#06b6d4",
+                    ],
+                    borderRadius: "#ffffff",
+                    borderWidth: 3
                 }
             ]
         },
@@ -160,9 +173,16 @@ function actualizarGraficoProductos(ventasFiltradas) {
             indexAxis: "y",
             resposive: true,
             maintainAspectRatio: false,
+            cutout: "60%",
             plugins: {
                 legend: {
-                    display: false
+                    display: false,
+                    position: "bottom"
+                },
+                tooltip: {
+                    callbacks:{
+                        label: contexto => contexto.label + ": " + contexto.parsed + "unidades"
+                    }
                 }
             },
             scales: {
@@ -182,13 +202,13 @@ function actualizarGraficoProductos(ventasFiltradas) {
 function actualizarAlertas() {
     const tabla = document.getElementById("tabla-stock"); tabla.replaceChildren();
 
-    const productosStockBajo = productos.filter(producto => producto.stock <= producto.stockMinimo);
+    const productosStockBajo = productos.filter(producto => producto.stock <= producto.stockMinimo).sort((a,b) => a.stock -b.stock);
 
     if (productosStockBajo.length === 0) {
         const fila = document.createElement("tr");
         const celda = document.createElement("td");
 
-        celda.colSpan = 4;
+        celda.colSpan = 5;
         celda.className = "sin-alertas";
         celda.textContent = "No hay productos con stokc bajo";
 
@@ -202,7 +222,8 @@ function actualizarAlertas() {
         [
             producto.nombre,
             producto.stock,
-            producto.stockMinimo
+            producto.stockMinimo,
+            producto.stockMinimo - producto.stock
         ].forEach(valor => {
             const celda = document.createElement("td");
             celda.textContent = valor;
@@ -225,27 +246,81 @@ function actualizarAlertas() {
     });
 }
 
+function actualizarTablaVentas(ventasFiltradas) {
+    const tabla = document.getElementById("tabla-ventas");
+    tabla.replaceChildren();
+
+    if (ventasFiltradas.length === 0) {
+        const fila = document.createElement("tr");
+        const celda = document.createElement("td");
+
+        celda.colSpan = 6;
+        celda.className = "sin-alertas";
+        celda.textContent = "No hay ventas en este periodo";
+
+        fila.appendChild(celda);
+        tabla.appendChild(fila);
+        return;
+    }
+
+    ventasFiltradas.forEach(venta => {
+        const producto = productos.find(producto => producto.id === venta.productoId);
+
+        const fecha = venta.fecha;
+
+        const valores = [
+            venta.id,
+            fecha,
+            producto ? producto.nombre: "Producto no disponible",
+            venta.cantidad,
+
+            formatearMoneda(venta.precioUnitario),
+            formatearMoneda(calcularIngreso(venta))
+        ];
+
+        const fila = document.createElement("tr");
+
+        valores.forEach(valor => {
+            const celda = document.createElement("td");
+            celda.textContent = valor;
+            fila.appendChild(celda);
+        });
+        tabla.appendChild(fila);
+    })
+}
+
 //Ejecutar todas las actualizaciones del dashboard
 function actualizarDashboard() {
     const ventasFiltradas = filtrarVentas();
 
+    document.getElementById("aviso-sin-ventas").hidden = ventasFiltradas.length > 0;
+
+
+    const periodo = selectorMes.value === "todos" 
+        ? " Todos los meses"
+        :nombreMeses[Number(selectorMes.value) - 1];
+
+        document.getElementById("titulo-ventas").textContent = "Ventas por mes - Ingresos (₡) - " + periodo
+
+        document.getElementById("titulo-productos").textContent = "Productos más vendidos - Unidades vendidas - " + periodo;
     actualizarIndicadores(ventasFiltradas);
     actualizarAlertas();
 
     //Las alertas e indicadores funcionan aunque chart no cargue
     if (typeof Chart === "undefined") {
-        mensajeActualizacion.textContent = "No se pudo cargar Chart,js. Revisa tu conexión a internet.";
+        mensajeActualizacion.textContent = "No se pudo cargar Chart.js. Revisa tu conexión a internet.";
         return;
     }
 
     actualizarGraficoVentas(ventasFiltradas);
-
     actualizarGraficoProductos(ventasFiltradas);
+    actualizarIndicadores(ventasFiltradas);
+    actualizarTablaVentas(ventasFiltradas);
+    actualizarAlertas();
 
     const hora = new Date().toLocaleTimeString("es-CR");
 
-    mensajeActualizacion.textContent = "Última actualización:" + hora + (ventasFiltradas.length === 0 ? " No hay ventas registradas en este periodo" : "");
-
+    mensajeActualizacion.textContent = "Última actualización: " + hora;
 }
 
 //Interacción del usuario
