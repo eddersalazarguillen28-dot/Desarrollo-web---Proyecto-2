@@ -12,19 +12,28 @@
         <h3>Regístrate</h3>
         <p class="subtitulo">Crea una cuenta para continuar</p>
 
-        <form>
+        <form id="formularioRegistro">
 
             <div class="grupoInput">
-                <input type="text" id="name" placeholder="Nombre" required>
+                <input type="text" id="nombre" placeholder="Nombre" required>
+                <small class="error" id="errorNombre"></small>
             </div>
 
             <div class="grupoInput">
                 <input type="email" id="email" placeholder="Correo electrónico" required>
+                <small class="error" id="errorEmail"></small>
             </div>
 
             <div class="grupoInput">
                 <input type="password" id="contrasena" placeholder="Contraseña"required>
+                <small class="error" id="errorContrasena"></small>
             </div>
+
+            <div class="grupoInput">
+                <input type="password" id="confirmarConstrasena" placeholder="Confirmar contraseña"required>
+                <small class="error" id="errorConfirmar"></small>
+            </div>
+
             <br>
 
             <button type="submit" class="btnIngresar">Crear cuenta</button>
@@ -32,8 +41,11 @@
         </form>
 
         <p id="preguntaCuenta">¿Ya tienes una cuenta?</p>
-        <a href="#" class="crearCuenta">Iniciar sesión</a>
+        <a href="inicioSesion.html" class="crearCuenta">Iniciar sesión</a>
+
+        <p id="mensajeExito"role="status"></p>
 
     </div>
+    <script src="validacionesCuenta.js"></script>
 </body>
 </html>
