@@ -9,7 +9,7 @@ cursor = conexion.cursor()
 
 print("--- ACTUALIZAR PRODUCTO EN OCTO ERP ---")
 producto_id = int(input("Ingresa el ID del producto a modificar: "))
-nuevo_precio = float(input("Ingresa el nuevo precio en colones (₡): "))
+nuevo_precio = float(input("Ingresa el nuevo precio: "))
 nuevo_stock = int(input("Ingresa la nueva cantidad en stock: "))
 
 # Actualizar el precio y el stock en la base de datos
