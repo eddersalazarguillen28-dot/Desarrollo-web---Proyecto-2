@@ -75,50 +75,52 @@ function actualizarGraficoVentas(ventasFiltradas) {
     if (graficoVentas) {
         graficoVentas.data.labels = etiquetas;
 
-        graficoVentas.data.datasets[0].data = ingresos; graficoVentas.update(); return;
+        graficoVentas.data.datasets[0].data = ingresos; graficoVentas.update();
+        return;
+    }
 
-        graficoVentas = new Chart(
-            document.getElementById("grafico-ventas"),
-            {
-                type: "bar",
-                data: {
-                    labels: etiquetas,
-                    datasets: [
-                        {
-                            label: "Ingresos",
-                            data: ingresos,
-                            backgroundColor: "#245bd7",
-                            borderRadius: 6
+    graficoVentas = new Chart(
+        document.getElementById("grafico-ventas"),
+        {
+            type: "bar",
+            data: {
+                labels: etiquetas,
+                datasets: [
+                    {
+                        label: "Ingresos",
+                        data: ingresos,
+                        backgroundColor: "#245bd7",
+                        borderRadius: 6
 
-                        }
-                    ]
-                },
-                options: {
-                    resposive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltrip: {
-                            callbacks: {
-                                label: contexto => formatearMoneda(contexto.parsed.y)
-                            }
-                        }
+                    }
+                ]
+            },
+            options: {
+                resposive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callbacks: valor => formatearMoneda(valor)
-                            }
+                    tooltrip: {
+                        callbacks: {
+                            label: contexto => formatearMoneda(contexto.parsed.y)
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callbacks: valor => formatearMoneda(valor)
                         }
                     }
                 }
             }
-        )
-    };
-}
+        }
+    )
+};
+
 
 //Ordena los productos por unidades vendidas
 function actualizarGraficoProductos(ventasFiltradas) {
@@ -177,12 +179,12 @@ function actualizarGraficoProductos(ventasFiltradas) {
 }
 
 // Tabla de alertas con el inventario actual
-function actualizarAlertas(){
+function actualizarAlertas() {
     const tabla = document.getElementById("tabla-stock"); tabla.replaceChildren();
 
     const productosStockBajo = productos.filter(producto => producto.stock <= producto.stockMinimo);
 
-    if(productosStockBajo.length === 0){
+    if (productosStockBajo.length === 0) {
         const fila = document.createElement("tr");
         const celda = document.createElement("td");
 
@@ -210,10 +212,10 @@ function actualizarAlertas(){
         const estado = document.createElement("span");
 
         const agotado = producto.stock === 0;
-        
+
         estado.className = agotado
-        ? "estado agotado"
-        : "estado stock-bajo"
+            ? "estado agotado"
+            : "estado stock-bajo"
 
         estado.textContent = agotado ? "Agotado" : "Stock bajo";
 
@@ -241,9 +243,9 @@ function actualizarDashboard() {
     actualizarGraficoProductos(ventasFiltradas);
 
     const hora = new Date().toLocaleTimeString("es-CR");
-    
-    mensajeActualizacion.textContent = "Última actualización:" + hora + (ventasFiltradas.length === 0 ? " No hay ventas registradas en este periodo": "");
-    
+
+    mensajeActualizacion.textContent = "Última actualización:" + hora + (ventasFiltradas.length === 0 ? " No hay ventas registradas en este periodo" : "");
+
 }
 
 //Interacción del usuario
@@ -253,10 +255,10 @@ botonActualizar.addEventListener("click", actualizarDashboard)
 //Actualizar la vista cada 15 segundos mientras la pestaña esté visible 
 //Recalcula los datos disponibles, no inventa ventas nuevas
 setInterval(() => {
-    if (document.visibilityState === "visible"){
+    if (document.visibilityState === "visible") {
         actualizarDashboard();
     }
-},15000);
+}, 15000);
 
 //Primera carga
 actualizarDashboard();
