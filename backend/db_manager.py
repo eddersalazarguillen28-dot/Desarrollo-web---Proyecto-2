@@ -205,8 +205,8 @@ def obtener_detalles_dashboard():
         DATE_FORMAT(V.FECHA, '%d/%m/%Y') AS fecha,
         dv.producto_id AS productoId,
         dv.cantidad AS cantidad,
-        dv,subtotal AS subtotal,
-        dv.subtotal / NULLIF(dv.cantidad, 0) AS precioUnitario FROM ventas v JOIN detalle_ventas dv ON dv.venta_id = v.id ORDER BY v.fecha, v.id, dv.id
+        dv.cantidad * dv.precio_unitario AS subtotal,
+        dv.precio_unitario AS precioUnitario
         """)
 
         return cursor.fetchall()
