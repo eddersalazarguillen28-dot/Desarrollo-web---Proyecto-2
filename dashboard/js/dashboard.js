@@ -330,7 +330,7 @@ let cargandoDatos = false;
 
 async function cargarDatos() {
     if (cargandoDatos) return;
-    cargarDatos = true;
+    cargandoDatos = true;
 
     mensajeActualizacion.textContent = "Consultando datos...";
 
