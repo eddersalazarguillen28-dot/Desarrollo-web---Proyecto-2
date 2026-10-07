@@ -78,8 +78,8 @@ INSERT INTO productos (id, nombre, precio, stock, stock_minimo) VALUES
 (2, 'Mouse Inalámbrico Ergonómico', 25.00, 2, 5), -- Stock bajo
 (3, 'Monitor Gaming 24"', 180.00, 10, 3),
 (4, 'Auriculares Bluetooth', 60.00, 1, 4), -- Stock bajo
-(5, 'Silla Gamer Ergonómica', 210.00, 7, 2);
-(5, 'Monitor RGB', 210.00, 7, 2);
+(5, 'Silla Gamer Ergonómica', 210.00, 7, 2),
+(6, 'Monitor RGB', 210.00, 7, 2);
 
 
 -- Insertar Usuarios

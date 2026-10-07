@@ -62,12 +62,8 @@ CONCLUSIÓN
 """
 
     try:
-
-        respuesta = client.models.generate_content(
-            model="gemini-3.8-flash",
-            contents=prompt
-        )
-
+        chat = client.chats.create(model="gemini-3.8")
+        respuesta = chat.send_message(prompt)
         return respuesta.text
 
     except Exception as e:
