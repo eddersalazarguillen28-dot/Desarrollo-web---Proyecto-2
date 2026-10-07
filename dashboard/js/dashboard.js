@@ -265,14 +265,14 @@ function actualizarTablaVentas(ventasFiltradas) {
         return;
     }
 
-    ventasFiltradas.forEach(venta => {
+    ventasFiltradas.forEach((venta, indice) => {
         const producto = productos.find(producto => producto.id === venta.productoId);
 
         const fecha = venta.fecha;
 
         const valores = [
-            venta.id,
-            fecha,
+            indice + 1,
+            venta.fecha,
             producto ? producto.nombre: "Producto no disponible",
             venta.cantidad,
 

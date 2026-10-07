@@ -153,3 +153,15 @@ def obtener_detalles_dashboard():
     finally: 
         cursor.close()
         conn.close()
+
+        
+def obtener_productos():
+    conn = obtener_conexion()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        cursor.execute("SELECT * FROM productos")
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
