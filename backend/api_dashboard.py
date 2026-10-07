@@ -5,7 +5,7 @@ app = Flask(__name__)
 @app.after_request
 def permitir_dashboard(respuesta):
 
-    respuesta.headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:5500"
+    respuesta.headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:5501"
     return respuesta
     
     
