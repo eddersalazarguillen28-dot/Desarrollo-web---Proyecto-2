@@ -12,12 +12,12 @@ def analizar_pruductos(datos):
 
     for p in productos:
         falta = p["stock_minimo"] - p["stock_actual"]
-        alerta = p["stock_actual"] < p["stock minimo"]
+        alerta = p["stock_actual"] < p["stock_minimo"]
 
         #clasifica la rotaion de productos
-        if p["vendidios_30d"] >= 8:
+        if p["vendidos_30d"] >= 8:
             rotacion = "alta"
-        elif p["vendidios_30d"] >= 4:
+        elif p["vendidos_30d"] >= 4:
             rotacion = "media"
         else:
             rotacion = "baja"
@@ -50,7 +50,7 @@ def obtener_recomendacion(ruta_datos="datos_prueba.json"):
     promt = generar_promt(analisis)
     return consultar_gemini(promt)
 
-if __name__ == "_main_":
+if __name__ == "__main__":
     print("=" * 60)
     print("asistente de reabastecimiento")
     print("="* 60 + "\n")
