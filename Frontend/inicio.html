@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="estiloInicio.css">
-    <title>Document</title>
+
+    
+    <title>Inicio</title>
 </head>
 <body>
     <!--Menu lado izquierdo-->
@@ -15,7 +17,7 @@
         </div>
 
         <nav class="menu">
-            <a href="#" class="menu-item active">
+            <a href="../Frontend/inicio.html" class="menu-item active">
                 <p>Inicio</p>
             </a>
 
@@ -35,13 +37,12 @@
                 <p>Inventario</p>
             </a>
 
+            <a href="../dashboard/index.html" class="menu-item">Dashboard</a>
+
             <a href="#" class="menu-item">
                 <p>Reportes</p>
             </a>
-
-
-        </nav>
-       
+        </nav> 
     </aside>
 
     <!--Contenido-->
@@ -270,9 +271,9 @@
                 <span>Mostrando 1-5 de 5 productos</span>
 
                 <div class="btnPaginas">
-                    <button>‹</button>
+                    <button><</button>
                     <button>1</button>
-                    <button>›</button>
+                    <button>></button>
                 </div>
 
             </div>
@@ -351,8 +352,42 @@
         </section>
 
     </main>
+<button id="btn-abrir-chat" class="chat-trigger">
+      X
+    </button>
 
-    
-    
+    <!-- Ventana del Asistente -->
+    <div id="ventana-chat" class="chat-window oculta">
+      <!-- Cabecera -->
+      <div class="chat-header">
+        <div class="header-perfil">
+          <div class="avatar">x</div>
+          <div class="info">
+            <h3>Asistente de Ventas <span>x Gemini</span></h3>
+            <span class="estado">● Conectado</span>
+          </div>
+        </div>
+        <button id="btn-cerrar-chat" class="btn-cerrar">✕</button>
+      </div>
+
+      <!-- Área de mensajes -->
+      <div class="chat-mensajes" id="chat-mensajes">
+        <div class="mensaje bot">
+          <div class="avatar-pequeno">X</div>
+          <div class="burbuja">
+            He analizado las ventas recientes y el inventario actual. ¿En qué te puedo ayudar hoy?
+          </div>
+        </div>
+      </div>
+
+      <!-- Entrada de texto -->
+      <div class="chat-input-container">
+        <input type="text" id="chat-input" placeholder="Escribe tu consulta...">
+        <button id="btn-enviar-chat" class="btn-enviar">➤</button>
+      </div>
+    </div>
+
+    <!-- Vinculación del script del chat -->
+    <script src="chat.js"></script> 
 </body>
 </html>
