@@ -1,5 +1,6 @@
 from db_reader import obtener_datos_ia
 from gemini_client import analizar_inventario
+from database import inicializar_esquema
 
 def analizar_productos(productos):
 
@@ -58,6 +59,9 @@ def ejecutar_asistente():
     print("\n====================================")
     print("      ASISTENTE INTELIGENTE")
     print("====================================\n")
+
+    print("Verificando base de datos...")
+    inicializar_esquema("../backend/schema.sql")
 
     # 1. Obtener datos reales de MariaDB
     productos = obtener_datos_ia()

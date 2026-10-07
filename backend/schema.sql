@@ -1,12 +1,12 @@
 -- ==========================================================
 -- ESTRUCTURA Y DATOS DE PRUEBA COMPLETOS PARA LA IA - OCTO ERP
 -- ==========================================================
-
-CREATE DATABASE IF NOT EXISTS octo_db;
+DROP DATABASE IF EXISTS octo_db; -- Borra la base de datos vieja
+CREATE DATABASE octo_db;         -- Crea la base de datos desde cero con la estructura limpia
 USE octo_db;
 
 -- 1. Tabla de Clientes
-CREATE TABLE IF NOT EXISTS clientes (
+CREATE TABLE clientes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     correo VARCHAR(100),
