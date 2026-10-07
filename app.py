@@ -4,13 +4,36 @@ from flask_cors import CORS
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-app = Flask(__name__)
+app = Flask(_name_)
 CORS(app)
 
 def obtener_conexion():
-    # Render inyecta la variable DATABASE_URL automáticamente
     database_url = os.getenv('DATABASE_URL')
     return psycopg2.connect(database_url, cursor_factory=RealDictCursor)
+
+# Esta función crea la tabla 'usuarios' automáticamente si no existe
+def crear_tablas():
+    try:
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        query = """
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id SERIAL PRIMARY KEY,
+            nombre VARCHAR(100) NOT NULL,
+            correo VARCHAR(100) UNIQUE NOT NULL,
+            password VARCHAR(255) NOT NULL
+        );
+        """
+        cursor.execute(query)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        print("Tabla 'usuarios' verificada/creada correctamente.")
+    except Exception as e:
+        print("Error creando la tabla:", e)
+
+# Ejecutamos la función al iniciar la app
+crear_tablas()
 
 @app.route('/api/registro', methods=['POST'])
 def registro():
@@ -18,7 +41,6 @@ def registro():
     conn = obtener_conexion()
     cursor = conn.cursor()
     try:
-        # En PostgreSQL se usa 'RETURNING id' para obtener el ID recién insertado
         query = "INSERT INTO usuarios (nombre, correo, password) VALUES (%s, %s, %s) RETURNING id;"
         cursor.execute(query, (datos['nombre'], datos['correo'], datos['password']))
         usuario_id = cursor.fetchone()['id']
@@ -49,8 +71,6 @@ def login():
         cursor.close()
         conn.close()
 
-if __name__ == '__main__':
-    # En producción (Render), Gunicorn se encarga de arrancar la app.
-    # Esta línea permite que siga funcionando si lo ejecutas de forma local.
+if _name_ == '_main_':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
