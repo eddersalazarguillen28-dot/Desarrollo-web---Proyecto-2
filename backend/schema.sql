@@ -1,12 +1,12 @@
 -- ==========================================================
 -- ESTRUCTURA Y DATOS DE PRUEBA COMPLETOS PARA LA IA - OCTO ERP
 -- ==========================================================
-
-CREATE DATABASE IF NOT EXISTS octo_db;
+DROP DATABASE IF EXISTS octo_db; -- Borra la base de datos vieja
+CREATE DATABASE octo_db;         -- Crea la base de datos desde cero con la estructura limpia
 USE octo_db;
 
 -- 1. Tabla de Clientes
-CREATE TABLE IF NOT EXISTS clientes (
+CREATE TABLE clientes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     correo VARCHAR(100),
@@ -78,7 +78,9 @@ INSERT INTO productos (id, nombre, precio, stock, stock_minimo) VALUES
 (2, 'Mouse Inalámbrico Ergonómico', 25.00, 2, 5), -- Stock bajo
 (3, 'Monitor Gaming 24"', 180.00, 10, 3),
 (4, 'Auriculares Bluetooth', 60.00, 1, 4), -- Stock bajo
-(5, 'Silla Gamer Ergonómica', 210.00, 7, 2);
+(5, 'Silla Gamer Ergonómica', 210.00, 7, 2),
+(6, 'Monitor RGB', 210.00, 7, 2);
+
 
 -- Insertar Usuarios
 INSERT INTO usuarios (id, nombre, correo, password, rol) VALUES

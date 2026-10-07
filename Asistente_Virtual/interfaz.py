@@ -1,20 +1,28 @@
-from asistente import analizar_pruductos, generar_promt
-from gemini_client import consultar_gemini
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from db_reader import obtener_datos_ia
+from asistente import analizar_productos 
+from gemini_client import responder_chat
 
-def recomendar_rebastecimiento(datos_inventario: dict)->dict:
-    analisis = analizar_pruductos(datos_inventario)
-    promt = generar_promt(analisis)
-    text = consultar_gemini(promt)
+app = Flask(__name__)
+CORS(app) 
 
-    return{
-        "recomendacion": text,
-        "total_productos": analisis["total_productos"],
-        "productos_alerta": analisis["con_alaerta"], 
-        "fecha_analisis": analisis["fecha"]
-    }
+@app.route('/chat', methods=['POST'])
+def chat():
+    datos_peticion = request.json
+    mensaje_usuario = datos_peticion.get("mensaje", "")
 
-def pregubtar_libre(pregunta: str, datos_inventario: dict = None)->str:
-    if datos_inventario:
-        contexto = f"\n\nContexto del inventario:\n{datos_inventario}"
-        return consultar_gemini(pregunta + contexto)
-    return consultar_gemini(pregunta)
+    # 1. Obtener y analizar datos frescos de MariaDB
+    productos_crudos = obtener_datos_ia()
+    if not productos_crudos:
+        return jsonify({"respuesta": "No pude conectar a la base de datos o está vacía."})
+
+    analisis = analizar_productos(productos_crudos)
+
+    # 2. Enviar mensaje a Gemini
+    respuesta_ia = responder_chat(mensaje_usuario, analisis)
+
+    return jsonify({"respuesta": respuesta_ia})
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
