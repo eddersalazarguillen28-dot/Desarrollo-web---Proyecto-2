@@ -4,7 +4,7 @@ from flask_cors import CORS
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-app = Flask(_name_)
+app = Flask(__name__)
 CORS(app)
 
 def obtener_conexion():
@@ -49,7 +49,7 @@ def login():
         cursor.close()
         conn.close()
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     # En producción (Render), Gunicorn se encarga de arrancar la app.
     # Esta línea permite que siga funcionando si lo ejecutas de forma local.
     port = int(os.environ.get("PORT", 5000))
