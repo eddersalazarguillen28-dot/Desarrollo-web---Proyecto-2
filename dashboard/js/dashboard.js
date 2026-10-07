@@ -52,7 +52,9 @@ function filtrarVentas() {
 function actualizarIndicadores(ventasFiltradas) {
     const totalVentas = ventasFiltradas.reduce((total, venta) => total + calcularIngreso(venta), 0);
 
-    const cantidadVentas = ventasFiltradas.length;
+    const cantidadVentas = new Set(
+        ventasFiltradas.map(venta => venta.id)
+    ).size;
 
     // Evitar dividir entre cero cuando no se registra venta
     const ticketPromedio = cantidadVentas > 0 ? totalVentas / cantidadVentas : 0;
@@ -324,16 +326,51 @@ function actualizarDashboard() {
 }
 
 //Interacción del usuario
-selectorMes.addEventListener("change", actualizarDashboard);
-botonActualizar.addEventListener("click", actualizarDashboard)
+let cargandoDatos = false;
 
-//Actualizar la vista cada 15 segundos mientras la pestaña esté visible 
-//Recalcula los datos disponibles, no inventa ventas nuevas
+async function cargarDatos() {
+    if (cargandoDatos) return;
+    cargarDatos = true;
+
+    mensajeActualizacion.textContent = "Consultando datos...";
+
+    try {
+        const respuesta = await fetch("http://127.0.0.1:5000/api/dashboard");
+
+        if (!respuesta.ok){
+            throw new Error("Error HTTP " + respuesta.status);
+        }
+
+        const datos = await respuesta.json(); 
+
+        if (!Array.isArray(datos.productos) || !Array.isArray(datos.ventas)){
+            throw new Error("La respuesta no contiene los datos esperados");
+        } 
+
+        productos = datos.productos;
+        ventas = datos.ventas;
+
+        actualizarDashboard();
+    } catch (error) {
+        console.error("Error al cargar datos:", error);
+        mensajeActualizacion.textContent = "No se pudieron actualizar los datos. Revisar la conexión";
+    } finally {
+        cargandoDatos = false;
+    }
+
+}
+
+//Cambiar el mes usando los datos cargados
+selectorMes.addEventListener("change",actualizarDashboard);
+
+//Consultar nuevamente la base de datos
+botonActualizar.addEventListener("click", cargarDatos);
+
+//Consultar cada 15 segundos
 setInterval(() => {
     if (document.visibilityState === "visible") {
-        actualizarDashboard();
+        cargarDatos();
     }
-}, 15000);
+}, 15000)
 
-//Primera carga
-actualizarDashboard();
+cargarDatos();
