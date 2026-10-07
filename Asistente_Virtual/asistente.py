@@ -1,58 +1,114 @@
-import json
-from gemini_client import consultar_gemini
+from db_reader import obtener_datos_ia
+from gemini_client import analizar_inventario
 
-#carga los datos de prueba para verificar valides
-def cargar_datos(ruta="datos_prueba.json"):
-    with open (ruta, "r", encoding="utf-8") as f:
-        return json.load(f)
-#recorre los datos 
-def analizar_pruductos(datos):
-    productos = datos["productos"]
-    analisis = []
+def analizar_productos(productos):
 
-    for p in productos:
-        falta = p["stock_minimo"] - p["stock_actual"]
-        alerta = p["stock_actual"] < p["stock_minimo"]
+    resultados = []
 
-        #clasifica la rotaion de productos
-        if p["vendidos_30d"] >= 8:
-            rotacion = "alta"
-        elif p["vendidos_30d"] >= 4:
-            rotacion = "media"
+    for producto in productos:
+
+        stock_actual = int(producto["stock_actual"] or 0)
+        stock_minimo = int(producto["stock_minimo"] or 0)
+        vendidos_30d = int(producto["vendidos_30d"] or 0)
+
+        # Promedio de ventas por día
+        promedio_diario = vendidos_30d / 30
+
+        # Demanda estimada para los próximos 30 días
+        demanda_30_dias = promedio_diario * 30
+
+        # Determinar si necesita reabastecimiento
+        necesita_reabastecimiento = (
+            stock_actual <= stock_minimo
+            or stock_actual < demanda_30_dias
+        )
+
+        # Cantidad recomendada
+        if necesita_reabastecimiento:
+
+            cantidad_recomendada = max(
+                0,
+                round(
+                    demanda_30_dias
+                    + stock_minimo
+                    - stock_actual
+                )
+            )
+
         else:
-            rotacion = "baja"
 
-        analisis.append({
-            **p,
-            "falta para minimo": max(falta,0),
-            "alerta_stock": alerta,
-            "rotacion": rotacion,
+            cantidad_recomendada = 0
+
+        resultados.append({
+            "producto_id": producto["producto_id"],
+            "nombre": producto["nombre"],
+            "stock_actual": stock_actual,
+            "stock_minimo": stock_minimo,
+            "vendidos_30d": vendidos_30d,
+            "promedio_diario": round(promedio_diario, 2),
+            "demanda_30_dias": round(demanda_30_dias, 2),
+            "necesita_reabastecimiento": necesita_reabastecimiento,
+            "cantidad_recomendada": cantidad_recomendada
         })
-    return{
-        "Fecha": datos["fecha_analisi"],
-        "total_productos": len(productos),
-        "con_alerta": sum(1 for a in analisis if a["alerta_stock"]),
-        "productos": analisis
-    }
 
-def generar_promt(analisis):
-    return f""" analiza este inventario y dime que restablecer  
-    "Datos: {json.dumps(analisis, indent=2, ensure_ascii=False)} 
-    Genera: una lista priorizada de productos a reastablecer usando:
-    urgente(stock bajo + rotacion alta), pronto (stock bajo pero rotacion baja/media), ok (stock saludable)
-    cantidad sugerida por producto (basada en ventas de 30 dias)
-    accion concreta para el encargado de compras al final 
-    """
+    return resultados
 
-def obtener_recomendacion(ruta_datos="datos_prueba.json"):
-    datos = cargar_datos(ruta_datos)
-    analisis =analizar_pruductos(datos)
-    promt = generar_promt(analisis)
-    return consultar_gemini(promt)
+def ejecutar_asistente():
+
+    print("\n====================================")
+    print("      ASISTENTE INTELIGENTE")
+    print("====================================\n")
+
+    # 1. Obtener datos reales de MariaDB
+    productos = obtener_datos_ia()
+
+    if not productos:
+
+        print(" No se encontraron datos en la base de datos.")
+        return
+
+    print(
+        f" Se obtuvieron {len(productos)} productos de MariaDB.\n"
+    )
+
+    # 2. Analizar inventario
+    analisis = analizar_productos(productos)
+
+    print("========== ANÁLISIS ==========\n")
+
+    for producto in analisis:
+
+        print(f"Producto: {producto['nombre']}")
+        print(f"Stock actual: {producto['stock_actual']}")
+        print(f"Stock mínimo: {producto['stock_minimo']}")
+        print(f"Ventas últimos 30 días: {producto['vendidos_30d']}")
+        print(
+            f"Promedio diario: "
+            f"{producto['promedio_diario']}"
+        )
+
+        if producto["necesita_reabastecimiento"]:
+
+            print(
+                f"REABASTECER: "
+                f"{producto['cantidad_recomendada']} unidades"
+            )
+
+        else:
+
+            print(" Stock suficiente")
+
+        print("--------------------------------")
+
+
+    # 3. Enviar análisis a Gemini
+    print("\nConsultando Gemini...\n")
+
+    recomendacion = analizar_inventario(analisis)
+
+    print("========== RECOMENDACIÓN DE IA ==========\n")
+
+    print(recomendacion)
 
 if __name__ == "__main__":
-    print("=" * 60)
-    print("asistente de reabastecimiento")
-    print("="* 60 + "\n")
-    print(obtener_recomendacion())
-    
+    ejecutar_asistente()
