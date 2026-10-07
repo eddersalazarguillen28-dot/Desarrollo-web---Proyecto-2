@@ -4,13 +4,13 @@ import mysql.connector
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'Pirko',
+    'password': '12345',
     'database': 'octo_db',
     'port': 3306
 }
 
 def obtener_conexion():
-    return mysql.connector.connect(**DB_CONFIG)
+    return mysql.connector.connect(**DB_CONFIG, use_pure=True)
 
 # ==========================================
 # MÓDULO PRODUCTOS (CRUD)
@@ -196,18 +196,21 @@ def obtener_datos_para_asistente_ia():
 
 def obtener_detalles_dashboard():
     conn = obtener_conexion()
-    cursor = conn.cursos(dictionary=True)
+    cursor = conn.cursor(dictionary=True)
 
     try: 
         cursor.execute("""
-        SELECT v.id AS id,
-        dv.id AS detalleId,
-        DATE_FORMAT(V.FECHA, '%d/%m/%Y') AS fecha,
-        dv.producto_id AS productoId,
-        dv.cantidad AS cantidad,
-        dv.cantidad * dv.precio_unitario AS subtotal,
-        dv.precio_unitario AS precioUnitario
-        """)
+        SELECT 
+            v.id AS id,
+            dv.id AS detalleId,
+            DATE_FORMAT(v.fecha, '%d/%m/%Y') AS fecha,
+            dv.producto_id AS productoId,
+            dv.cantidad AS cantidad,
+            dv.cantidad * dv.precio_unitario AS subtotal,
+            dv.precio_unitario AS precioUnitario
+            FROM ventas v JOIN detalle_ventas dv ON dv.venta_id = v.id 
+            ORDER BY v.fecha, v.id, dv.id
+            """)
 
         return cursor.fetchall()
 
