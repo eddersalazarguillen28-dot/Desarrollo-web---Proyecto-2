@@ -67,7 +67,7 @@ def obtener_datos_ia():
         datos = cursor.fetchall()
         return datos
     except Error as e:
-        print("Error consultando datos: {e}")
+        print(f"Error consultando datos: {e}")
         return []
     finally:
         cursor.close()
