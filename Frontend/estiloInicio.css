@@ -139,6 +139,7 @@ body{
 .contenedorTabla{
     width: 100%;
     overflow-x: auto;
+    border-radius: 10px 10px 0 0;
 }
 
 /*TABLA*/
@@ -148,12 +149,15 @@ table{
     border-collapse: collapse;
     table-layout: fixed;
     
+    
 }
 
 thead{
     background: #475ddc63;
+   
 
 }
+
 
 th{
     height: 23px;
@@ -163,12 +167,13 @@ th{
     font-family: Arial, Helvetica, sans-serif;
     font-weight: 600;
     border-bottom: 1px solid #edf0f5;
+    
 }
 
 td{
     height: 29px;
     padding: 2px 6px;
-    color: #5d6680;
+    color: black/*#5d6680*/;
     border-bottom: 1px solid #f0f2f7;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 17px;
@@ -184,7 +189,7 @@ tbody tr:hover{
 
 td strong{
     color: #2b3450;
-    font-weight: 800;
+    font-weight: 700;
     font-size: 17px;
 }
 
@@ -218,8 +223,8 @@ td:nth-child(6){
 /*Imagenes de prductos*/
 
 .imagen-producto{
-    width: 21px;
-    height: 21px;
+    width: 100px;
+    height: 100px;
     border-radius: 4px;
     display: flex;
     align-items: center;
@@ -297,222 +302,218 @@ td:nth-child(6){
 
 .footer-tabla > span{
     font-size: 17px;
-    color: #9aa1b3;
+    color: rgb(60, 60, 60);
+    font-family: Arial, Helvetica, sans-serif;
+    
+
 }
 
 .btnPaginas{
     display: flex;
     gap: 3px;
+    justify-content: flex-end;
 }
+    
+
 
 .btnPaginas button{
-    width: 25px;
-    height: 25px;
-    border: 1px solid #e6e8ee;
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgb(119, 119, 119);
     background: white;
     box-sizing: 4px;
-    color: #7b8397;
+    color: black;
     font-size: 15px;
-    cursor:pointer
+    cursor:pointer;
+    border-radius: 4px;
+   
 }
 
-/************************************/
-.btnPaginas button.current{
+.btnPaginas button:hover{
     background: #635bff;
-    border-color: #635bff;
     color: white;
+    box-shadow: 0 3px 7px rgba(99, 91, 255, 0.2);
 }
 
 /* ESTILOS DEL ASISTENTE INTELIGENTE */
 
-/* Botón Flotante */
-.chat-trigger {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #625aff, #7168ff);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  font-size: 28px;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(99, 91, 255, 0.4);
-  z-index: 1000;
-  transition: transform 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+/*Seccion de una nueva venta*/
+
+.seccion-venta{
+    margin-top: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
 }
 
-.chat-trigger:hover { 
-  transform: scale(1.05); 
+/*Nueva venta*/
+
+.nuevaVenta{
+    background: white;
+    border: 1px solid rgb(60, 60, 60);
+    border-radius: 7px;
+    padding: 10px;
+}
+.nuevaVenta h2{
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    margin-bottom: 10px;
+
 }
 
-/* Ventana del Chat */
-.chat-window {
-  position: fixed;
-  bottom: 90px;
-  right: 20px;
-  width: 500px; 
-  height: 650px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(20, 30, 60, 0.15);
-  display: flex;
-  flex-direction: column;
-  z-index: 999;
-  border: 1px solid #edf0f5;
-  overflow: hidden;
-  font-family: Arial, Helvetica, sans-serif;
-}
-.mensaje { 
-  display: flex; 
-  gap: 10px; 
-  max-width: 92%; 
+/*Formularios*/
+.form-grupo{
+    margin-bottom: 7px;
 }
 
-.chat-window.oculta { 
-  display: none; 
+.form-grupo label{
+    display: block;
+    font-size: 17px;
+    font-family: Arial, Helvetica, sans-serif;
+    color:black;
+    margin-bottom: 3px;
 }
 
-/* Cabecera del Chat */
-.chat-header {
-  background-color: #ffffff;
-  padding: 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #edf0f5;
+.form-grupo select, .form-grupo input{
+    width: 95%;
+    height: 23px;
+    padding: 0 7px;
+    border:1px solid #e1e5ee;
+    border-radius: 4px;
+    background: white;
+    color: #566079;
+    font-size: 17px;
+    outline:none;
 }
 
-.header-perfil { 
-  display: flex; 
-  align-items: center; 
-  gap: 10px; 
+.form-grupo select:focus,.form-grupo input:focus{
+    border-color: #817aff;
+    box-shadow: 0 0 0 2px rgba(99, 91, 255, 0.08);
 }
 
-.header-perfil .avatar { 
-  font-size: 24px; 
+/*Cantidad y venta*/
+.camposVenta{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap:8px;
 }
 
-.header-perfil h3 { 
-  margin: 0; 
-  font-size: 15px; 
-  color: #170933; 
-  font-weight: 700;
+/*Botón denerar factura*/
+
+.btnFactura{
+    width: 97%;
+    height: 25px;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #635bff,#7168ff);
+    color:white;
+    font-size: 17px;
+    font-weight: 400;
+    cursor: pointer;
+    margin-top: 1px;
+    box-shadow: 0 3px 7px rgba(99, 91, 255, 0.18);
 }
 
-.header-perfil h3 span { 
-  color: #625aff; 
-  font-size: 12px; 
-  font-weight: normal;
+/*Resumen venta*/
+.resumenVenta{
+    background: white;
+    border:1px solid rgb(60, 60, 60);
+    border-radius: 7px;
+    padding: 10px;
+
 }
 
-.header-perfil .estado { 
-  font-size: 11px; 
-  color: #159a63; 
-  font-weight: bold;
+.resumenVenta h3{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    margin-bottom: 13px;
+
 }
 
-.btn-cerrar { 
-  background: none; 
-  border: none; 
-  font-size: 18px; 
-  cursor: pointer; 
-  color: #7b8397; 
+.resumenVenta strong{
+     font-family: Arial, Helvetica, sans-serif;
 }
 
-.btn-cerrar:hover {
-  color: #e85a5a;
+/*Producto Resumen*/
+.producto-resumen{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #edf0f5;
 }
 
-/* Área de Mensajes */
-.chat-mensajes {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-  background-color: #f8f9fe;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+.producto-resumen div{
+    display: flex;
+    gap:13px;
+    align-items: center;
+
 }
 
-.mensaje { 
-  display: flex; 
-  gap: 10px; 
-  max-width: 85%; 
+.producto-resumen strong{
+    font-size: 17px;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-.mensaje.usuario { 
-  align-self: flex-end; 
-  flex-direction: row-reverse; 
+.producto-resumen span{
+    font-size: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    color:#282e3d;
 }
 
-.burbuja {
-  padding: 12px 15px;
-  border-radius: 12px;
-  font-size: 14px;
-  line-height: 1.5;
+/********************************/
+
+.producto-resumen > strong{
+    font-size: 17px;
+    
 }
 
-.burbuja b {
-    color: #170933;
+/********************************/
+
+.summary-row{
+    display: flex;
+    justify-content: space-between;
+    padding: 9px 0 0;
 }
 
-.mensaje.bot .burbuja { 
-  background-color: #ffffff; 
-  border: 1px solid #edf0f5; 
-  color: #5d6680; 
-  border-radius: 0 12px 12px 12px;
+.summary-row span,.summary-row strong{
+    font-size: 17px;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-.mensaje.usuario .burbuja { 
-  background-color: #625aff; 
-  color: #ffffff; 
-  border-radius: 12px 12px 0 12px; 
+.summary-row span{
+    color:#737b91;
 }
 
-.avatar-pequeno { 
-  font-size: 20px; 
+/*Total*/
+
+.summary-total{
+    border-top: 1px solid #e9ebf1;
+    margin-top: 10px;
+    padding-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-/* Input de texto */
-.chat-input-container {
-  padding: 15px;
-  background: white;
-  border-top: 1px solid #edf0f5;
-  display: flex;
-  gap: 10px;
+.summary-total span{
+    font-size: 17px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+
 }
 
-#chat-input {
-  flex: 1;
-  padding: 12px;
-  border: 1px solid #D9D9D9;
-  border-radius: 8px;
-  outline: none;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px;
-  color: #18213d;
+.summary-total strong{
+    font-size: 17px;
+    color:#15203c;
 }
 
-#chat-input::placeholder {
-  color: #a3a9b8;
-}
 
-.btn-enviar {
-  background: linear-gradient(135deg, #625aff, #7168ff);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  width: 45px;
-  cursor: pointer;
-  font-size: 16px;
-  box-shadow: 0 2px 5px rgba(99, 91, 255, 0.2);
-}
 
-.btn-enviar:active {
-  transform: scale(0.95);
-}
+
+
+
+
+
