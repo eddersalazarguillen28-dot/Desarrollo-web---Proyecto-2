@@ -139,6 +139,7 @@ body{
 .contenedorTabla{
     width: 100%;
     overflow-x: auto;
+    border-radius: 10px 10px 0 0;
 }
 
 /*TABLA*/
@@ -148,12 +149,15 @@ table{
     border-collapse: collapse;
     table-layout: fixed;
     
+    
 }
 
 thead{
     background: #475ddc63;
+   
 
 }
+
 
 th{
     height: 23px;
@@ -163,12 +167,13 @@ th{
     font-family: Arial, Helvetica, sans-serif;
     font-weight: 600;
     border-bottom: 1px solid #edf0f5;
+    
 }
 
 td{
     height: 29px;
     padding: 2px 6px;
-    color: #5d6680;
+    color: black/*#5d6680*/;
     border-bottom: 1px solid #f0f2f7;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 17px;
@@ -184,7 +189,7 @@ tbody tr:hover{
 
 td strong{
     color: #2b3450;
-    font-weight: 800;
+    font-weight: 700;
     font-size: 17px;
 }
 
@@ -218,8 +223,8 @@ td:nth-child(6){
 /*Imagenes de prductos*/
 
 .imagen-producto{
-    width: 21px;
-    height: 21px;
+    width: 100px;
+    height: 100px;
     border-radius: 4px;
     display: flex;
     align-items: center;
@@ -297,30 +302,217 @@ td:nth-child(6){
 
 .footer-tabla > span{
     font-size: 17px;
-    color: #9aa1b3;
+    color: rgb(60, 60, 60);
+    font-family: Arial, Helvetica, sans-serif;
+    
+
 }
 
 .btnPaginas{
     display: flex;
     gap: 3px;
+    justify-content: flex-end;
 }
+    
+
 
 .btnPaginas button{
-    width: 25px;
-    height: 25px;
-    border: 1px solid #e6e8ee;
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgb(119, 119, 119);
     background: white;
     box-sizing: 4px;
-    color: #7b8397;
+    color: black;
     font-size: 15px;
-    cursor:pointer
+    cursor:pointer;
+    border-radius: 4px;
+   
 }
 
-/************************************/
-.btnPaginas button.current{
+.btnPaginas button:hover{
     background: #635bff;
-    border-color: #635bff;
     color: white;
+    box-shadow: 0 3px 7px rgba(99, 91, 255, 0.2);
 }
+
+
+
+/*Seccion de una nueva venta*/
+
+.seccion-venta{
+    margin-top: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+/*Nueva venta*/
+
+.nuevaVenta{
+    background: white;
+    border: 1px solid rgb(60, 60, 60);
+    border-radius: 7px;
+    padding: 10px;
+}
+.nuevaVenta h2{
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    margin-bottom: 10px;
+
+}
+
+/*Formularios*/
+.form-grupo{
+    margin-bottom: 7px;
+}
+
+.form-grupo label{
+    display: block;
+    font-size: 17px;
+    font-family: Arial, Helvetica, sans-serif;
+    color:black;
+    margin-bottom: 3px;
+}
+
+.form-grupo select, .form-grupo input{
+    width: 95%;
+    height: 23px;
+    padding: 0 7px;
+    border:1px solid #e1e5ee;
+    border-radius: 4px;
+    background: white;
+    color: #566079;
+    font-size: 17px;
+    outline:none;
+}
+
+.form-grupo select:focus,.form-grupo input:focus{
+    border-color: #817aff;
+    box-shadow: 0 0 0 2px rgba(99, 91, 255, 0.08);
+}
+
+/*Cantidad y venta*/
+.camposVenta{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap:8px;
+}
+
+/*Botón denerar factura*/
+
+.btnFactura{
+    width: 97%;
+    height: 25px;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #635bff,#7168ff);
+    color:white;
+    font-size: 17px;
+    font-weight: 400;
+    cursor: pointer;
+    margin-top: 1px;
+    box-shadow: 0 3px 7px rgba(99, 91, 255, 0.18);
+}
+
+/*Resumen venta*/
+.resumenVenta{
+    background: white;
+    border:1px solid rgb(60, 60, 60);
+    border-radius: 7px;
+    padding: 10px;
+
+}
+
+.resumenVenta h3{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    margin-bottom: 13px;
+
+}
+
+.resumenVenta strong{
+     font-family: Arial, Helvetica, sans-serif;
+}
+
+/*Producto Resumen*/
+.producto-resumen{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #edf0f5;
+}
+
+.producto-resumen div{
+    display: flex;
+    gap:13px;
+    align-items: center;
+
+}
+
+.producto-resumen strong{
+    font-size: 17px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.producto-resumen span{
+    font-size: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    color:#282e3d;
+}
+
+/********************************/
+
+.producto-resumen > strong{
+    font-size: 17px;
+    
+}
+
+/********************************/
+
+.summary-row{
+    display: flex;
+    justify-content: space-between;
+    padding: 9px 0 0;
+}
+
+.summary-row span,.summary-row strong{
+    font-size: 17px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.summary-row span{
+    color:#737b91;
+}
+
+/*Total*/
+
+.summary-total{
+    border-top: 1px solid #e9ebf1;
+    margin-top: 10px;
+    padding-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.summary-total span{
+    font-size: 17px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+
+}
+
+.summary-total strong{
+    font-size: 17px;
+    color:#15203c;
+}
+
+
+
+
+
+
 
 
