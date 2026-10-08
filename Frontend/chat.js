@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     agregarMensajeTemporal("Analizando base de datos...", 'bot', idCarga);
 
     try {
-        const respuesta = await fetch('http://octo-erp.onrender.com/chat', {
+        const respuesta = await fetch('https://octo-erp.onrender.com/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ mensaje: texto })
