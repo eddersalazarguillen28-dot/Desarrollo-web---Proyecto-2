@@ -157,3 +157,10 @@ def obtener_dashboard():
     finally:
         cursor.close()
         conn.close()
+
+@app.route('/')
+def inicio():
+    return jsonify({
+        "status": "ok",
+        "message": "Servidor OCTO ERP corriendo correctamente en Render"
+    })
