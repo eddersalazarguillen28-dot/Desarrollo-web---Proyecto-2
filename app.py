@@ -192,7 +192,13 @@ def obtener_dashboard():
         if conn:
             conn.close()
 
+@app.route('/')
+def inicio():
+    return jsonify({
+        "status": "ok",
+        "message": "Servidor OCTO ERP corriendo correctamente  en Render"
+    })
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-        
