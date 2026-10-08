@@ -11,7 +11,7 @@ const errorConfirmar = document.getElementById("errorConfirmar");
 const mensajeExito = document.getElementById("mensajeExito");
 
 // URL de tu API desplegada en Render
-const API_URL = "https://tu-app-en-render.onrender.com";
+const API_URL = "https://octo-erp.onrender.com";
 
 // Función mostrar errores
 function mostrarErrores(campo, elementoError, mensaje) {
