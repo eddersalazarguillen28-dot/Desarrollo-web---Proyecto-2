@@ -10,8 +10,35 @@ const errorContrasena = document.getElementById("errorContrasena");
 const errorConfirmar = document.getElementById("errorConfirmar");
 const mensajeExito = document.getElementById("mensajeExito");
 
-// URL de tu API desplegada en Render
 const API_URL = "https://octo-erp.onrender.com";
+
+document.getElementById("formularioRegistro").addEventListener("submit", async (e) => {
+    e.preventDefault(); // EVITA QUE LA PÁGINA SE RECARGUE AUTOMÁTICAMENTE
+
+    const nombre = document.getElementById("nombre").value;
+    const correo = document.getElementById("correo").value;
+    const password = document.getElementById("password").value;
+
+    try {
+        const respuesta = await fetch(`${API_URL}/api/registro`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nombre, correo, password })
+        });
+
+        const datos = await respuesta.json();
+
+        if (datos.status === "ok") {
+            alert("Cuenta creada con éxito. Redirigiendo...");
+            window.location.href = "inicioSesion.html"; // Redirige al login
+        } else {
+            alert("Error al registrar: " + datos.message);
+        }
+    } catch (error) {
+        console.error("Error en la petición:", error);
+        alert("No se pudo conectar con el servidor.");
+    }
+});
 
 // Función mostrar errores
 function mostrarErrores(campo, elementoError, mensaje) {
