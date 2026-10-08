@@ -5,7 +5,7 @@ from asistente import analizar_productos
 from gemini_client import responder_chat
 
 app = Flask(__name__)
-CORS(app) 
+CORS(app, resources={r"/*": {"origins": "*"}}) 
 
 @app.route('/chat', methods=['POST'])
 def chat():
