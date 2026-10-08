@@ -72,7 +72,7 @@ def ejecutar_asistente():
         return
 
     print(
-        f" Se obtuvieron {len(productos)} productos de MariaDB.\n"
+        f" Se obtuvieron {len(productos)} productos.\n"
     )
 
     # 2. Analizar inventario
