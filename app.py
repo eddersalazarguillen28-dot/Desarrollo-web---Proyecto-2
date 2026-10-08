@@ -11,7 +11,6 @@ def obtener_conexion():
     database_url = os.getenv('DATABASE_URL')
     return psycopg2.connect(database_url, cursor_factory=RealDictCursor)
 
-# Función para verificar y crear todas las tablas requeridas en PostgreSQL
 def crear_tablas():
     try:
         conn = obtener_conexion()
@@ -58,32 +57,40 @@ def crear_tablas():
         );
         """)
 
-        # 5. Insertar usuario de prueba si no existe alguno
+        # 5. Insertar usuario de prueba por defecto
         cursor.execute("SELECT COUNT(*) AS total FROM usuarios;")
         if cursor.fetchone()['total'] == 0:
             cursor.execute(
                 "INSERT INTO usuarios (nombre, correo, password) VALUES (%s, %s, %s);",
-                ('Usuario Demo', 'admin@octo.com', '12345678')
+                ('Usuario Demo', 'admin@octo.com', '123456')
             )
             print("Usuario de prueba creado.")
 
         conn.commit()
         cursor.close()
         conn.close()
-        print("Tablas y datos iniciales verificados correctamente.")
+        print("Tablas verificadas correctamente.")
     except Exception as e:
         print("Error al inicializar la base de datos:", e)
-# Ejecutamos la creación de estructura al arrancar el servidor
+
+# Ejecutar creación de tablas al iniciar
 crear_tablas()
+
+@app.route('/')
+def inicio():
+    return jsonify({
+        "status": "ok",
+        "message": "Servidor OCTO ERP corriendo correctamente en Render"
+    })
 
 @app.route('/api/registro', methods=['POST'])
 def registro():
-    datos = request.json
+    datos = request.get_json() or {}
     conn = obtener_conexion()
     cursor = conn.cursor()
     try:
         query = "INSERT INTO usuarios (nombre, correo, password) VALUES (%s, %s, %s) RETURNING id;"
-        cursor.execute(query, (datos['nombre'], datos['correo'], datos['password']))
+        cursor.execute(query, (datos.get('nombre'), datos.get('correo', '').strip().lower(), datos.get('password')))
         usuario_id = cursor.fetchone()['id']
         conn.commit()
         return jsonify({"status": "ok", "usuario_id": usuario_id})
@@ -96,13 +103,17 @@ def registro():
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    datos = request.json
+    datos = request.get_json() or {}
+    correo = datos.get('correo', '').strip().lower()
+    password = datos.get('password', '').strip()
+
     conn = obtener_conexion()
     cursor = conn.cursor()
     try:
-        query = "SELECT id, nombre, correo FROM usuarios WHERE correo = %s AND password = %s;"
-        cursor.execute(query, (datos['correo'], datos['password']))
+        query = "SELECT id, nombre, correo FROM usuarios WHERE LOWER(correo) = %s AND password = %s;"
+        cursor.execute(query, (correo, password))
         usuario = cursor.fetchone()
+        
         if usuario:
             return jsonify({"status": "ok", "usuario": usuario})
         return jsonify({"status": "error", "message": "Credenciales incorrectas"})
@@ -112,18 +123,11 @@ def login():
         cursor.close()
         conn.close()
 
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
-
-
-
 @app.route('/api/dashboard', methods=['GET'])
 def obtener_dashboard():
     conn = obtener_conexion()
     cursor = conn.cursor()
     try:
-        # Calcular total de ventas, cantidad de ventas e ingresos promedio
         query = """
         SELECT 
             COALESCE(SUM(total), 0) AS ventas_periodo,
@@ -146,60 +150,12 @@ def obtener_dashboard():
         cursor.close()
         conn.close()
 
-@app.route('/')
-def inicio():
-    return jsonify({
-        "status": "ok",
-        "message": "Servidor OCTO ERP corriendo correctamente en Render"
-    })
-
-
-
-
-# Insertar un usuario de prueba si la tabla está vacía
-    cursor.execute("SELECT COUNT(*) AS total FROM usuarios;")
-    if cursor.fetchone()['total'] == 0:
-            cursor.execute(
-                "INSERT INTO usuarios (nombre, correo, password) VALUES (%s, %s, %s);",
-                ('Usuario Demo', 'admin@octo.com', '123456')
-            )
-            print("Usuario de prueba (admin@octo.com) creado exitosamente.")
-            conn.commit()
-
-
-
-@app.route('/api/crear-admin-forzado')
-def crear_admin_forzado():
-    try:
-        conn = obtener_conexion()
-        cursor = conn.cursor()
-        
-        # Elimina si existía conflicto y lo crea limpio
-        cursor.execute("DELETE FROM usuarios WHERE correo = 'admin@octo.com';")
-        cursor.execute(
-            "INSERT INTO usuarios (nombre, correo, password) VALUES (%s, %s, %s);",
-            ('Usuario Demo', 'admin@octo.com', '123456')
-        )
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return jsonify({"status": "ok", "message": "Usuario admin@octo.com creado exitosamente"})
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)})
-
-
-
-
 @app.route('/api/reset-admin')
 def reset_admin():
     try:
         conn = obtener_conexion()
         cursor = conn.cursor()
-        
-        # Borra el usuario si existía con datos incorrectos
         cursor.execute("DELETE FROM usuarios WHERE LOWER(correo) = 'admin@octo.com';")
-        
-        # Inserta el usuario de prueba limpio
         cursor.execute(
             "INSERT INTO usuarios (nombre, correo, password) VALUES (%s, %s, %s);",
             ('Usuario Demo', 'admin@octo.com', '123456')
@@ -210,3 +166,7 @@ def reset_admin():
         return jsonify({"status": "ok", "message": "Usuario admin@octo.com listo con clave 123456"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
+
+if __name__ == '_main_':
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
