@@ -38,7 +38,7 @@ def obtener_datos_ia():
                 COALESCE(
                     SUM(
                         CASE
-                            WHEN v.fecha >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                            WHEN v.fecha >= CURRENT_DATE - INTERVAL '30 days
                             THEN dv.cantidad
                             ELSE 0
                         END
