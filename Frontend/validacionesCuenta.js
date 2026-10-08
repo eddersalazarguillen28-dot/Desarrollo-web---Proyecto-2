@@ -172,7 +172,7 @@ formulario.addEventListener("submit", async function (evento) {
                 mensajeExito.style.color = "green";
                 formulario.reset();
                 setTimeout(()=>{
-                    Window.location.href = "inicioSesion.html";
+                    window.location.href = "inicioSesion";
                 }, 6000)
             } else {
                 mensajeExito.textContent = datos.message || "Error al registrar la cuenta";
