@@ -1,4 +1,7 @@
 "use strict";
+
+const API_URL = "https://octo-erp.onrender.com/api/dashboard"
+
 const nombreMeses = [
     "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto",
     "Septiembre", "Octumbre", "Noviembre", "Diciembre"
@@ -335,7 +338,7 @@ async function cargarDatos() {
     mensajeActualizacion.textContent = "Consultando datos...";
 
     try {
-        const respuesta = await fetch("http://127.0.0.1:5000/api/dashboard");
+        const respuesta = await fetch(API_URL);
 
         if (!respuesta.ok){
             throw new Error("Error HTTP " + respuesta.status);

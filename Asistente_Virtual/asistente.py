@@ -1,3 +1,4 @@
+import os
 from db_reader import obtener_datos_ia
 from gemini_client import analizar_inventario
 from database import inicializar_esquema
@@ -61,9 +62,10 @@ def ejecutar_asistente():
     print("====================================\n")
 
     print("Verificando base de datos...")
-    inicializar_esquema("../backend/schema.sql")
+    ruta_actual = os.path.dirname(os.path.abspath(__file__))
+    ruta_esquema = os.path.join(ruta_actual, "schema.sql")
+    inicializar_esquema(ruta_esquema)
 
-    # 1. Obtener datos reales de MariaDB
     productos = obtener_datos_ia()
 
     if not productos:
@@ -72,7 +74,7 @@ def ejecutar_asistente():
         return
 
     print(
-        f" Se obtuvieron {len(productos)} productos de MariaDB.\n"
+        f" Se obtuvieron {len(productos)} productos.\n"
     )
 
     # 2. Analizar inventario

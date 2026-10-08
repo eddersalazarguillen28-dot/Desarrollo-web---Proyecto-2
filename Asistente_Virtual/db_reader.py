@@ -1,30 +1,30 @@
-import mysql.connector
-from mysql.connector import Error
+import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from dotenv import load_dotenv
 
-DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'Pirko',
-    'database': 'octo_db',
-    'port': 3306
-}
+load_dotenv()
 
 def obtener_conexion():
     try:
-        conexion = mysql.connector.connect(**DB_CONFIG)
+        database_url = os.getenv("DATABASE_URL")
 
-        if conexion.is_connected():
-            print("conexion exitosa")
-            return conexion
-    except Error as e:
-        print(f"Error de conexion: {e}")
-        return None    
+        if not database_url:
+            print("Error: No se encontró la variable DATABASE_URL.")
+            return None
+
+        conexion = psycopg2.connect(database_url)
+        print("Conexión exitosa a PostgreSQL")
+        return conexion
+    except Exception as e:
+        print(f"Error de conexión: {e}")
+        return None  
 
 def obtener_datos_ia():
     conexion = obtener_conexion()
     if conexion is None:
         return []
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor(cursor_factory=RealDictCursor)
 
     try:
         consulta = """
@@ -38,7 +38,7 @@ def obtener_datos_ia():
                 COALESCE(
                     SUM(
                         CASE
-                            WHEN v.fecha >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                            WHEN v.fecha >= CURRENT_DATE - INTERVAL '30 days
                             THEN dv.cantidad
                             ELSE 0
                         END
@@ -66,7 +66,7 @@ def obtener_datos_ia():
         cursor.execute(consulta)
         datos = cursor.fetchall()
         return datos
-    except Error as e:
+    except Exception as e:
         print(f"Error consultando datos: {e}")
         return []
     finally:

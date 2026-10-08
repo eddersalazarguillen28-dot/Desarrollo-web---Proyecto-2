@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/jpeg" href="../dashboard/Imagenes/logoVentana.jpeg">
+
+    <link rel="stylesheet" href="estiloInicio.css">
+
+    
+    <title>Inicio</title>
+</head>
+<body>
+
+    
+    <!--Menu lado izquierdo-->
+
+    <aside class = "barraLateral">
+        <div>
+            <img src="Imagenes/logoLinea.png" alt="" id="logo">
+        </div>
+
+        <nav class="menu">
+            <a href="../Frontend/inicio.html" class="menu-item active">
+                <p>Inicio</p>
+            </a>
+
+            <a href="#" class="menu-item">
+                <p>Productos</p>
+            </a>
+
+            <a href="#" class="menu-item">
+                <p>Clientes</p>
+            </a>
+
+            <a href="#" class="menu-item">
+                <p>Ventas</p>
+            </a>
+
+            <a href="#" class="menu-item">
+                <p>Inventario</p>
+            </a>
+
+            <a href="../dashboard/index.html" class="menu-item">Dashboard</a>
+
+            <a href="#" class="menu-item">
+                <p>Reportes</p>
+            </a>
+        </nav> 
+    </aside>
+
+    <!--Contenido-->
+
+    <main class="main">
+        <section class="seccion-productos">
+            <div class="contenedorTitulo">
+                <h2>Productos</h2>
+                <button class="btnNuevoProducto">
+                    <span>+</span>
+                    Nuevo producto
+                </button>
+            </div>
+
+            <!--Buscador-->
+            <div class="contenedor-buscador">
+                <input type="text" placeholder="Buscar producto">
+            </div>
+
+            <!--Tabla-->
+            <div class="contenedorTabla">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <!--Producto1-->
+                        <tr>
+                            <td>
+                                <div class="imagen-producto Laptop">
+                                    <img src="Imagenes/laptop.png" alt="" class="imagen-producto">
+
+                                </div>
+                            </td>
+
+                            <td>
+                                <strong>Laptop</strong>
+                            </td>
+
+                            <td>
+                                Electrónica
+                            </td>
+
+                            <td>
+                                $999
+                            </td>
+
+                            <td>
+                                <span class="stock good">
+                                    15
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="actions">
+                                    <button class="edit">
+                                        Editar
+                                    </button>
+
+                                    <button class="delete">
+                                        Eliminar
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                           
+                        </tr>
+
+                        <!--Prducto 2-->
+                        <tr>
+                            <td>
+                                <div class="imagen-producto Mouse">
+
+                                    <img src="Imagenes/mouse.png" alt="" class="imagen-producto">
+
+                                </div>
+                            </td>
+
+                            <td>
+                                <strong>Mouse inalámbrico</strong>
+                            </td>
+
+                            <td>
+                                Accesorios
+                            </td>
+
+                            <td>
+                                $25
+                            </td>
+
+                            <td>
+                                <span class="stock good">
+                                    50
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="actions">
+                                    <button class="edit">Editar</button>
+                                    <button class="delete">Eliminar</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!--Producto 3-->
+
+                        <tr>
+                            <td>
+                                <div class="imagen-producto Teclado">
+
+                                </div>
+                            </td>
+
+                            <td>
+                                <strong>Teclado</strong>
+                            </td>
+
+                            <td>
+                                Accesorios
+                            </td>
+
+                            <td>
+                                $75
+                            </td>
+
+                            <td>
+                                <span class="stock good">
+                                    28
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="actions">
+                                    <button class="edit">Editar</button>
+                                    <button class="delete">Eliminar</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!--Producto 4-->
+
+                        <tr>
+                            <td>
+                                <div class="imagen-producto Monitor">
+
+                                </div>
+                            </td>
+
+                            <td>
+                                <strong>Monitor 24"</strong>
+                            </td>
+
+                            <td>
+                                Electrónica
+                            </td>
+
+                            <td>
+                                $199
+                            </td>
+
+                            <td>
+                                <span class="stock low">
+                                    8
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="actions">
+                                    <button class="edit">Editar</button>
+                                    <button class="delete">Eliminar</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!--Producto 5-->
+
+                        <tr>
+                            <td>
+                                <div class="imagen-producto Silla">
+
+                                </div>
+                            </td>
+
+                            <td>
+                                <strong>Silla Gamer</strong>
+                            </td>
+
+                            <td>
+                                Muebles
+                            </td>
+
+                            <td>
+                                $149
+                            </td>
+
+                            <td>
+                                <span class="stock good">
+                                    12
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="actions">
+                                    <button class="edit">Editar</button>
+                                    <button class="delete">Eliminar</button>
+                                </div>
+                            </td>
+                        </tr>
+
+
+                    
+                    </tbody>
+                </table>
+            </div>
+
+            <!--Pie de tabla-->
+            <div class="footer-tabla">
+                <span>Mostrando 1-5 de 5 productos</span>
+
+                <div class="btnPaginas">
+                    <button><</button>
+                    <button>1</button>
+                    <button>></button>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!--Seccion de una nueva venta-->
+        <section class="seccion-venta">
+            <div class="nuevaVenta">
+                <h2>Nueva venta</h2>
+
+                <!--Cliente-->
+                <div class="form-grupo">
+                    <label>Cliente</label>
+                    <select>
+                        <option>nombre1</option>
+                        <option>nombre2</option>
+                        <option>nombre3</option>
+                    </select>
+                </div>
+
+                <!--Producto-->
+                <div class="form-grupo">
+                    <label>Producto</label>
+                    <select>
+                        <option>Laptop</option>
+                        <option>Mouse</option>
+                        <option>Monitor 24"</option>
+                    </select>
+
+                </div>
+
+                <!--Cantidad y precio-->
+                <div class="camposVenta">
+                    <div class="form-grupo">
+                        <label>Cantidad</label>
+                        <input type="number" value="1" min="1">
+
+                    </div>
+                    <div class="form-grupo">
+                        <label>Venta</label>
+                        <input type="text" value="$999" readonly>
+                    </div>
+                </div>
+
+                <button class="btnFactura">Generar factura</button>
+            </div>
+
+            <!--Resumen-->
+            <div class="resumenVenta">
+                <h3>Resumen de venta</h3>
+                <div class="producto-resumen">
+                    <strong>Laptop</strong>
+                    <span>x1</span>
+                    <strong>$899</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <strong>$899</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Impuestos (IVA 16%)</span>
+                    <strong>$143.84</strong>
+                </div>
+
+                <div class="summary-total">
+                    <span>Total</span>
+                    <strong>$1,042.84</strong>
+                </div>
+            </div>
+        </section>
+
+    </main>
+<button id="btn-abrir-chat" class="chat-trigger">
+      X
+    </button>
+
+    <!-- Ventana del Asistente -->
+    <div id="ventana-chat" class="chat-window oculta">
+      <!-- Cabecera -->
+      <div class="chat-header">
+        <div class="header-perfil">
+          <div class="avatar">x</div>
+          <div class="info">
+            <h3>Asistente de Ventas <span>x Gemini</span></h3>
+            <span class="estado">● Conectado</span>
+          </div>
+        </div>
+        <button id="btn-cerrar-chat" class="btn-cerrar">✕</button>
+      </div>
+
+      <!-- Área de mensajes -->
+      <div class="chat-mensajes" id="chat-mensajes">
+        <div class="mensaje bot">
+          <div class="avatar-pequeno">X</div>
+          <div class="burbuja">
+            He analizado las ventas recientes y el inventario actual. ¿En qué te puedo ayudar hoy?
+          </div>
+        </div>
+      </div>
+
+      <!-- Entrada de texto -->
+      <div class="chat-input-container">
+        <input type="text" id="chat-input" placeholder="Escribe tu consulta...">
+        <button id="btn-enviar-chat" class="btn-enviar">➤</button>
+      </div>
+    </div>
+
+    <!-- Vinculación del script del chat -->
+    <script src="chat.js"></script> 
+</body>
+</html>
