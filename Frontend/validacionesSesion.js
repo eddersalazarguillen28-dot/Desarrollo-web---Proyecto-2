@@ -105,3 +105,4 @@ formulario.addEventListener("submit", async function (evento) {
         contrasenaError.textContent = "Error al conectar con el servidor";
     }
 });
+

@@ -125,8 +125,9 @@ def login():
 
 @app.route('/api/dashboard', methods=['GET'])
 def obtener_dashboard():
-    conn = obtener_conexion()
-    cursor = conn.cursor()
+    conn = None
+    cursor = None
+
     try:
         query = """
         SELECT 
@@ -139,16 +140,14 @@ def obtener_dashboard():
         resumen = cursor.fetchone()
         
         return jsonify({
-            "status": "ok",
-            "ventas_periodo": float(resumen['ventas_periodo']),
-            "cantidad_ventas": int(resumen['cantidad_ventas']),
-            "ticket_promedio": float(resumen['ticket_promedio'])
-        })
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)})
+            "error": "No se pudieron cargar los datos"
+        }), 500
+
     finally:
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 @app.route('/api/reset-admin')
 def reset_admin():

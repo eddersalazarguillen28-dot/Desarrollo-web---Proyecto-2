@@ -5,26 +5,21 @@ from sqlalchemy.orm import sessionmaker
 
 # Cargar variables de entorno
 load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    DB_HOST = os.getenv("DB_HOST", "localhost")
+    DB_PORT = os.getenv("DB_PORT", "5432")
+    DB_NAME = os.getenv("DB_NAME", "postgres")
+    DB_USER = os.getenv("DB_USER", "postgres")
+    DB_PASSWORD = os.getenv("DB_PASSWORD", "")
+    DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_PORT = os.getenv("DB_PORT", "3306")
-DB_NAME = os.getenv("DB_NAME", "")
-DB_USER = os.getenv("DB_USER", "root")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "")
-
-# URL de conexión para MariaDB
-DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-
-# Crear el motor de conexión
 engine = create_engine(DATABASE_URL, echo=False)
 
-# Crear el generador de sesiones
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def inicializar_esquema(schema_file_path="schema.sql"):
-    """
-    Lee y ejecuta el archivo schema.sql en MariaDB para crear la estructura.
-    """
+    
     if not os.path.exists(schema_file_path):
         print(f" El archivo '{schema_file_path}' no fue encontrado.")
         return

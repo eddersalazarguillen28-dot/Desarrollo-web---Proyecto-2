@@ -7,7 +7,7 @@ load_dotenv()
 
 def obtener_conexion():
     try:
-        database_url = os.getenv("http://octo-erp.onrender.com")
+        database_url = os.getenv("DATABASE_URL")
 
         if not database_url:
             print("Error: No se encontró la variable DATABASE_URL.")
