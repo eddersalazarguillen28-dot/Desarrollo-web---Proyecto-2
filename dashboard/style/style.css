@@ -2,8 +2,13 @@
     box-sizing: border-box;
 }
 
+:root {
+    --ancho-menu: 188px;
+}
+
 body{
     margin: 0;
+    padding-left: var(--ancho-menu);
     font-family: Arial, Helvetica, sans-serif;
     background-color: #f2f5fa;
     color: #243247;
@@ -11,44 +16,67 @@ body{
 }
 
 .barraLateral{
-    width: 158px;
-    min-width: 188px;
-    height: auto;
     position: fixed;
-    left: 0;
     top: 0;
     bottom: 0;
+    left: 0;
+    width: var(--ancho-menu);
+    padding: 18px 10px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
     background: linear-gradient(180deg,#111b37 0%,#0d1730 100%);
     color: white;
-    padding: 18px 10px;
-    flex-direction: column;
     box-shadow: 2px 0 10px rgb(20,30,60,.08);
-}
-
-.menu-item{
-    height: 30px;
-    padding: 0 10px;
-    border-radius: 5px;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    font-size: 15px;
-    margin-bottom: 15px;
-    font-family: Arial, Helvetica, sans-serif;
-    transition: .2s ease;
-    color: white;
-}
-
-.menu-item:hover{
-    background-color: #475EDC;
-    box-shadow: 0 4px 10px rgba(99,91,255,0.25);
+    z-index: 10;
 }
 
 #logo{
+    display: block;
     width: 150px;
-    margin: 5px;
+    max-width: 100%;
+    height: auto;
+    margin: 5px auto 24px;
+}
+
+.menu{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.menu-item{
+   display: flex;
+   align-items: center;
+   min-height: 44px;
+   padding: 10px 12px;
+   border-radius: 6px;
+   text-decoration: none;
+   font-size-adjust: 15px;
+   color: white;
+   transition: background-color 0.2;
+}
+
+.menu-item p{
+    margin: 0;
+}
+
+.menu-item:hover,
+.menu-item.active{
+    background-color: #475EDC;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: white;
+    margin-top: 10px;
+}
+
+.menu-item:focus-visible{
+    outline: 3px solid #aabaff;
+    outline-offset: 2pxs;
 }
 
 .encabezado{
@@ -67,7 +95,7 @@ body{
     grid-row: 1;
     margin: 0;
     font-size: 32px;
-    text-align: center;
+    overflow-wrap: anywhere;
 }
 
 .encabezado p{
@@ -86,7 +114,9 @@ body{
 }
 
 .contenedor{
-    width: min(1200px, 92%);
+    width: calc(100% - 48px);
+    max-width: 1200px;
+    min-width: 0;
     margin: 30px auto;
 }
 
@@ -98,13 +128,22 @@ body{
     gap: 16px;
 }
 
+.controles > div {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-width: 0;
+}
+
 .controles label{
     font-weight: bold;
-    margin-right: 8px;
 }
 
 select, 
 button{
+    max-width: 100%;
+    min-height: 44px;
     padding: 12px 16px;
     border-radius: 8px;
     font-family: inherit;
@@ -138,7 +177,7 @@ select:focus-visible{
 .aviso{
     margin: 18px 0;
     font-size: 14px;
-    color: black;
+    color: #243247;
 }
 
 /*Tarjetas de indicadores*/
@@ -150,6 +189,7 @@ select:focus-visible{
 }
 
 .tarjeta{
+    min-width: 0;
     padding: 24px;
     background-color: white;
     border-radius: 12px;
@@ -188,10 +228,9 @@ select:focus-visible{
 
 /*Paneles y GrÃ¡ficos*/
 .graficos{
-    grid-template-columns: repeat(2,minmax(0, 1fr));
-    gap: 24px;
+    grid: grid;
+    grid-template-columns: minmax(0, 1fr);
     margin-bottom: 24px;
-    
 }
 
 .panel{
@@ -206,6 +245,7 @@ select:focus-visible{
     margin: 0 0 16px;
     font-size: 21px;
     color: #16345c;
+    overflow-wrap: anywhere;
 }
 
 .panel > p{
@@ -214,11 +254,23 @@ select:focus-visible{
 
 .contenedor-grafico{
     position: relative;
+    width: 100%;
+    min-width: 0;
     height: 320px;
+}
+
+.contenedor-grafico canvas{
+    display: block;
+    max-width: 100%;
+}
+
+.panel + .panel {
+    margin-top: 24px;
 }
 
 /*Tabla de inventario*/
 .contenedor-tabla{
+    width: 100%;
     overflow: auto;
 }
 
@@ -229,25 +281,23 @@ select:focus-visible{
 table{
     width: 100%;
     border-collapse: collapse;
-    text-align: left;
 }
 
 th,
 td{
     padding: 14px 16px;
     border-bottom: 1px solid #e2e8f0;
+    text-align: center;
 }
 
 th{
     background-color: #edf3fc;
     color: #16345c;
     font-size: 14px;
-    text-align: center;
 }
 
 td{
     font-size: 16px;
-    text-align: center;
 }
 
 tbody tr:hover{
@@ -255,9 +305,11 @@ tbody tr:hover{
 }
 
 /*Estados que agregaremos con JavaScript*/
-.estado{
+.estado,
+.stock-bajo,
+.agotado{
     display: inline-block;
-    padding: 6px 12px;
+    padding: 6px 10px;
     border-radius: 6px;
     font-size: 14px;
     font-weight: bold;
@@ -265,41 +317,18 @@ tbody tr:hover{
 }
 
 .stock-bajo{
-    display: inline-block;
-    padding: 5px 5px;
-    border-radius: 6px;
-    font-size: 14px;
     background-color: #fff0cc;
     color: #805000;
-    font-weight: bold;
-    white-space: nowrap;
 }
 
 .agotado{
-    display: inline-block;
-    padding: 5px 5px;
-    border-radius: 6px;
-    font-size: 14px;
     background-color: #ffe0e0;
     color: #a32020;
-    font-weight: bold;
-    white-space: nowrap;
 }
 
 .sin-alertas{
     text-align: center;
     color: #596a80;
-}
-
-.panel + .panel {
-    margin-top: 24px;
-}
-
-footer{
-    padding: 20px;
-    text-align: center;
-    color: black;
-    font-size: 14px;
 }
 
 #aviso-sin-ventas{
@@ -310,95 +339,128 @@ footer{
     border-radius: 6px;
 }
 
-/*Responsivo para tablets*/
-@media (max-width: 1000px) {
-   .indicadores{
+footer{
+    padding: 20px;
+    text-align: center;
+    color: black;
+    font-size: 14px;
+}
+
+@media (max-width: 1100px){
+    .indicadores{
         grid-template-columns: repeat(2, minmax(0, 1fr));
-   }
-
-   .graficos{
-        grid-template-columns: 1fr;
-   }
-
-   .encabezado{
-        grid-template-columns: 120px;
     }
 
-    .encabezado h1{
-       font-size: 26px;
+    .encabezado{
+        grid-template-columns: minmax(0, 1fr);
     }
 
-    #ultima-actualizacion{
-        grid-column: 1 / -1;
+    .encabezado h1 {
+        font-size: 26px;
+    }
+
+    #ultima-actualziacion {
+        grid-column: 1;
         grid-row: 3;
         text-align: center;
         margin-top: 8px;
     }
 }
 
-/*Resposivo para telefonos*/
-@media (max-width: 600px){
-   .encabezado{
-        grid-template-columns: minmax(0, 1fr);
+@media (max-width: 700px){
+    body {
+        padding-left: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .barraLateral {
+        position: static;
+        width: 100%;
+        padding: 14px 16px;
+        overflow: visible;
+        order: -1;
+    }
+
+    #logo {
+        width: 130px;
+        margin: 0 auto 14px;
+    }
+
+    .menu {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .menu-item {
+        justify-content: center;
+        padding: 8px 12px;
+        font-style: 14px;
+    }
+
+    .encabezado {
         padding: 20px 16px;
     }
 
-   .encabezado img {
-        grid-column: 1;
-        grid-row: 1;
-        width: 110px;
-        justify-content: center;
-   }
+    .encabezado h1{
+        font-size: 24px;
+    }
 
-   .encabezado h1 {
-        grid-column: 1;
-        grid-row: 2;
-        font-size: 22px;
-   }
+    .contenedor{
+        width: calc(100% - 32px);
+        margin: 24px auto;
+    }
 
-   .encabezado p {
-        grid-column: 1;
-        grid-row: 3;
-   }
-
-   #ultima-actualizacion {
-        grid-column: 1;
-        grid-row: 4;
-        font-size: 14px;
-        text-align: center;
-   }
-
-   .controles {
+    .controles {
         flex-direction: column;
         align-items: stretch;
-   }
+    }
 
-   .controles label {
-        display: block;
-        margin-bottom: 8px;
-   }
+    .controles > div {
+        flex-direction: column;
+        align-items: stretch;
+    }
 
-   select,
-   button {
+    select,
+    button {
         width: 100%;
-   }
+    }
 
-   .indicadores {
-        grid-template-columns: 1fr;
-        gap: 16px;
-   }
+    .tarjeta,
+    .panel {
+        padding: 18px;
+    }
 
-   .tarjeta,
-   .panel{
-        padding: 20px;
-   }
+    .panel h2 {
+        font-size: 18px;
+    }
 
-   .contenedor-grafico {
+    .contenedor-grafico {
         height: 280px;
-   }
+    }
 
-   th,
-   td {
+    th,
+    td {
         padding: 12px;
-   }
+    }
 }
+
+@media (max-width: 450px) {
+    .indicadores {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    .encabezado h1 {
+        font-size: 22px;
+    }
+
+    .contenedor-grafico {
+        height: 250px;
+    }
+}
+
+
+
