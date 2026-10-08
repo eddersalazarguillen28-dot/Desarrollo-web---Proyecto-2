@@ -16,7 +16,7 @@ def crear_tablas():
     try:
         conn = obtener_conexion()
         cursor = conn.cursor()
-        
+
         # 1. Tabla de usuarios
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS usuarios (
@@ -58,33 +58,21 @@ def crear_tablas():
         );
         """)
 
-        # 5. Tabla de detalle_ventas
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS detalle_ventas (
-            id SERIAL PRIMARY KEY,
-            venta_id INTEGER NOT NULL,
-            producto_id INTEGER NOT NULL,
-            cantidad INTEGER NOT NULL,
-            subtotal NUMERIC(10, 2) NOT NULL,
-            FOREIGN KEY (venta_id) REFERENCES ventas(id),
-            FOREIGN KEY (producto_id) REFERENCES productos(id)
-        );
-        """)
-
-        # Insertar productos de prueba iniciales si la tabla está vacía
-        cursor.execute("SELECT COUNT(*) AS total FROM productos;")
+        # 5. Insertar usuario de prueba si no existe alguno
+        cursor.execute("SELECT COUNT(*) AS total FROM usuarios;")
         if cursor.fetchone()['total'] == 0:
-            cursor.execute("INSERT INTO productos (nombre, precio, stock) VALUES (%s, %s, %s)", ('Laptop HP', 335000.00, 10))
-            cursor.execute("INSERT INTO productos (nombre, precio, stock) VALUES (%s, %s, %s)", ('Mouse Inalambrico', 8000.00, 25))
-            cursor.execute("INSERT INTO productos (nombre, precio, stock) VALUES (%s, %s, %s)", ('Teclado Mecanico', 23000.00, 8))
+            cursor.execute(
+                "INSERT INTO usuarios (nombre, correo, password) VALUES (%s, %s, %s);",
+                ('Usuario Demo', 'admin@octo.com', '12345678')
+            )
+            print("Usuario de prueba creado.")
 
         conn.commit()
         cursor.close()
         conn.close()
-        print("Estructura de la base de datos verificada y creada correctamente.")
+        print("Tablas y datos iniciales verificados correctamente.")
     except Exception as e:
         print("Error al inicializar la base de datos:", e)
-
 # Ejecutamos la creación de estructura al arrancar el servidor
 crear_tablas()
 
@@ -164,3 +152,61 @@ def inicio():
         "status": "ok",
         "message": "Servidor OCTO ERP corriendo correctamente en Render"
     })
+
+
+
+
+# Insertar un usuario de prueba si la tabla está vacía
+    cursor.execute("SELECT COUNT(*) AS total FROM usuarios;")
+    if cursor.fetchone()['total'] == 0:
+            cursor.execute(
+                "INSERT INTO usuarios (nombre, correo, password) VALUES (%s, %s, %s);",
+                ('Usuario Demo', 'admin@octo.com', '123456')
+            )
+            print("Usuario de prueba (admin@octo.com) creado exitosamente.")
+            conn.commit()
+
+
+
+@app.route('/api/crear-admin-forzado')
+def crear_admin_forzado():
+    try:
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        
+        # Elimina si existía conflicto y lo crea limpio
+        cursor.execute("DELETE FROM usuarios WHERE correo = 'admin@octo.com';")
+        cursor.execute(
+            "INSERT INTO usuarios (nombre, correo, password) VALUES (%s, %s, %s);",
+            ('Usuario Demo', 'admin@octo.com', '123456')
+        )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify({"status": "ok", "message": "Usuario admin@octo.com creado exitosamente"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+
+
+
+@app.route('/api/reset-admin')
+def reset_admin():
+    try:
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        
+        # Borra el usuario si existía con datos incorrectos
+        cursor.execute("DELETE FROM usuarios WHERE LOWER(correo) = 'admin@octo.com';")
+        
+        # Inserta el usuario de prueba limpio
+        cursor.execute(
+            "INSERT INTO usuarios (nombre, correo, password) VALUES (%s, %s, %s);",
+            ('Usuario Demo', 'admin@octo.com', '123456')
+        )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify({"status": "ok", "message": "Usuario admin@octo.com listo con clave 123456"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
