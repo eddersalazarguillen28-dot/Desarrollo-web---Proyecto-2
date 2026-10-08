@@ -124,36 +124,75 @@ def login():
         cursor.close()
         conn.close()
 
+@app.route('/api/dashboard', methods=['GET'])
+def obtener_dashboard():
+    conn = None
+    cursor = None
+
+    try:
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+
+        cursor.execute("""SELECT id, nombre, precio, stock
+        FROM productos
+        ORDER BY id
+        """)
+
+        productos = []
+
+        for p in cursor.fetchall():
+            productos.append({
+                "id": p["id"],
+                "nombre": p["nombre"],
+                "precio": float(p["precio"]),
+                "stock": p["stock"],
+                "stockMinimo": 5
+            })
+
+        cursor.execute("""
+            SELECT
+                v.id,
+                TO_CHAR(v.fecha, 'DD/MM/YYYY)
+                AS fecha,
+                dv.producto_id AS producto_id,
+                dv.cantidad, 
+                dv.subtotal FROM ventas v INNER JOIN detalle_ventas dv ON v.id = dv.venta_id 
+                ORDER BY v.fecha DESC, v.id DESC
+            """)
+
+        ventas = []
+
+        for v in cursor.fetchall():
+            cantidad = int(v["cantidad"])
+            subtotal = float(v["subtotal"])
+
+            ventas.append({
+                "id": v["id"],
+                "fecha": v["fecha"],
+                "productoId": v["producto_id"],
+                "cantidad": cantidad,
+                "precioUnitario": subtotal / cantidad
+                if cantidad > 0 else 0, "subtotal": subtotal
+            })
+
+            return jsonify({
+                "productos": productos,
+                "ventas": ventas
+            })
+
+    except Exception:
+        app.logger.exception("Error al consultar dashboard")
+        return jsonify({
+            "error": "No se pudieron cargar los datos"
+        }), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
-
-
-@app.route('/api/dashboard', methods=['GET'])
-def obtener_dashboard():
-    conn = obtener_conexion()
-    cursor = conn.cursor()
-    try:
-        # Calcular total de ventas, cantidad de ventas e ingresos promedio
-        query = """
-        SELECT 
-            COALESCE(SUM(total), 0) AS ventas_periodo,
-            COUNT(id) AS cantidad_ventas,
-            COALESCE(AVG(total), 0) AS ticket_promedio
-        FROM ventas;
-        """
-        cursor.execute(query)
-        resumen = cursor.fetchone()
         
-        return jsonify({
-            "status": "ok",
-            "ventas_periodo": float(resumen['ventas_periodo']),
-            "cantidad_ventas": int(resumen['cantidad_ventas']),
-            "ticket_promedio": float(resumen['ticket_promedio'])
-        })
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)})
-    finally:
-        cursor.close()
-        conn.close()
