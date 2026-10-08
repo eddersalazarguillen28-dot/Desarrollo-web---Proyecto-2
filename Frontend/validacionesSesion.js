@@ -116,3 +116,34 @@ formulario.addEventListener("submit", async function (evento) {
         contrasenaError.style.color = "red";
     }
 });
+
+
+// Si API_URL ya está definida arriba en este archivo, NO vuelvas a escribir "const API_URL = ..."
+
+document.getElementById("formularioLogin").addEventListener("submit", async (e) => {
+    e.preventDefault(); // Evita la recarga de la página
+
+    const correo = document.getElementById("correo").value;
+    const password = document.getElementById("password").value;
+
+    try {
+        const respuesta = await fetch(`${API_URL}/api/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ correo, password })
+        });
+
+        const datos = await respuesta.json();
+
+        if (datos.status === "ok") {
+            localStorage.setItem("usuario", JSON.stringify(datos.usuario));
+            alert("¡Inicio de sesión exitoso!");
+            window.location.href = "dashboard/dashboard.html"; // Cambia esta ruta según la ubicación de tu HTML
+        } else {
+            alert("Error: " + datos.message);
+        }
+    } catch (error) {
+        console.error("Error al conectar:", error);
+        alert("No se pudo conectar con el servidor en Render.");
+    }
+});
