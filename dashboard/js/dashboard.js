@@ -1,6 +1,6 @@
 "use strict";
 
-const API_URL = "http://octo-erp.onrender.com"
+const API_URL = "https://octo-erp.onrender.com/api/dashboard"
 
 const nombreMeses = [
     "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto",
