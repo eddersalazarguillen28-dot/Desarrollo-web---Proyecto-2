@@ -120,7 +120,8 @@ body{
     align-items: center;
     gap: 6px;
     padding: 0 8px;
-    margin-bottom: 6px;
+    margin-bottom: 20px;
+
 }
 
 .contenedor-buscador input{
@@ -130,6 +131,7 @@ body{
     font-size: 15px;
     font-family: Arial, Helvetica, sans-serif;
     color: #18213d;
+    
 }
 
 .contenedor-buscador input::placeholder{
@@ -312,6 +314,7 @@ td:nth-child(6){
     display: flex;
     gap: 3px;
     justify-content: flex-end;
+    margin-right: 90px;
 }
     
 
@@ -525,31 +528,6 @@ td:nth-child(6){
   transform: scale(0.95);
 }
 
-/*Seccion de una nueva venta*/
-
-.seccion-venta{
-    margin-top: 8px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-}
-
-/*Nueva venta*/
-
-.nuevaVenta{
-    background: white;
-    border: 1px solid rgb(60, 60, 60);
-    border-radius: 7px;
-    padding: 10px;
-}
-.nuevaVenta h2{
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: 700;
-    font-size: 20px;
-    margin-bottom: 10px;
-
-}
-
 /*Formularios*/
 .form-grupo{
     margin-bottom: 7px;
@@ -589,19 +567,7 @@ td:nth-child(6){
 
 /*Botón denerar factura*/
 
-.btnFactura{
-    width: 97%;
-    height: 25px;
-    border: none;
-    border-radius: 6px;
-    background: linear-gradient(90deg, #635bff,#7168ff);
-    color:white;
-    font-size: 17px;
-    font-weight: 400;
-    cursor: pointer;
-    margin-top: 1px;
-    box-shadow: 0 3px 7px rgba(99, 91, 255, 0.18);
-}
+
 
 /*Resumen venta*/
 .resumenVenta{
@@ -609,6 +575,7 @@ td:nth-child(6){
     border:1px solid rgb(60, 60, 60);
     border-radius: 7px;
     padding: 10px;
+    margin-top: 30px;
 
 }
 

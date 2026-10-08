@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpeg" href="../dashboard/Imagenes/logoVentana.jpeg">
+    <link rel="stylesheet" href="estiloVentas.css">
+    <title>Ventas</title>
+</head>
+<body>
+
+    
+    <!--Menu lado izquierdo-->
+
+    <aside class = "barraLateral">
+        <div>
+            <img src="Imagenes/logoLinea.png" alt="" id="logo">
+        </div>
+
+        <nav class="menu">
+            <a href="../Frontend/inicio.html" class="menu-item active">
+                <p>Inicio</p>
+            </a>
+
+            <a href="#" class="menu-item">
+                <p>Productos</p>
+            </a>
+
+            <a href="#" class="menu-item">
+                <p>Clientes</p>
+            </a>
+
+            <a href="#" class="menu-item">
+                <p>Ventas</p>
+            </a>
+
+            <a href="#" class="menu-item">
+                <p>Inventario</p>
+            </a>
+
+            <a href="../dashboard/index.html" class="menu-item">Dashboard</a>
+
+            <a href="#" class="menu-item">
+                <p>Reportes</p>
+            </a>
+        </nav> 
+    </aside>
+
+    <!--Encabezado-->
+
+    <header class="header">
+        <div class="area-user">
+            <div class="date-box">
+                <div>
+                    <strong>8 de octubre</strong>
+                    <small>Miercoles</small>
+                </div>
+
+            </div>
+
+            <div class="user-profile">
+                <div class="avatar">AT</div>
+                <div>
+                    <strong>Ana Torres</strong>
+                    <small>Administrador</small>
+                </div>
+
+                <span class="arrow">⌄</span>
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <!--Contenido-->
+
+    <main class="main">
+        <!--Nueva venta-->
+        <section class="nueva-venta">
+            <div class="card-header">
+                <div class="titulo">
+                    <h2>Nueva venta </h2>
+                </div>
+
+                <div class="instruccion">
+                    Selecciona los productos y genera tu factura
+                </div>
+            </div>
+
+                <!--Formulario-->
+            <div class="form-ventas">
+                <!--Cliente-->
+                <div class="campo-form cliente">
+                    <label>Cliente</label>
+
+                    <div class="select-box">
+                        <input type="text" id="cliente" name="cliente" placeholder="Cliente">
+
+                    </div>
+
+                </div>
+
+                    <!--Producto-->
+
+                    <div class="campo-form producto">
+
+                        <label>Producto</label>
+
+                        <select id="producto" name="producto">
+                            <option value="">Seleccionar producto</option>
+                            <option value="Laptop" data-precio="999">Laptop</option>
+                            <option value="mouse" data-precio="25">Mouse</option>
+                            <option value="teclado" data-precio="75">Teclado</option>
+                            <option value="monitor" data-precio="199">Monitor 24"</option>
+                            <option value="silla" data-precio="149">Silla Gamer</option>
+
+                        </select>
+
+                    </div>
+
+                    <!--Cantidad-->
+
+                    <div class="campo-form cantidad">
+                        <label>Cantidad</label>
+
+                        <input type="number" id="cantidad" value="1" min="1">
+
+                    </div>
+
+                    <!--Precio-->
+
+                    <div class="campo-form precio">
+                        <label>Precio unitario</label>
+                        <input type="text" id="precio" name="precio" placeholder="$0" readonly>
+                    </div>
+
+                    <!--Botón-->
+
+                    <button class="btnFactura">Generar factura</button>
+
+                </div>
+
+
+            
+
+            <!--Productos más vendidos-->
+            <div class="productos-populares">
+                <div class="popular-titulo">Productos más vendidos</div>
+                <button class="pill-producto">Mouse inalámbrico</button>
+                <button class="pill-producto">Laptop</button>
+                <button class="pill-producto">Teclado</button>
+                <button class="pill-producto">Monitor 24"</button>
+                <button class="pill-producto">Silla Gamer</button>
+            </div>
+
+        </section>
+
+        <!--Resumen-->
+        <section class="resumen-seccion">
+            <div class="resumen-card">
+                <div class="resumen-titulo">
+                    <h2>Resumen de ventas</h2>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio unitario</th>
+                            <th>Subtotal</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="nombre-producto">
+                                    <div class="imagen-producto">
+                                        <img src="Imagenes/laptop.png" alt="" class="imagen-producto">
+
+                                    </div>
+
+                                    <strong>Laptop</strong>
+
+                                </div>
+                                
+                            </td>
+
+                            <td>x1</td>
+                            <td>$899</td>
+                            <td>$899</td>
+                            <td>
+                                <button class="btn-delete">Eliminar</button>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <button class="btn-agregar">+Agregar otro producto</button>
+
+            </div>
+
+            <!--Total-->
+
+            <div class="total-card">
+                <h3>Resumen de la venta</h3>
+                <div class="total-linea">
+                    <span>Subtotal</span>
+                    <strong>$899</strong>
+                </div>
+
+                <div class="total-linea">
+                    <span>Impuestos (IVA 16%)</span>
+                    <strong>$143</strong>
+                </div>
+
+                <div class="total-final">
+                    <span>Total</span>
+                    <strong>$1,042.84</strong>
+
+                </div>
+            </div>
+            
+
+
+
+        </section>
+
+        <!--Mensaje-->
+
+        <div class="mensaje-exito">
+            <span>Venta registrada correctamente</span>
+            <button>x</button>
+        </div>
+
+    </main>
+
+
+
+
+
+
+    
+<button id="btn-abrir-chat" class="chat-trigger">
+      X
+    </button>
+
+    <!-- Ventana del Asistente -->
+    <div id="ventana-chat" class="chat-window oculta">
+      <!-- Cabecera -->
+      <div class="chat-header">
+        <div class="header-perfil">
+          <div class="avatar">x</div>
+          <div class="info">
+            <h3>Asistente de Ventas <span>x Gemini</span></h3>
+            <span class="estado">● Conectado</span>
+          </div>
+        </div>
+        <button id="btn-cerrar-chat" class="btn-cerrar">✕</button>
+      </div>
+
+      <!-- Área de mensajes -->
+      <div class="chat-mensajes" id="chat-mensajes">
+        <div class="mensaje bot">
+          <div class="avatar-pequeno">X</div>
+          <div class="burbuja">
+            He analizado las ventas recientes y el inventario actual. ¿En qué te puedo ayudar hoy?
+          </div>
+        </div>
+      </div>
+
+      <!-- Entrada de texto -->
+      <div class="chat-input-container">
+        <input type="text" id="chat-input" placeholder="Escribe tu consulta...">
+        <button id="btn-enviar-chat" class="btn-enviar">➤</button>
+      </div>
+    </div>
+
+    <!-- Vinculación del script del chat -->
+    <script src="chat.js"></script> 
+</body>
+</html>
