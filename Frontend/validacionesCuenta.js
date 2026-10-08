@@ -11,7 +11,7 @@ const errorConfirmar = document.getElementById("errorConfirmar");
 const mensajeExito = document.getElementById("mensajeExito");
 
 // URL de tu API desplegada en Render
-const API_URL = "https://tu-app-en-render.onrender.com";
+const API_URL = "https://octo-erp.onrender.com";
 
 // Función mostrar errores
 function mostrarErrores(campo, elementoError, mensaje) {
@@ -168,9 +168,12 @@ formulario.addEventListener("submit", async function (evento) {
             const datos = await respuesta.json();
 
             if (datos.status === "ok") {
-                mensajeExito.textContent = "Se registró la cuenta correctamente";
+                mensajeExito.textContent = "Se registró la cuenta correctamente. Redirigiendo...";
                 mensajeExito.style.color = "green";
                 formulario.reset();
+                setTimeout(()=>{
+                    window.location.href = "inicioSesion";
+                }, 6000)
             } else {
                 mensajeExito.textContent = datos.message || "Error al registrar la cuenta";
                 mensajeExito.style.color = "red";
