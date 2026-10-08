@@ -1,3 +1,6 @@
 google-genai
 python-dotenv
-mysql-connector-python
+psycopg2-binary
+flask
+flask-cors
+gunicorn
