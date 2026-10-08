@@ -4,8 +4,8 @@ const contrasena = document.getElementById("contrasena");
 const errorEmail = document.getElementById("errorEmail");
 const contrasenaError = document.getElementById("errorContrasena");
 
-// URL de tu backend desplegado en Render
-const API_URL = "https://octo-erp.onrender.com"; // Reemplaza con tu URL de Render
+// URL del backend desplegado en Render
+const API_URL = "https://octo-erp.onrender.com";
 
 // Patrón para validar correo
 const patronCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -14,73 +14,61 @@ const patronCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 function validarEmail() {
     const valor = email.value.trim();
 
-    // Campo vacío
     if (valor === "") {
         email.classList.add("input-error");
         errorEmail.textContent = "El correo electrónico es obligatorio";
         return false;
     }
 
-    // Formato incorrecto
     if (!patronCorreo.test(valor)) {
         email.classList.add("input-error");
         errorEmail.textContent = "Ingresa un correo electrónico válido";
         return false;
     }
 
-    // Correcto
     email.classList.remove("input-error");
     errorEmail.textContent = "";
     return true;
 }
 
-// Validar contraseña
+// Validar contraseña (Ajustado para permitir contraseñas cortas de prueba como 123456)
 function validarContrasena() {
     const valor = contrasena.value;
 
-    // Campo vacío
     if (valor.trim() === "") {
         contrasena.classList.add("input-error");
         contrasenaError.textContent = "La contraseña es obligatoria";
         return false;
     }
 
-    // Mínimo 8 caracteres
-    if (valor.length < 8) {
+    if (valor.length < 4) {
         contrasena.classList.add("input-error");
-        contrasenaError.textContent = "La contraseña debe tener al menos 8 caracteres";
+        contrasenaError.textContent = "La contraseña debe tener al menos 4 caracteres";
         return false;
     }
 
-    // Correcto
     contrasena.classList.remove("input-error");
     contrasenaError.textContent = "";
     return true;
 }
 
-// Valida mientras escribe
-email.addEventListener("input", () => {
-    validarEmail();
-});
+// Escuchar cambios en los inputs
+email.addEventListener("input", validarEmail);
+contrasena.addEventListener("input", validarContrasena);
 
-contrasena.addEventListener("input", () => {
-    validarContrasena();
-});
-
-// Enviar formulario
+// Enviar formulario (Unico evento Submit)
 formulario.addEventListener("submit", async function (evento) {
     evento.preventDefault();
     
     const emailValid = validarEmail();
     const contrasenaValid = validarContrasena();
 
-    // Si hay un error de validación local
     if (!emailValid || !contrasenaValid) {
         return;
     }
 
-    contrasenaError.textContent = "Iniciando sesión...";
     contrasenaError.style.color = "blue";
+    contrasenaError.textContent = "Iniciando sesión...";
 
     try {
         const respuesta = await fetch(`${API_URL}/api/login`, {
@@ -97,53 +85,24 @@ formulario.addEventListener("submit", async function (evento) {
         const datos = await respuesta.json();
 
         if (datos.status === "ok") {
-            contrasenaError.textContent = "¡Inicio de sesión exitoso!";
             contrasenaError.style.color = "green";
+            contrasenaError.textContent = "¡Inicio de sesión exitoso!";
 
-            // Guardar usuario en localStorage si se requiere
+            // Guardar credenciales en el navegador
             localStorage.setItem("usuario", JSON.stringify(datos.usuario));
 
-            // Redirigir al inicio o dashboard tras iniciar sesión
+            // Redirigir al Dashboard tras 1 segundo
             setTimeout(() => {
-                window.location.href = "inicio.html"; // Cambia esta ruta a la página deseada
+                window.location.href = "dashboard/dashboard.html";
             }, 1000);
         } else {
-            contrasenaError.textContent = datos.message || "Credenciales incorrectas";
             contrasenaError.style.color = "red";
+            contrasenaError.textContent = datos.message || "Credenciales incorrectas";
         }
     } catch (error) {
-        contrasenaError.textContent = "Error al conectar con el servidor";
+        console.error("Error al conectar con Render:", error);
         contrasenaError.style.color = "red";
+        contrasenaError.textContent = "Error al conectar con el servidor";
     }
 });
 
-
-// Si API_URL ya está definida arriba en este archivo, NO vuelvas a escribir "const API_URL = ..."
-
-document.getElementById("formularioLogin").addEventListener("submit", async (e) => {
-    e.preventDefault(); // Evita la recarga de la página
-
-    const correo = document.getElementById("correo").value;
-    const password = document.getElementById("password").value;
-
-    try {
-        const respuesta = await fetch(`${API_URL}/api/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ correo, password })
-        });
-
-        const datos = await respuesta.json();
-
-        if (datos.status === "ok") {
-            localStorage.setItem("usuario", JSON.stringify(datos.usuario));
-            alert("¡Inicio de sesión exitoso!");
-            window.location.href = "dashboard/dashboard.html"; // Cambia esta ruta según la ubicación de tu HTML
-        } else {
-            alert("Error: " + datos.message);
-        }
-    } catch (error) {
-        console.error("Error al conectar:", error);
-        alert("No se pudo conectar con el servidor en Render.");
-    }
-});

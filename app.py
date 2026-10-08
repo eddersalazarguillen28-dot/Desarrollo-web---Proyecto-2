@@ -11,12 +11,11 @@ def obtener_conexion():
     database_url = os.getenv('DATABASE_URL')
     return psycopg2.connect(database_url, cursor_factory=RealDictCursor)
 
-# Función para verificar y crear todas las tablas requeridas en PostgreSQL
 def crear_tablas():
     try:
         conn = obtener_conexion()
         cursor = conn.cursor()
-        
+
         # 1. Tabla de usuarios
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS usuarios (
@@ -58,44 +57,40 @@ def crear_tablas():
         );
         """)
 
-        # 5. Tabla de detalle_ventas
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS detalle_ventas (
-            id SERIAL PRIMARY KEY,
-            venta_id INTEGER NOT NULL,
-            producto_id INTEGER NOT NULL,
-            cantidad INTEGER NOT NULL,
-            subtotal NUMERIC(10, 2) NOT NULL,
-            FOREIGN KEY (venta_id) REFERENCES ventas(id),
-            FOREIGN KEY (producto_id) REFERENCES productos(id)
-        );
-        """)
-
-        # Insertar productos de prueba iniciales si la tabla está vacía
-        cursor.execute("SELECT COUNT(*) AS total FROM productos;")
+        # 5. Insertar usuario de prueba por defecto
+        cursor.execute("SELECT COUNT(*) AS total FROM usuarios;")
         if cursor.fetchone()['total'] == 0:
-            cursor.execute("INSERT INTO productos (nombre, precio, stock) VALUES (%s, %s, %s)", ('Laptop HP', 335000.00, 10))
-            cursor.execute("INSERT INTO productos (nombre, precio, stock) VALUES (%s, %s, %s)", ('Mouse Inalambrico', 8000.00, 25))
-            cursor.execute("INSERT INTO productos (nombre, precio, stock) VALUES (%s, %s, %s)", ('Teclado Mecanico', 23000.00, 8))
+            cursor.execute(
+                "INSERT INTO usuarios (nombre, correo, password) VALUES (%s, %s, %s);",
+                ('Usuario Demo', 'admin@octo.com', '123456')
+            )
+            print("Usuario de prueba creado.")
 
         conn.commit()
         cursor.close()
         conn.close()
-        print("Estructura de la base de datos verificada y creada correctamente.")
+        print("Tablas verificadas correctamente.")
     except Exception as e:
         print("Error al inicializar la base de datos:", e)
 
-# Ejecutamos la creación de estructura al arrancar el servidor
+# Ejecutar creación de tablas al iniciar
 crear_tablas()
+
+@app.route('/')
+def inicio():
+    return jsonify({
+        "status": "ok",
+        "message": "Servidor OCTO ERP corriendo correctamente en Render"
+    })
 
 @app.route('/api/registro', methods=['POST'])
 def registro():
-    datos = request.json
+    datos = request.get_json() or {}
     conn = obtener_conexion()
     cursor = conn.cursor()
     try:
         query = "INSERT INTO usuarios (nombre, correo, password) VALUES (%s, %s, %s) RETURNING id;"
-        cursor.execute(query, (datos['nombre'], datos['correo'], datos['password']))
+        cursor.execute(query, (datos.get('nombre'), datos.get('correo', '').strip().lower(), datos.get('password')))
         usuario_id = cursor.fetchone()['id']
         conn.commit()
         return jsonify({"status": "ok", "usuario_id": usuario_id})
@@ -108,13 +103,17 @@ def registro():
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    datos = request.json
+    datos = request.get_json() or {}
+    correo = datos.get('correo', '').strip().lower()
+    password = datos.get('password', '').strip()
+
     conn = obtener_conexion()
     cursor = conn.cursor()
     try:
-        query = "SELECT id, nombre, correo FROM usuarios WHERE correo = %s AND password = %s;"
-        cursor.execute(query, (datos['correo'], datos['password']))
+        query = "SELECT id, nombre, correo FROM usuarios WHERE LOWER(correo) = %s AND password = %s;"
+        cursor.execute(query, (correo, password))
         usuario = cursor.fetchone()
+        
         if usuario:
             return jsonify({"status": "ok", "usuario": usuario})
         return jsonify({"status": "error", "message": "Credenciales incorrectas"})
@@ -130,58 +129,16 @@ def obtener_dashboard():
     cursor = None
 
     try:
-        conn = obtener_conexion()
-        cursor = conn.cursor()
-
-        cursor.execute("""SELECT id, nombre, precio, stock
-        FROM productos
-        ORDER BY id
-        """)
-
-        productos = []
-
-        for p in cursor.fetchall():
-            productos.append({
-                "id": p["id"],
-                "nombre": p["nombre"],
-                "precio": float(p["precio"]),
-                "stock": p["stock"],
-                "stockMinimo": 5
-            })
-
-        cursor.execute("""
-            SELECT
-                v.id,
-                TO_CHAR(v.fecha, 'DD/MM/YYYY)
-                AS fecha,
-                dv.producto_id AS producto_id,
-                dv.cantidad, 
-                dv.subtotal FROM ventas v INNER JOIN detalle_ventas dv ON v.id = dv.venta_id 
-                ORDER BY v.fecha DESC, v.id DESC
-            """)
-
-        ventas = []
-
-        for v in cursor.fetchall():
-            cantidad = int(v["cantidad"])
-            subtotal = float(v["subtotal"])
-
-            ventas.append({
-                "id": v["id"],
-                "fecha": v["fecha"],
-                "productoId": v["producto_id"],
-                "cantidad": cantidad,
-                "precioUnitario": subtotal / cantidad
-                if cantidad > 0 else 0, "subtotal": subtotal
-            })
-
-            return jsonify({
-                "productos": productos,
-                "ventas": ventas
-            })
-
-    except Exception:
-        app.logger.exception("Error al consultar dashboard")
+        query = """
+        SELECT 
+            COALESCE(SUM(total), 0) AS ventas_periodo,
+            COUNT(id) AS cantidad_ventas,
+            COALESCE(AVG(total), 0) AS ticket_promedio
+        FROM ventas;
+        """
+        cursor.execute(query)
+        resumen = cursor.fetchone()
+        
         return jsonify({
             "error": "No se pudieron cargar los datos"
         }), 500
@@ -192,13 +149,23 @@ def obtener_dashboard():
         if conn:
             conn.close()
 
-@app.route('/')
-def inicio():
-    return jsonify({
-        "status": "ok",
-        "message": "Servidor OCTO ERP corriendo correctamente  en Render"
-    })
+@app.route('/api/reset-admin')
+def reset_admin():
+    try:
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM usuarios WHERE LOWER(correo) = 'admin@octo.com';")
+        cursor.execute(
+            "INSERT INTO usuarios (nombre, correo, password) VALUES (%s, %s, %s);",
+            ('Usuario Demo', 'admin@octo.com', '123456')
+        )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify({"status": "ok", "message": "Usuario admin@octo.com listo con clave 123456"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
 
-if __name__ == '__main__':
+if __name__ == '_main_':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
