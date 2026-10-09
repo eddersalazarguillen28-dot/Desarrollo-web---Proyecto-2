@@ -2,13 +2,19 @@ import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from google import genai
+
+# Importación directa desde la raíz
 from backend import db_manager as db
 
 app = Flask(__name__)
 CORS(app)
 
-# Inicializar PostgreSQL al iniciar el servidor
-db.inicializar_bd()
+# Intentar inicializar PostgreSQL al arrancar
+try:
+    db.inicializar_bd()
+    print("Base de datos inicializada correctamente al arrancar.")
+except Exception as e:
+    print("Aviso al inicializar base de datos:", e)
 
 @app.route('/')
 def inicio():
@@ -16,6 +22,18 @@ def inicio():
         "status": "ok",
         "message": "Servidor OCTO ERP corriendo correctamente en Render"
     })
+
+# ==========================================
+# RUTA DE INICIALIZACIÓN MANUAL
+# ==========================================
+
+@app.route('/api/init-db', methods=['POST', 'GET'])
+def inicializar_bd_manual():
+    try:
+        db.inicializar_bd()
+        return jsonify({"mensaje": "Base de datos inicializada y datos cargados con éxito"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # ==========================================
 # RUTAS DE AUTENTICACIÓN
@@ -106,8 +124,8 @@ def obtener_dashboard():
         productos = db.obtener_productos()
         ventas = db.obtener_detalles_dashboard()
         return jsonify({
-            "productos": productos,
-            "ventas": ventas
+            "productos": productos if productos else [],
+            "ventas": ventas if ventas else []
         }), 200
     except Exception as e:
         app.logger.exception("Error al consultar el dashboard")
@@ -138,13 +156,11 @@ def chat_asistente():
         return jsonify({"respuesta": "Por favor ingresa una pregunta o consulta válida."}), 400
 
     try:
-        # Contexto dinámico de la BD
         productos = db.obtener_productos()
         ventas = db.obtener_detalles_dashboard()
 
         api_key = os.getenv("GEMINI_API_KEY")
         
-        # Si la API Key de Gemini está configurada, usar el modelo oficial
         if api_key:
             client = genai.Client(api_key=api_key)
             prompt_contexto = f"""
@@ -164,8 +180,7 @@ def chat_asistente():
             )
             return jsonify({"respuesta": response.text}), 200
         
-        # Respuesta de respaldo en caso de no haber configurado GEMINI_API_KEY en Render
-        stock_bajo = [p['nombre'] for p in productos if p['stock'] <= p['stockMinimo']]
+        stock_bajo = [p['nombre'] for p in productos if p.get('stock', 0) <= p.get('stockMinimo', 0)]
         if "stock" in mensaje_usuario.lower() or "inventario" in mensaje_usuario.lower():
             if stock_bajo:
                 respuesta = f"Actualmente tienes {len(stock_bajo)} producto(s) con stock bajo: {', '.join(stock_bajo)}."
@@ -179,19 +194,6 @@ def chat_asistente():
     except Exception as e:
         return jsonify({"respuesta": f"Ocurrió un error al procesar tu solicitud: {str(e)}"}), 500
 
-if __name__ == '__main__':
+if __name__ == '_main_':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
-
-
-
-from db_manager import init_db
-
-@app.route('/api/init-db', methods=['POST', 'GET'])
-def inicializar_bd():
-    try:
-        init_db()
-        return jsonify({"mensaje": "Base de datos inicializada y datos cargados con éxito"}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
