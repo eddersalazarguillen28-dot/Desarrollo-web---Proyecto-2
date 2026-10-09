@@ -49,12 +49,23 @@ body{
     margin: 5px;
 }
 
+.header{
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 50px;
+    align-items: center;
+    margin-bottom: 25px;
+
+}
+
 /*Usuario*/
 
-.user-area{
+.area-user{
     display: flex;
     align-items: center;
     gap: 25px;
+    
+    
 }
 
 .date-box{
@@ -70,6 +81,59 @@ body{
 .calendar{
     font-size: 19px;
     color: #4657c9;
+}
+
+.date-box strong{
+    display: block;
+    font-size: 13px;
+    color:#35436d;
+}
+
+.date-box small{
+    color:#7180a6;
+    font-size: 11px;
+
+}
+
+.user-profile{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background:white ;
+    border-radius: 25px;
+    padding:10px 17px;
+    border:1px solid #e3e7f2;
+
+
+}
+
+.avatar{
+    width:45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #665cf5;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.user-profile strong{
+    display: block;
+    font-size: 14px;
+}
+
+.user-profile small{
+    display: block;
+    color:#7b86a6;
+    font-size: 11px;
+    margin-top: 3px;
+}
+
+.arrow{
+    font-size: 20px;
+    color:#5f6b8d;
 }
 
 /*Contenido*/
