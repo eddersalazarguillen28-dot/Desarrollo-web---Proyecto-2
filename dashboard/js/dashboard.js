@@ -6,21 +6,23 @@ const nombreMeses = [
     "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto",
     "Septiembre", "Octumbre", "Noviembre", "Diciembre"
 ];
-const selectorMes =
-    document.getElementById("mes");
-const botonActualizar = document.getElementById("actualizar");
+
+const selectorMes = document.getElementById("mes");
+const  botonActualizar = document.getElementById("actualizar");
 const mensajeActualizacion = document.getElementById("ultima-actualizacion");
 
-let graficoVentas = null
-let graficoProductos = null
+let productos = []
+let ventas = []
+let graficoVentas = null;
+let graficoProductos = null;
+let cargandoDatos = false;
 
-if (typeof Chart !== "undefined") {
+if (typeof Chart !== "undifenid") {
     Chart.defaults.font.size = 14;
     Chart.defaults.font.family = "Arial";
-    Chart.defaults.color = "#243247"
+    Chart,defaults.color = "#243247";
 }
 
-// Formato para cantidad como colones
 function formatearMoneda(valor) {
     return new Intl.NumberFormat("es-CR", {
         style: "currency",
@@ -29,349 +31,311 @@ function formatearMoneda(valor) {
     }).format(valor);
 }
 
-// Extraer el mes de una fecha 
-//Evita problemas de conversion por zona horaria
 function obtenerMes(fecha) {
-    return Number(fecha.split("/")[1]);
+    return Number(String(fecha).split("/")[1]);
 }
+
 function calcularIngreso(venta) {
     return venta.cantidad * venta.precioUnitario;
 }
 
-//Devolver todas las ventas o solo las del mes seleccionado
-function filtrarVentas() {
-    const mesSeleccionado = selectorMes.value;
+function filtrarVenta() {
+    const mes = selectorMes.value;
 
-    if (mesSeleccionado === "todos") {
-        return ventas;
-    }
-
-    return ventas.filter(
-        venta => obtenerMes(venta.fecha) === Number(mesSeleccionado)
+    return mes === "todos" 
+    ? ventas 
+    : ventas.filter(
+        v => obtenerMes(v.fecha) === Number(mes)
     );
 }
 
-//Actualizar las tarjetas
-function actualizarIndicadores(ventasFiltradas) {
-    const totalVentas = ventasFiltradas.reduce((total, venta) => total + calcularIngreso(venta), 0);
+function actualizarIndicadores(filtradas) {
+    const total = filtradas.reduce(
+        (s, v) => s + calcularIngreso(v), 0
+    );
 
-    const cantidadVentas = new Set(
-        ventasFiltradas.map(venta => venta.id)
-    ).size;
+    const cantidad = new Set(
+        filtradas.map(v => v.id)
+    ).size
 
-    // Evitar dividir entre cero cuando no se registra venta
-    const ticketPromedio = cantidadVentas > 0 ? totalVentas / cantidadVentas : 0;
+    const ticket = cantidad ? total / cantidad: 0;
 
-    const stockBajo = productos.filter(producto => producto.stock <= producto.stockMinimo);
+    const stockBajo = productos.filter( 
+        p => p.stock <= p.stockMinimo
+    );
 
-    document.getElementById("total-ventas").textContent = formatearMoneda(totalVentas);
+    document.getElementById("total-ventas").textContent = formatearMoneda(total);
 
-    document.getElementById("cantidad-ventas").textContent = cantidadVentas;
+    document.getElementById("cantidad-ventas").textContent = cantidad
 
-    document.getElementById("ticket-promedio").textContent = formatearMoneda(ticketPromedio);
+    document.getElementById("ticket-promedio").textContent = formatearMoneda(ticket);
 
     document.getElementById("cantidad-stock-bajo").textContent = stockBajo.length;
 }
 
-//Crear gráfico mensual o actualizar el existente
-function actualizarGraficoVentas(ventasFiltradas) {
-    const mesSeleccionado = selectorMes.value;
+function actualizarGraficoVentas(filtradas) {
+    const mes = selectorMes.value;
 
-    const mesesVisibles = mesSeleccionado === "todos" ? nombreMeses.map((nombre, indice) => indice + 1) : [Number(mesSeleccionado)];
+    const meses = mes === "todos"
+    ? nombreMeses.map((API_URL, i)=> i + 1)
+    : [Number(mes)];
 
-    const ingresos = mesesVisibles.map(mes => ventasFiltradas.filter(venta => obtenerMes(venta.fecha) === mes).reduce((total, venta) => total + calcularIngreso(venta), 0));
+    const ingresos = meses.map(m => filtradas.filter(v => obtenerMes(v.fecha) === m),reduce((s,v) => s + calcularIngreso(v),0)
+    );
 
-    const etiquetas = mesesVisibles.map(mes => nombreMeses[mes - 1]);
-
-    if (graficoVentas) {
+    const etiquetas = meses.map(
+    m => nombreMeses[m - 1]
+    );
+    
+    if(graficoVentas) {
         graficoVentas.data.labels = etiquetas;
-
-        graficoVentas.data.datasets[0].data = ingresos; graficoVentas.update();
+        graficoVentas.data.dataset[0].data = ingresos;
+        graficoVentas.update();
         return;
     }
 
-    graficoVentas = new Chart(
-        document.getElementById("grafico-ventas"),
-        {
-            type: "bar",
-            data: {
-                labels: etiquetas,
-                datasets: [
-                    {
-                        label: "Ingresos",
-                        data: ingresos,
-                        backgroundColor: "#245bd7",
-                        borderRadius: 6
-
-                    }
-                ]
-            },
-            options: {
-                resposive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltrip: {
-                        callbacks: {
-                            label: contexto => formatearMoneda(contexto.parsed.y)
-                        }
-                    }
+    graficoVentas = new Chart(document.getElementById("grafico-ventas"),{
+        type: "bar",
+        data: {
+            labels: etiquetas,
+            datasets: [{
+                label: "Ingresos",
+                data: ingresos,
+                backgroundColor: "#245bd7",
+                borderRadios: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callbacks: valor => formatearMoneda(valor)
-                        }
+                tooltip: {
+                    callbacks: {
+                        label: ctx => formatearMoneda(ctx.parsed.y)
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callbacks: valor => formatearMoneda(valor)
                     }
                 }
             }
         }
-    )
-};
-
-
-//Ordena los productos por unidades vendidas
-function actualizarGraficoProductos(ventasFiltradas) {
-    const ranking = productos.map(producto => {
-        const unidades = ventasFiltradas.filter(venta => venta.productoId === producto.id).reduce((total, venta) => total + venta.cantidad, 0);
-        return {
-            nombre: producto.nombre, unidades
-        };
     });
+}
 
-    ranking.sort((a, b) => b.unidades - a.unidades);
+function actualizarGraficoProductos(filtradas){
+    const ranking = productos.map(p => ({
+        nombre: p.nombre,
+        unidades: filtradas.filter(v => v.productoId === p.id).reduce((s, v) => s + v.cantidad, 0)
+    })).sort((a, b) => b.unidades - a.unidades);
 
-    const etiquetas = ranking.map(producto => producto.nombre);
-    const cantidades = ranking.map(producto => producto.unidades);
+    const etiquetas = ranking.map(p => p.nombre);
+    const cantidades = ranking.map(p => p.unidades);
 
-    if (graficoProductos) {
+    if(graficoProductos) {
         graficoProductos.data.labels = etiquetas;
-        graficoProductos.data.datasets[0].data = cantidades;
+        graficoProductos.data.datasets[0],data = cantidad;
         graficoProductos.update();
         return;
     }
 
-    graficoProductos = new Chart(document.getElementById("grafico-productos"), {
-        type: "doughnut",
-        data: {
-            labels: etiquetas,
-            datasets: [
-                {
+    graficoProductos = new Chart(document.getElementById("grafico-productos"),
+        {
+            type: "doughnut",
+            data: {
+                labels: etiquetas,
+                datasets: [{
                     label: "Unidades vendidas",
                     data: cantidades,
-                    backgroundColor: [
+                    backgroundColor:[
                         "#245bd7",
                         "#169b86",
                         "#8b5cf6",
                         "#ef4444",
                         "#06b6d4",
+                        "#f59e0b",
                     ],
-                    borderRadius: "#ffffff",
+                    borderColor: "#ffffff",
                     borderWidth: 3
-                }
-            ]
-        },
-        options: {
-            indexAxis: "y",
-            resposive: true,
-            maintainAspectRatio: false,
-            cutout: "60%",
-            plugins: {
-                legend: {
-                    display: false,
-                    position: "bottom"
-                },
-                tooltip: {
-                    callbacks:{
-                        label: contexto => contexto.label + ": " + contexto.parsed + "unidades"
-                    }
-                }
+                }]
             },
-            scales: {
-                x: {
-                    beginAtZero: true,
-                    ticks: {
-                        precision: 0
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout:"60%",
+                plugins:{
+                    legend: {
+                        display: false
+                    },
+                    toolt: {
+                        callbacks: {
+                            label: ctx => '${ctx.label}: ${ctx.parsed} unidades'
+                        }
                     }
                 }
             }
         }
-    }
     );
 }
 
-// Tabla de alertas con el inventario actual
 function actualizarAlertas() {
     const tabla = document.getElementById("tabla-stock"); tabla.replaceChildren();
 
-    const productosStockBajo = productos.filter(producto => producto.stock <= producto.stockMinimo).sort((a,b) => a.stock -b.stock);
+    const bajos = productos.filter(p =>  p.stock <= p.stockMinimo).sort((a, b) => a.stock - b.stock);
 
-    if (productosStockBajo.length === 0) {
-        const fila = document.createElement("tr");
-        const celda = document.createElement("td");
+    if (!bajos.length) {
+        const fila = tabla.insertRow();
+        const celda = fila.insertCell();
 
         celda.colSpan = 5;
-        celda.className = "sin-alertas";
-        celda.textContent = "No hay productos con stokc bajo";
-
-        fila.appendChild(celda);
-        tabla.appendChild(fila);
+        celda.className = "sin-alerta";
+        celda.textContent = "No hay productos con stock bajo";
         return;
     }
 
-    productosStockBajo.forEach(producto => {
-        const fila = document.createElement("tr");
+    bajos.forEach(p => {
+        const fila = tabla.insertRow();
         [
-            producto.nombre,
-            producto.stock,
-            producto.stockMinimo,
-            producto.stockMinimo - producto.stock
+            p.nombre,
+            p.stock,
+            p.stockMinimo,
+            Math.max(0, p.stockMinimo - p.stock)
         ].forEach(valor => {
-            const celda = document.createElement("td");
-            celda.textContent = valor;
-            fila.appendChild(celda)
+            fila.insertCell().textContent = valor;
         });
-        const celdaEstado = document.createElement("td");
+
         const estado = document.createElement("span");
 
-        const agotado = producto.stock === 0;
+        estado.className = p.stock === 0
+        ? "estado agotado"
+        : "estado stock-bajo";
 
-        estado.className = agotado
-            ? "estado agotado"
-            : "estado stock-bajo"
+        estado.textContent = p.stock === 0 
+        ? "Agotado"
+        : "Stock bajo"
 
-        estado.textContent = agotado ? "Agotado" : "Stock bajo";
-
-        celdaEstado.appendChild(estado);
-        fila.appendChild(celdaEstado);
-        tabla.appendChild(fila);
+        fila.insertCell().appendChild(estado);
     });
 }
 
-function actualizarTablaVentas(ventasFiltradas) {
+function actualizarTablaVentas(filtradas) {
     const tabla = document.getElementById("tabla-ventas");
     tabla.replaceChildren();
 
-    if (ventasFiltradas.length === 0) {
-        const fila = document.createElement("tr");
-        const celda = document.createElement("td");
+    if (!filtradas.length) {
+        const fila = tabla.insertRow();
+        const celda = fila.insertCell();
 
         celda.colSpan = 6;
         celda.className = "sin-alertas";
         celda.textContent = "No hay ventas en este periodo";
-
-        fila.appendChild(celda);
-        tabla.appendChild(fila);
         return;
     }
 
-    ventasFiltradas.forEach((venta, indice) => {
-        const producto = productos.find(producto => producto.id === venta.productoId);
+    filtradas.forEach((venta, indice) => {
+        const producto  = productos.find(
+            p => p.id === venta.productoId
+        );
 
-        const fecha = venta.fecha;
-
-        const valores = [
+        const fila = tabla.insertRow();
+        [
             indice + 1,
             venta.fecha,
-            producto ? producto.nombre: "Producto no disponible",
+            producto
+            ? producto.nombre
+            : "Producto no disponible",
             venta.cantidad,
 
             formatearMoneda(venta.precioUnitario),
             formatearMoneda(calcularIngreso(venta))
-        ];
-
-        const fila = document.createElement("tr");
-
-        valores.forEach(valor => {
-            const celda = document.createElement("td");
-            celda.textContent = valor;
-            fila.appendChild(celda);
+        ].forEach(valor => {
+            fila.insertCell().textContent = valor;
         });
-        tabla.appendChild(fila);
-    })
+    });
 }
 
-//Ejecutar todas las actualizaciones del dashboard
 function actualizarDashboard() {
-    const ventasFiltradas = filtrarVentas();
+    const filtradas = filtrarVenta();
 
-    document.getElementById("aviso-sin-ventas").hidden = ventasFiltradas.length > 0;
+    document.getElementById("aviso-sin-ventas").hidden = filtradas.length > 0;
 
+    const periodo = selectorMes.value === "todos"
+    ? "Todos los meses"
+    : nombreMeses[Number(selectorMes.value) - 1];
 
-    const periodo = selectorMes.value === "todos" 
-        ? " Todos los meses"
-        :nombreMeses[Number(selectorMes.value) - 1];
+    document.getElementById("tutilo-ventas").textContent = 'Ventas por mes - Ingresos (₡) - ${periodo}';
 
-        document.getElementById("titulo-ventas").textContent = "Ventas por mes - Ingresos (₡) - " + periodo
+    document.getElementById("titulo-produtos").textContent = 'Producto más vendido - Unidades vendidas - ${periodo}'
 
-        document.getElementById("titulo-productos").textContent = "Productos más vendidos - Unidades vendidas - " + periodo;
-    actualizarIndicadores(ventasFiltradas);
+    actualizarIndicadores(filtradas);
     actualizarAlertas();
+    actualizarTablaVentas(filtradas);
 
-    //Las alertas e indicadores funcionan aunque chart no cargue
     if (typeof Chart === "undefined") {
         mensajeActualizacion.textContent = "No se pudo cargar Chart.js. Revisa tu conexión a internet.";
         return;
     }
 
-    actualizarGraficoVentas(ventasFiltradas);
-    actualizarGraficoProductos(ventasFiltradas);
-    actualizarIndicadores(ventasFiltradas);
-    actualizarTablaVentas(ventasFiltradas);
-    actualizarAlertas();
+    actualizarGraficoVentas(filtradas);
+    actualizarGraficoProductos(filtradas);
 
-    const hora = new Date().toLocaleTimeString("es-CR");
-
-    mensajeActualizacion.textContent = "Última actualización: " + hora;
+    mensajeActualizacion.textContent = "Última actualización: " + new Date().toLocaleTimeString("es-CR");
 }
-
-//Interacción del usuario
-let cargandoDatos = false;
 
 async function cargarDatos() {
     if (cargandoDatos) return;
-    cargandoDatos = true;
 
+    cargandoDatos = true;
     mensajeActualizacion.textContent = "Consultando datos...";
 
     try {
         const respuesta = await fetch(API_URL);
 
-        if (!respuesta.ok){
-            throw new Error("Error HTTP " + respuesta.status);
+        if (!respuesta.ok) {
+            throw new Error("HTPPS " + respuesta.status);
         }
+        
+        const datos = await respuesta.json();
 
-        const datos = await respuesta.json(); 
-
-        if (!Array.isArray(datos.productos) || !Array.isArray(datos.ventas)){
-            throw new Error("La respuesta no contiene los datos esperados");
-        } 
+        if (
+            !Array.isArray(datos.productos) || 
+            !Array.isArray(datos.ventas)
+        ) {
+            throw new Error("La respuesta no contiene productos y ventas");
+        }
 
         productos = datos.productos;
         ventas = datos.ventas;
-
+        
         actualizarDashboard();
-    } catch (error) {
-        console.error("Error al cargar datos:", error);
-        mensajeActualizacion.textContent = "No se pudieron actualizar los datos. Revisar la conexión";
+    } catch(error) {
+        console.error("Error al cargar datos:". error);
+
+        mensajeActualizacion.textContent = "No se pudieron actualizar los datos. Revisa la conexión";
     } finally {
         cargandoDatos = false;
     }
-
 }
 
-//Cambiar el mes usando los datos cargados
-selectorMes.addEventListener("change",actualizarDashboard);
+selectorMes.addEventListener(
+    "change",
+    actualizarDashboard
+);
 
-//Consultar nuevamente la base de datos
-botonActualizar.addEventListener("click", cargarDatos);
+botonActualizar.addEventListener(
+    "click",
+    cargarDatos
+);
 
-//Consultar cada 15 segundos
 setInterval(() => {
-    if (document.visibilityState === "visible") {
+    if (document.visibilityState === "visible"){
         cargarDatos();
     }
 }, 15000)
