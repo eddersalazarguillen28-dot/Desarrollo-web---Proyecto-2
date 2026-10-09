@@ -45,11 +45,7 @@
     <main class="main">
         <section class="seccion-productos">
             <div class="contenedorTitulo">
-                <h2>Productos</h2>
-                <button class="btnNuevoProducto">
-                    <span>+</span>
-                    Nuevo producto
-                </button>
+                <h2>Catalogo</h2>
             </div>
 
             <!--Buscador-->
@@ -57,216 +53,50 @@
                 <input type="text" placeholder="Buscar producto">
             </div>
 
-            <!--Tabla-->
-            <div class="contenedorTabla">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Imagen</th>
-                            <th>Nombre</th>
-                            <th>Categoría</th>
-                            <th>Precio</th>
-                            <th>Stock</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <!--Producto1-->
-                        <tr>
-                            <td>
-                                <div class="imagen-producto Laptop">
-                                    <img src="Imagenes/laptop.png" alt="" class="imagen-producto">
-
-                                </div>
-                            </td>
-
-                            <td>
-                                <strong>Laptop</strong>
-                            </td>
-
-                            <td>
-                                Electrónica
-                            </td>
-
-                            <td>
-                                $999
-                            </td>
-
-                            <td>
-                                <span class="stock good">
-                                    15
-                                </span>
-                            </td>
-
-                            <td>
-                                <div class="actions">
-                                    <button class="edit">
-                                        Editar
-                                    </button>
-
-                                    <button class="delete">
-                                        Eliminar
-                                    </button>
-
-                                </div>
-
-                            </td>
-
-                           
-                        </tr>
-
-                        <!--Prducto 2-->
-                        <tr>
-                            <td>
-                                <div class="imagen-producto Mouse">
-
-                                    <img src="Imagenes/mouse.png" alt="" class="imagen-producto">
-
-                                </div>
-                            </td>
-
-                            <td>
-                                <strong>Mouse inalámbrico</strong>
-                            </td>
-
-                            <td>
-                                Accesorios
-                            </td>
-
-                            <td>
-                                $25
-                            </td>
-
-                            <td>
-                                <span class="stock good">
-                                    50
-                                </span>
-                            </td>
-
-                            <td>
-                                <div class="actions">
-                                    <button class="edit">Editar</button>
-                                    <button class="delete">Eliminar</button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!--Producto 3-->
-
-                        <tr>
-                            <td>
-                                <div class="imagen-producto Teclado">
-
-                                    <img src="Imagenes/teclado.png" alt="" class="imagen-producto">
-
-                                </div>
-                            </td>
-
-                            <td>
-                                <strong>Teclado</strong>
-                            </td>
-
-                            <td>
-                                Accesorios
-                            </td>
-
-                            <td>
-                                $75
-                            </td>
-
-                            <td>
-                                <span class="stock good">
-                                    28
-                                </span>
-                            </td>
-
-                            <td>
-                                <div class="actions">
-                                    <button class="edit">Editar</button>
-                                    <button class="delete">Eliminar</button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!--Producto 4-->
-
-                        <tr>
-                            <td>
-                                <div class="imagen-producto Monitor">
-                                    <img src="Imagenes/monitor.png" alt="" class="imagen-producto">
-
-                                </div>
-                            </td>
-
-                            <td>
-                                <strong>Monitor 24"</strong>
-                            </td>
-
-                            <td>
-                                Electrónica
-                            </td>
-
-                            <td>
-                                $199
-                            </td>
-
-                            <td>
-                                <span class="stock low">
-                                    8
-                                </span>
-                            </td>
-
-                            <td>
-                                <div class="actions">
-                                    <button class="edit">Editar</button>
-                                    <button class="delete">Eliminar</button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!--Producto 5-->
-
-                        <tr>
-                            <td>
-                                <div class="imagen-producto Silla">
-
-                                    <img src="Imagenes/sillaGamer.png" alt="" class="imagen-producto">
-
-                                </div>
-                            </td>
-
-                            <td>
-                                <strong>Silla Gamer</strong>
-                            </td>
-
-                            <td>
-                                Muebles
-                            </td>
-
-                            <td>
-                                $149
-                            </td>
-
-                            <td>
-                                <span class="stock good">
-                                    12
-                                </span>
-                            </td>
-
-                            <td>
-                                <div class="actions">
-                                    <button class="edit">Editar</button>
-                                    <button class="delete">Eliminar</button>
-                                </div>
-                            </td>
-                        </tr>
+            <!--cards-->
+            <div class="grid-productos">
 
 
-                    
-                    </tbody>
-                </table>
+                <!-- Card Producto 1 -->
+                <div class="producto-card" onclick="abrirModal('Laptop', 'Electrónica', '₡999', 'Laptop de alta gama ideal para trabajo y diseño. Cuenta con 16GB de memoria RAM, disco de estado sólido de 512GB y procesador de última generación.', 'Imagenes/laptop.png')">
+                    <img src="Imagenes/laptop.png" alt="Laptop" class="card-img">
+                    <h3 class="card-titulo">Laptop</h3>
+                    <span class="card-categoria">Electrónica</span>
+                    <p class="card-precio">₡999</p>
+                </div>
+                <!-- Card Producto 2 -->
+                <div class="producto-card" onclick="abrirModal('Mouse Inalámbrico', 'Accesorios', '₡25', 'Mouse ergonómico con conexión Bluetooth de baja latencia. Batería recargable con duración de hasta 30 días continuos.', 'Imagenes/mouse.png')">
+                    <img src="Imagenes/mouse.png" alt="Mouse" class="card-img">
+                    <h3 class="card-titulo">Mouse Inalámbrico</h3>
+                    <span class="card-categoria">Accesorios</span>
+                    <p class="card-precio">₡25</p>
+                </div>
+
+                <!-- Card Producto 3 -->
+                <div class="producto-card" onclick="abrirModal('Teclado Mecánico', 'Accesorios', '₡75', 'Teclado con switches mecánicos para mejor respuesta táctil y luces RGB configurables. Formato compacto.', 'Imagenes/teclado.png')">
+                    <img src="Imagenes/teclado.png" alt="Teclado" class="card-img">
+                    <h3 class="card-titulo">Teclado Mecánico</h3>
+                    <span class="card-categoria">Accesorios</span>
+                    <p class="card-precio">₡75</p>
+                </div>
+
+                <!-- Card Producto 4 -->
+                <div class="producto-card" onclick="abrirModal('Monitor 24 pulgadas', 'Electrónica', '₡199', 'Monitor Full HD de 24 pulgadas con tasa de refresco de 144Hz y panel IPS para colores más vivos.', 'Imagenes/monitor.png')">
+                    <img src="Imagenes/monitor.png" alt="Monitor" class="card-img">
+                    <h3 class="card-titulo">Monitor 24"</h3>
+                    <span class="card-categoria">Electrónica</span>
+                    <p class="card-precio">₡199</p>
+                </div>
+
+                <!-- Card Producto 5 -->
+                <div class="producto-card" onclick="abrirModal('Silla Gamer', 'Muebles', '₡149', 'Silla ergonómica para largas sesiones de juego o trabajo. Respaldo reclinable, soporte lumbar y cervical ajustables.', 'Imagenes/sillaGamer.png')">
+                    <img src="Imagenes/sillaGamer.png" alt="Silla Gamer" class="card-img">
+                    <h3 class="card-titulo">Silla Gamer</h3>
+                    <span class="card-categoria">Muebles</span>
+                    <p class="card-precio">₡149</p>
+                </div>
             </div>
+            
 
             <!--Pie de tabla-->
             <div class="footer-tabla">
@@ -282,43 +112,88 @@
 
         </section>
     </main>
+    <!--Pie de pagina de producto-->
+    <div id="modal-producto" class="modal-overlay">
+        <div class="modal-content">
+            <span class="cerrar-modal" onclick="cerrarModal()">✕</span>
+
+            <div class="modal-header">
+                <img id="modal-img" src="" alt="Producto" class="modal-imagen">
+                <h2 id="modal-titulo">Nombre</h2>
+                <span id="modal-categoria" class="modal-categoria-badge">Categoría</span>
+            </div>
+
+            <div class="modal-body">
+                <h3>Especificaciones</h3>
+                <p id="modal-desc">Aquí van los detalles del producto.</p>
+
+                <div class="modal-precio-box">
+                    <span>Precio de venta:</span>
+                    <strong id="modal-precio">₡0.00</strong>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <button id="btn-abrir-chat" class="chat-trigger">
-      X
+      <img src="Imagenes/octopus1.png" alt="Chat" style="width:30px;">
     </button>
 
     <!-- Ventana del Asistente -->
     <div id="ventana-chat" class="chat-window oculta">
-      <!-- Cabecera -->
       <div class="chat-header">
         <div class="header-perfil">
-          <div class="avatar">x</div>
+          <div class="avatar"><img src="Imagenes/octopus.png"></div>
           <div class="info">
-            <h3>Asistente de Ventas <span>x Gemini</span></h3>
+            <h3>Asistente de Inventario <span>x Gemini</span></h3>
             <span class="estado">● Conectado</span>
           </div>
         </div>
         <button id="btn-cerrar-chat" class="btn-cerrar">✕</button>
       </div>
 
-      <!-- Área de mensajes -->
       <div class="chat-mensajes" id="chat-mensajes">
         <div class="mensaje bot">
-          <div class="avatar-pequeno">X</div>
           <div class="burbuja">
             He analizado las ventas recientes y el inventario actual. ¿En qué te puedo ayudar hoy?
           </div>
         </div>
       </div>
 
-      <!-- Entrada de texto -->
       <div class="chat-input-container">
-        <input type="text" id="chat-input" placeholder="Escribe tu consulta...">
+        <input type="text" id="chat-input" placeholder="Pregunta sobre tu stock...">
         <button id="btn-enviar-chat" class="btn-enviar">➤</button>
       </div>
     </div>
 
+
     <!-- Vinculación del script del chat -->
     <script src="chat.js"></script> 
+    <script>
+        // Función para abrir la ventana modal y llenar los datos
+        function abrirModal(titulo, categoria, precio, descripcion, imagen) {
+            document.getElementById('modal-titulo').innerText = titulo;
+            document.getElementById('modal-categoria').innerText = categoria;
+            document.getElementById('modal-precio').innerText = precio;
+            document.getElementById('modal-desc').innerText = descripcion;
+            document.getElementById('modal-img').src = imagen;
+
+            // Muestra el modal añadiendo la clase "activo"
+            document.getElementById('modal-producto').classList.add('activo');
+        }
+
+        // Función para cerrar la ventana modal
+        function cerrarModal() {
+            document.getElementById('modal-producto').classList.remove('activo');
+        }
+
+        // Opcional: Cerrar el modal al hacer clic en el fondo oscuro
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal-producto');
+            if (event.target == modal) {
+                cerrarModal();
+            }
+        }
+    </script>
 </body>
 </html>
