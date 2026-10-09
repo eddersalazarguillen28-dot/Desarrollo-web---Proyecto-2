@@ -666,7 +666,6 @@ td:nth-child(6){
 
 .grid-productos {
     display: grid;
-    /* Crea columnas automáticas de mínimo 220px de ancho */
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 20px;
     margin-top: 15px;

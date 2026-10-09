@@ -4,114 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="estiloProductos.css">
+    <link rel="stylesheet" href="global.css">
     <title>Document</title>
 </head>
-<body>
-
-    <aside class = "barraLateral">
-        <div>
-            <img src="Imagenes/logoLinea.png" alt="" id="logo">
-        </div>
-
-        <nav class="menu">
-            <a href="../Frontend/inicio.html" class="menu-item active">
-                <p>Inicio</p>
-            </a>
-
-            <a href="#" class="menu-item">
-                <p>Productos</p>
-            </a>
-
-            <a href="#" class="menu-item">
-                <p>Clientes</p>
-            </a>
-
-            <a href="#" class="menu-item">
-                <p>Ventas</p>
-            </a>
-
-            <a href="#" class="menu-item">
-                <p>Inventario</p>
-            </a>
-
-            <a href="../dashboard/index.html" class="menu-item">Dashboard</a>
-
-            <a href="#" class="menu-item">
-                <p>Reportes</p>
-            </a>
-        </nav> 
-    </aside>
-
-    <main class="main">
-        <section class="seccion-productos">
-            <div class="contenedorTitulo">
-                <h2>Catalogo</h2>
-            </div>
-
-            <!--Buscador-->
-            <div class="contenedor-buscador">
-                <input type="text" placeholder="Buscar producto">
-            </div>
-
-            <!--cards-->
-            <div class="grid-productos">
-
-
-                <!-- Card Producto 1 -->
-                <div class="producto-card" onclick="abrirModal('Laptop', 'Electrónica', '₡999', 'Laptop de alta gama ideal para trabajo y diseño. Cuenta con 16GB de memoria RAM, disco de estado sólido de 512GB y procesador de última generación.', 'Imagenes/laptop.png')">
-                    <img src="Imagenes/laptop.png" alt="Laptop" class="card-img">
-                    <h3 class="card-titulo">Laptop</h3>
-                    <span class="card-categoria">Electrónica</span>
-                    <p class="card-precio">₡999</p>
-                </div>
-                <!-- Card Producto 2 -->
-                <div class="producto-card" onclick="abrirModal('Mouse Inalámbrico', 'Accesorios', '₡25', 'Mouse ergonómico con conexión Bluetooth de baja latencia. Batería recargable con duración de hasta 30 días continuos.', 'Imagenes/mouse.png')">
-                    <img src="Imagenes/mouse.png" alt="Mouse" class="card-img">
-                    <h3 class="card-titulo">Mouse Inalámbrico</h3>
-                    <span class="card-categoria">Accesorios</span>
-                    <p class="card-precio">₡25</p>
+<body id="page-productos">
+    <div id="sidebar-container"></div>
+    <div id="header-container"></div>
+    
+    <div class="main-wrapper">
+        <main class="main">
+            <section class="seccion-productos">
+                <div class="contenedorTitulo">
+                    <h2>Catalogo</h2>
                 </div>
 
-                <!-- Card Producto 3 -->
-                <div class="producto-card" onclick="abrirModal('Teclado Mecánico', 'Accesorios', '₡75', 'Teclado con switches mecánicos para mejor respuesta táctil y luces RGB configurables. Formato compacto.', 'Imagenes/teclado.png')">
-                    <img src="Imagenes/teclado.png" alt="Teclado" class="card-img">
-                    <h3 class="card-titulo">Teclado Mecánico</h3>
-                    <span class="card-categoria">Accesorios</span>
-                    <p class="card-precio">₡75</p>
+                <!--Buscador-->
+                <div class="contenedor-buscador">
+                    <input type="text" placeholder="Buscar producto">
                 </div>
 
-                <!-- Card Producto 4 -->
-                <div class="producto-card" onclick="abrirModal('Monitor 24 pulgadas', 'Electrónica', '₡199', 'Monitor Full HD de 24 pulgadas con tasa de refresco de 144Hz y panel IPS para colores más vivos.', 'Imagenes/monitor.png')">
-                    <img src="Imagenes/monitor.png" alt="Monitor" class="card-img">
-                    <h3 class="card-titulo">Monitor 24"</h3>
-                    <span class="card-categoria">Electrónica</span>
-                    <p class="card-precio">₡199</p>
+                <!--cards-->
+                <div class="grid-productos">
+
+                    <!-- Card Producto 1 -->
+                    <div class="producto-card" onclick="abrirModal('Laptop', 'Electrónica', '₡999', 'Laptop de alta gama ideal para trabajo y diseño. Cuenta con 16GB de memoria RAM, disco de estado sólido de 512GB y procesador de última generación.', 'Imagenes/laptop.png')">
+                        <img src="Imagenes/laptop.png" alt="Laptop" class="card-img">
+                        <h3 class="card-titulo">Laptop</h3>
+                        <span class="card-categoria">Electrónica</span>
+                        <p class="card-precio">₡999</p>
+                    </div>
+                    <!-- Card Producto 2 -->
+                    <div class="producto-card" onclick="abrirModal('Mouse Inalámbrico', 'Accesorios', '₡25', 'Mouse ergonómico con conexión Bluetooth de baja latencia. Batería recargable con duración de hasta 30 días continuos.', 'Imagenes/mouse.png')">
+                        <img src="Imagenes/mouse.png" alt="Mouse" class="card-img">
+                        <h3 class="card-titulo">Mouse Inalámbrico</h3>
+                        <span class="card-categoria">Accesorios</span>
+                        <p class="card-precio">₡25</p>
+                    </div>
+
+                    <!-- Card Producto 3 -->
+                    <div class="producto-card" onclick="abrirModal('Teclado Mecánico', 'Accesorios', '₡75', 'Teclado con switches mecánicos para mejor respuesta táctil y luces RGB configurables. Formato compacto.', 'Imagenes/teclado.png')">
+                        <img src="Imagenes/teclado.png" alt="Teclado" class="card-img">
+                        <h3 class="card-titulo">Teclado Mecánico</h3>
+                        <span class="card-categoria">Accesorios</span>
+                        <p class="card-precio">₡75</p>
+                    </div>
+
+                    <!-- Card Producto 4 -->
+                    <div class="producto-card" onclick="abrirModal('Monitor 24 pulgadas', 'Electrónica', '₡199', 'Monitor Full HD de 24 pulgadas con tasa de refresco de 144Hz y panel IPS para colores más vivos.', 'Imagenes/monitor.png')">
+                        <img src="Imagenes/monitor.png" alt="Monitor" class="card-img">
+                        <h3 class="card-titulo">Monitor 24"</h3>
+                        <span class="card-categoria">Electrónica</span>
+                        <p class="card-precio">₡199</p>
+                    </div>
+
+                    <!-- Card Producto 5 -->
+                    <div class="producto-card" onclick="abrirModal('Silla Gamer', 'Muebles', '₡149', 'Silla ergonómica para largas sesiones de juego o trabajo. Respaldo reclinable, soporte lumbar y cervical ajustables.', 'Imagenes/sillaGamer.png')">
+                        <img src="Imagenes/sillaGamer.png" alt="Silla Gamer" class="card-img">
+                        <h3 class="card-titulo">Silla Gamer</h3>
+                        <span class="card-categoria">Muebles</span>
+                        <p class="card-precio">₡149</p>
+                    </div>
+                </div>
+                
+
+                <!--Pie de tabla-->
+                <div class="footer-tabla">
+                    <span>Mostrando 1-5 de 5 productos</span>
+
+                    <div class="btnPaginas">
+                        <button><</button>
+                        <button>1</button>
+                        <button>></button>
+                    </div>
+
                 </div>
 
-                <!-- Card Producto 5 -->
-                <div class="producto-card" onclick="abrirModal('Silla Gamer', 'Muebles', '₡149', 'Silla ergonómica para largas sesiones de juego o trabajo. Respaldo reclinable, soporte lumbar y cervical ajustables.', 'Imagenes/sillaGamer.png')">
-                    <img src="Imagenes/sillaGamer.png" alt="Silla Gamer" class="card-img">
-                    <h3 class="card-titulo">Silla Gamer</h3>
-                    <span class="card-categoria">Muebles</span>
-                    <p class="card-precio">₡149</p>
-                </div>
-            </div>
-            
+            </section>
+        </main>
+    </div>
 
-            <!--Pie de tabla-->
-            <div class="footer-tabla">
-                <span>Mostrando 1-5 de 5 productos</span>
-
-                <div class="btnPaginas">
-                    <button><</button>
-                    <button>1</button>
-                    <button>></button>
-                </div>
-
-            </div>
-
-        </section>
-    </main>
     <!--Pie de pagina de producto-->
     <div id="modal-producto" class="modal-overlay">
         <div class="modal-content">
@@ -166,8 +137,8 @@
       </div>
     </div>
 
-
     <!-- Vinculación del script del chat -->
+    <script src="layout.js"></script>
     <script src="chat.js"></script> 
     <script>
         // Función para abrir la ventana modal y llenar los datos
