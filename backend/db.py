@@ -19,13 +19,13 @@ def inicializar_bd():
 
         # Crear tabla productos
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS productos (
-                id SERIAL PRIMARY KEY,
-                nombre VARCHAR(150) NOT NULL,
-                precio NUMERIC(10, 2) NOT NULL,
-                stock INTEGER NOT NULL
-            );
-        ''')
+                 CREATE TABLE IF NOT EXISTS productos (
+                     id SERIAL PRIMARY KEY,
+                     nombre VARCHAR(150) NOT NULL,
+                     precio NUMERIC(10, 2) NOT NULL,
+                     stock INTEGER NOT NULL
+                 );
+             ''')
 
         # Crear tabla clientes
         cursor.execute(''' 

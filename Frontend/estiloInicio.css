@@ -1,0 +1,202 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    /* Fondo oscuro basado en tu antigua barra lateral para resaltar el logo */
+    background: linear-gradient(135deg, #0d1730 0%, #111b37 100%);
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Contenedor principal centrado */
+.contenedor-centro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    max-width: 800px;
+    padding: 20px;
+}
+
+/* Sección de Bienvenida */
+.bienvenida {
+    margin-bottom: 50px;
+    animation: fadeInDown 0.8s ease;
+}
+
+#logo-centro {
+    width: 250px; /* Tamaño más grande para el centro */
+    margin-bottom: 20px;
+}
+
+.bienvenida h1 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.bienvenida p {
+    font-size: 18px;
+    color: #a3a9b8;
+}
+
+/* Grid de botones de navegación */
+.grid-menu {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    animation: fadeInUp 0.8s ease;
+}
+
+/* Estilo de los botones */
+.btn-menu {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    text-decoration: none;
+    padding: 25px 20px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-menu:hover {
+    background: #625aff;
+    border-color: #7168ff;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(98, 90, 255, 0.3);
+}
+
+/* Animaciones suaves de entrada */
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive para celulares */
+@media (max-width: 768px) {
+    .grid-menu {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 480px) {
+    .grid-menu {
+        grid-template-columns: 1fr;
+    }
+}
+
+   /* STILOS DEL ASISTENTE INTELIGENTE */
+
+.chat-trigger {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #625aff, #7168ff);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(99, 91, 255, 0.4);
+    z-index: 1000;
+    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-trigger:hover { transform: scale(1.05); }
+
+.chat-window {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 400px; 
+    height: 550px; 
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    z-index: 999;
+    overflow: hidden;
+    color: #333;
+}
+
+.chat-window.oculta { display: none; }
+
+.chat-header {
+    background-color: #ffffff;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #edf0f5;
+}
+
+.header-perfil { display: flex; align-items: center; gap: 10px; }
+.header-perfil h3 { margin: 0; font-size: 15px; color: #170933; }
+.header-perfil h3 span { color: #625aff; font-size: 12px; font-weight: normal; }
+.header-perfil .estado { font-size: 11px; color: #159a63; font-weight: bold; }
+
+.btn-cerrar { background: none; border: none; font-size: 18px; cursor: pointer; color: #7b8397; }
+.btn-cerrar:hover { color: #e85a5a; }
+
+.chat-mensajes {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #f8f9fe;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.mensaje { display: flex; gap: 10px; max-width: 92%; }
+.mensaje.bot .burbuja { background-color: #ffffff; border: 1px solid #edf0f5; color: #5d6680; padding: 12px; border-radius: 0 12px 12px 12px; font-size: 15px; }
+
+.chat-input-container {
+    padding: 15px;
+    background: white;
+    border-top: 1px solid #edf0f5;
+    display: flex;
+    gap: 10px;
+}
+
+#chat-input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #D9D9D9;
+    border-radius: 8px;
+    outline: none;
+}
+
+.btn-enviar {
+    background: linear-gradient(135deg, #625aff, #7168ff);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    cursor: pointer;
+}
