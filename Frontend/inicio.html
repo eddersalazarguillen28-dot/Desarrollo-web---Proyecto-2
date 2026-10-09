@@ -3,11 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" type="image/jpeg" href="../dashboard/Imagenes/logoVentana.jpeg">
-
+    <link rel="icon" type="image/jpeg" href="../dashboard/Imagenes/logoVentana.jpeg">
     <link rel="stylesheet" href="estiloProductos.css">
-
-    
     <title>Inicio</title>
 </head>
 <body>
@@ -37,7 +34,7 @@
                 <p>Ventas</p>
             </a>
 
-            <a href="#" class="menu-item">
+            <a href="inventario.html" class="menu-item">
                 <p>Inventario</p>
             </a>
 
@@ -99,7 +96,7 @@
                             </td>
 
                             <td>
-                                $999
+                                ₡999
                             </td>
 
                             <td>
@@ -144,7 +141,7 @@
                             </td>
 
                             <td>
-                                $25
+                                ₡25
                             </td>
 
                             <td>
@@ -179,7 +176,7 @@
                             </td>
 
                             <td>
-                                $75
+                                ₡75
                             </td>
 
                             <td>
@@ -214,7 +211,7 @@
                             </td>
 
                             <td>
-                                $199
+                                ₡199
                             </td>
 
                             <td>
@@ -249,7 +246,7 @@
                             </td>
 
                             <td>
-                                $149
+                                ₡149
                             </td>
 
                             <td>
@@ -334,61 +331,59 @@
                 <div class="producto-resumen">
                     <strong>Laptop</strong>
                     <span>x1</span>
-                    <strong>$899</strong>
+                    <strong>₡899</strong>
                 </div>
 
                 <div class="summary-row">
                     <span>Subtotal</span>
-                    <strong>$899</strong>
+                    <strong>₡899</strong>
                 </div>
 
                 <div class="summary-row">
                     <span>Impuestos (IVA 16%)</span>
-                    <strong>$143.84</strong>
+                    <strong>₡143.84</strong>
                 </div>
 
                 <div class="summary-total">
                     <span>Total</span>
-                    <strong>$1,042.84</strong>
+                    <strong>₡1,042.84</strong>
                 </div>
             </div>
         </section>
 
     </main>
+
 <button id="btn-abrir-chat" class="chat-trigger">
-      X
+      <img src="Imagenes/octopus1.png" alt="Chat" style="width:30px;">
     </button>
 
     <!-- Ventana del Asistente -->
     <div id="ventana-chat" class="chat-window oculta">
-      <!-- Cabecera -->
       <div class="chat-header">
         <div class="header-perfil">
-          <div class="avatar">x</div>
+          <div class="avatar"><img src="Imagenes/octopus.png"></div>
           <div class="info">
-            <h3>Asistente de Ventas <span>x Gemini</span></h3>
+            <h3>Asistente de Inventario <span>x Gemini</span></h3>
             <span class="estado">● Conectado</span>
           </div>
         </div>
         <button id="btn-cerrar-chat" class="btn-cerrar">✕</button>
       </div>
 
-      <!-- Área de mensajes -->
       <div class="chat-mensajes" id="chat-mensajes">
         <div class="mensaje bot">
-          <div class="avatar-pequeno">X</div>
           <div class="burbuja">
             He analizado las ventas recientes y el inventario actual. ¿En qué te puedo ayudar hoy?
           </div>
         </div>
       </div>
 
-      <!-- Entrada de texto -->
       <div class="chat-input-container">
-        <input type="text" id="chat-input" placeholder="Escribe tu consulta...">
+        <input type="text" id="chat-input" placeholder="Pregunta sobre tu stock...">
         <button id="btn-enviar-chat" class="btn-enviar">➤</button>
       </div>
     </div>
+
 
     <!-- Vinculación del script del chat -->
     <script src="chat.js"></script> 
