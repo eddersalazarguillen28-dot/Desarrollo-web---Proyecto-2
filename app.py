@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from google import genai
 
-# Importación directa desde la raíz
+# Importación directa desde la raíz del proyecto
 from backend import db_manager as db
 
 app = Flask(__name__)
@@ -96,11 +96,14 @@ def listar_productos():
 def crear_producto():
     datos = request.get_json() or {}
     try:
+        # Acepta tanto stockMinimo como stock_minimo por compatibilidad
+        s_min = datos.get('stockMinimo') if datos.get('stockMinimo') is not None else datos.get('stock_minimo', 5)
+
         p_id = db.agregar_producto(
             datos.get('nombre'),
             float(datos.get('precio', 0)),
             int(datos.get('stock', 0)),
-            int(datos.get('stockMinimo', 5))
+            int(s_min)
         )
         return jsonify({"status": "ok", "producto_id": p_id}), 201
     except Exception as e:
@@ -194,6 +197,6 @@ def chat_asistente():
     except Exception as e:
         return jsonify({"respuesta": f"Ocurrió un error al procesar tu solicitud: {str(e)}"}), 500
 
-if __name__ == '_main_':
+if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
