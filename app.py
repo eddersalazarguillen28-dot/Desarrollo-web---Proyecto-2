@@ -182,3 +182,16 @@ def chat_asistente():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
+
+
+
+from db_manager import init_db
+
+@app.route('/api/init-db', methods=['POST', 'GET'])
+def inicializar_bd():
+    try:
+        init_db()
+        return jsonify({"mensaje": "Base de datos inicializada y datos cargados con éxito"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
