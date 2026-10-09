@@ -3,9 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="estiloClientes.css">
     <title>Document</title>
 </head>
 <body>
+    <aside class = "barraLateral">
+        <div>
+            <img src="Imagenes/logoLinea.png" alt="" id="logo">
+        </div>
+
+        <nav class="menu">
+            <a href="../Frontend/inicio.html" class="menu-item active">
+                <p>Inicio</p>
+            </a>
+
+            <a href="#" class="menu-item">
+                <p>Productos</p>
+            </a>
+
+            <a href="#" class="menu-item">
+                <p>Clientes</p>
+            </a>
+
+            <a href="#" class="menu-item">
+                <p>Ventas</p>
+            </a>
+
+            <a href="#" class="menu-item">
+                <p>Inventario</p>
+            </a>
+
+            <a href="../dashboard/index.html" class="menu-item">Dashboard</a>
+
+            <a href="#" class="menu-item">
+                <p>Reportes</p>
+            </a>
+        </nav> 
+    </aside>
     
+    <!--Contenido-->
+
+    <main class="main">
+
+        <!--Encabezado-->
+
+        <header class="header">
+        <div class="area-user">
+            <div class="date-box">
+                <div>
+                    <strong id="fecha">8 de octubre</strong>
+                    <small id="diaSemana">Miercoles</small>
+                </div>
+
+            </div>
+
+            <div class="user-profile">
+                <div class="avatar">AT</div>
+                <div>
+                    <strong>Ana Torres</strong>
+                    <small>Administrador</small>
+                </div>
+
+                <span class="arrow">⌄</span>
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <section class="estadistica-grid">
+        <article class="estadistica-card card-morada">
+            <div class="estadistica-icon">
+
+            </div>
+
+            <div>
+                <p>Total de Clientes</p>
+                <h2 id="totalClientes">8</h2>
+                <small>Clientes registrados</small>
+            </div>
+        </article>
+
+        <article class="estadistica-card card-verde">
+            <div class="estadistica-icon">
+
+
+            </div>
+
+            <div>
+                <p>Clientes activos</p>
+                <h2 id="clientesActivos">2</h2>
+                <small>Con estado activo</small>
+            </div>
+        </article>
+
+        <article class="estadistica-card card-roja">
+            <div class="estadistica-icon">
+
+            </div>
+
+            <div>
+                <p>Clientes inactivos</p>
+                <h2 id="clientesInactivos">0</h2>
+                <small>Con estado inactivo</small>
+            </div>
+        </article>
+
+        <article class="estadistica-card card-azul">
+            <div class="estadistica-icon">
+
+            </div>
+
+            <div>
+                <p>Ventas registradas</p>
+                <h2 id="totalVentas">0</h2>
+                <small>Ventas asociadas a clientes</small>
+            </div>
+        </article>
+    </section>
+
+    <section class="contenido-grid">
+        <article class="panel clientes-panel-lista">
+            <div class="panel-header">
+                <div>
+                    <h2>Lista de clientes</h2>
+                    <p>Consulta y administra tus contactos</p>
+                </div>
+
+                <button class="btn-nuevoCliente" id="nuevoClienteBtn">+Nuevo cliente</button>
+
+            </div>
+
+            <div class="busqueda-box">
+                <input type="search" id="buscarCliente" placeholder="Buscar">
+                 
+            </div>
+
+            <div class="tabla">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Teléfono</th>
+                            <th>Correo electrónico</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tablaClientes"></tbody>
+                </table>
+
+            </div>
+
+            <div class="footer-tabla">
+                <span id="contadorClientes">Mostrando 0 clientes</span>
+            </div>
+
+        </article>
+
+        <article class="panel form-panel" id="formularioPanel">
+            <div class="panel-header">
+                <div>
+                    <h2 id="tituloForm">Nuevo cliente</h2>
+                    <p>Completa información del cliente</p>
+                </div>
+
+            </div>
+
+            <form id="formCliente">
+                <input type="hidden" id="clienteId">
+                <div class="form-campo">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" placeholder="Nombre" required>
+                    
+
+                </div>
+
+                <div class="form-campo">
+                    <label for="telefono">Teléfono</label>
+                    <input type="text" id="telefono" placeholder="Telefono" required>
+
+
+                </div>
+
+                <div class="form-campo">
+                    <label for="correo">Correo</label>
+                    <input type="email" id="correo" placeholder="Correo">
+
+
+                </div>
+
+                <div class="form-campo">
+                    <label for="direccion">Dirección</label>
+                    <input type="text" id="direccion" placeholder="Direccion">
+
+
+                </div>
+
+                <div class="form-campo">
+                    <label for="estado">Estado</label>
+                    <select id="estado">
+                        <option value="Activo">Activo</option>
+                        <option value="Inactivo">Inactivo</option>
+
+                    </select>
+
+
+                </div>
+
+                <button type="submit" class="btn-guardar" id="guardarBtn">Guardar cliente</button>
+                <button type="button" class="btn-cancelar" id="cancelarBtn" hidden>Cancelar edición</button>
+                <p class="form-mensaje" id="mensajeFormulario"></p>
+
+
+
+
+            </form>
+
+        </article>
+
+    </section>
+
+    </main>
+
+    <script src="clientes.js"></script>
+
+
 </body>
 </html>
