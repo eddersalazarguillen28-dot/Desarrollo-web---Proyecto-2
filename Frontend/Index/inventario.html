@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/jpeg" href="../dashboard/Imagenes/logoVentana.jpeg">
-    <link rel="stylesheet" href="global.css">
-    <link rel="stylesheet" href="estiloProductos.css">
+    <link rel="icon" type="image/png" href="../Imagenes/logoLinea.png">
+    <link rel="stylesheet" href="../Style/global.css">
+    <link rel="stylesheet" href="../Style/estiloProductos.css">
     <title>Inventario</title>
 </head>
 <body id="page-inventario">
@@ -17,8 +17,7 @@
             <section class="seccion-productos">
                 <div class="contenedorTitulo">
                     <button class="btnNuevoProducto">
-                        <span>+</span>
-                        Ingresar Stock
+                        <span>+</span> Ingresar Stock
                     </button>
                 </div>
 
@@ -40,13 +39,12 @@
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-
                         <tbody>
                             <!-- Producto 1 -->
                             <tr>
                                 <td>
                                     <div class="imagen-producto">
-                                        <img src="Imagenes/laptop.png" alt="Laptop" class="imagen-producto">
+                                        <img src="../Imagenes/laptop.png" alt="Laptop" class="imagen-producto">
                                     </div>
                                 </td>
                                 <td><strong>Laptop Dell XPS</strong></td>
@@ -60,12 +58,11 @@
                                     </div>
                                 </td>
                             </tr>
-
                             <!-- Producto 2 -->
                             <tr>
                                 <td>
                                     <div class="imagen-producto">
-                                        <img src="Imagenes/mouse.png" alt="Mouse" class="imagen-producto">
+                                        <img src="../Imagenes/mouse.png" alt="Mouse" class="imagen-producto">
                                     </div>
                                 </td>
                                 <td><strong>Mouse inalámbrico Logitech</strong></td>
@@ -79,12 +76,11 @@
                                     </div>
                                 </td>
                             </tr>
-
                             <!-- Producto 3 -->
                             <tr>
                                 <td>
                                     <div class="imagen-producto">
-                                        <img src="Imagenes/teclado.png" alt="Teclado" class="imagen-producto">
+                                        <img src="../Imagenes/teclado.png" alt="Teclado" class="imagen-producto">
                                     </div>
                                 </td>
                                 <td><strong>Teclado Mecánico</strong></td>
@@ -98,12 +94,11 @@
                                     </div>
                                 </td>
                             </tr>
-
                             <!-- Producto 4 (Stock Bajo) -->
                             <tr>
                                 <td>
                                     <div class="imagen-producto">
-                                        <img src="Imagenes/monitor.png" alt="Teclado" class="imagen-producto">
+                                        <img src="../Imagenes/monitor.png" alt="Monitor" class="imagen-producto">
                                     </div>
                                 </td>
                                 <td><strong>Monitor LG 24"</strong></td>
@@ -117,12 +112,11 @@
                                     </div>
                                 </td>
                             </tr>
-
                             <!-- Producto 5 -->
                             <tr>
                                 <td>
                                     <div class="imagen-producto">
-                                        <img src="Imagenes/sillaGamer.png" alt="Teclado" class="imagen-producto">
+                                        <img src="../Imagenes/sillaGamer.png" alt="Silla Gamer" class="imagen-producto">
                                     </div>
                                 </td>
                                 <td><strong>Silla Gamer Corsair</strong></td>
@@ -151,21 +145,20 @@
                         <button>></button>
                     </div>
                 </div>
-
             </section>
         </main>
     </div>
 
     <!-- Botón Flotante del Chat -->
     <button id="btn-abrir-chat" class="chat-trigger">
-        <img src="Imagenes/octopus1.png" alt="Chat" style="width:30px;">
+        <img src="../Imagenes/octopus1.png" alt="Chat" style="width:30px;">
     </button>
 
     <!-- Ventana del Asistente -->
     <div id="ventana-chat" class="chat-window oculta">
         <div class="chat-header">
             <div class="header-perfil">
-                <div class="avatar"><img src="Imagenes/octopus.png" alt="Avatar"></div>
+                <div class="avatar"><img src="../Imagenes/octopus.png" alt="Avatar"></div>
                 <div class="info">
                     <h3>Asistente de Inventario <span>x Gemini</span></h3>
                     <span class="estado">● Conectado</span>
@@ -187,7 +180,7 @@
         </div>
     </div>
 
-    <script src="layout.js"></script>
-    <script src="chat.js"></script>
+    <script src="../JavaScript/layout.js"></script>
+    <script src="../JavaScript/chat.js"></script>
 </body>
 </html>
