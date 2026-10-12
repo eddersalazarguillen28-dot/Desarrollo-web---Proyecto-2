@@ -6,7 +6,7 @@ from flask_cors import CORS
 from google import genai
 from backend import db_manager as db
 
-app = Flask(_name_)
+app = Flask(__name__)
 CORS(app)
 
 
