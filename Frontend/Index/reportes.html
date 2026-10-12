@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../Imagenes/Logo.png">
+    <link rel="stylesheet" href="../Style/global.css">
+    <link rel="stylesheet" href="../Style/estiloReportes.css">
+    <link rel="stylesheet" href="../Style/">
+    <title>Reportes</title>
+</head>
+<body id="page-reportes">
+    <div id="sidebar-container"></div>
+    <div id="header-container"></div>
+    
+    <div class="main-wrapper">
+        <main class="main">
+            <section class="contenido-grid">
+                <article class="panel form-panel panel-full-width">
+                    <div class="panel-header">
+                        <div>
+                            <h2>Generador de Reportes</h2>
+                            <p>Filtra y exporta la información de tu negocio</p>
+                        </div>
+                    </div>
+
+                    <form id="formFiltrosReporte" class="filtros-reporte">
+                        <div class="form-campo">
+                            <label for="tipoReporte">Tipo de Reporte</label>
+                            <select id="tipoReporte">
+                                <option value="ventas">Historial de Ventas</option>
+                                <option value="inventario">Estado de Inventario</option>
+                                <option value="clientes">Actividad de Clientes</option>
+                            </select>
+                        </div>
+
+                        <div class="form-campo">
+                            <label for="fechaInicio">Fecha Inicio</label>
+                            <input type="date" id="fechaInicio">
+                        </div>
+
+                        <div class="form-campo">
+                            <label for="fechaFin">Fecha Fin</label>
+                            <input type="date" id="fechaFin">
+                        </div>
+
+                        <button type="button" class="btn-guardar" id="btnGenerarReporte">Generar Reporte</button>
+                        <button type="button" class="btn-exportar" id="btnExportarExcel">Exportar</button>
+                    </form>
+                </article>
+
+                <!-- Panel de Resultados (Tabla) -->
+                <article class="panel clientes-panel-lista panel-full-width">
+                    <div class="panel-header">
+                        <div>
+                            <h2>Vista Previa del Reporte</h2>
+                            <p>Resultados basados en los filtros seleccionados</p>
+                        </div>
+                    </div>
+
+                    <div class="tabla">
+                        <table>
+                            <thead id="cabeceraReporte">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Referencia</th>
+                                    <th>Descripción / Cliente</th>
+                                    <th>Monto Total</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpoReporte">
+                                <tr>
+                                    <td>2026-10-12</td>
+                                    <td>#VNT-001</td>
+                                    <td>Ana Torres - Laptop Dell XPS</td>
+                                    <td>₡999</td>
+                                    <td><span style="color: #28a745; font-weight: 600;">Completado</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2026-10-10</td>
+                                    <td>#VNT-002</td>
+                                    <td>Cliente Mostrador - Mouse Inalámbrico</td>
+                                    <td>₡25</td>
+                                    <td><span style="color: #28a745; font-weight: 600;">Completado</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2026-10-08</td>
+                                    <td>#VNT-003</td>
+                                    <td>Carlos Ruiz - Monitor 24"</td>
+                                    <td>₡199</td>
+                                    <td><span style="color: #ffc107; font-weight: 600;">Pendiente</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="footer-tabla">
+                        <span id="contadorReporte">Mostrando registros totales</span>
+                        
+                        <div class="btnPaginas">
+                            <button>&lt;</button>
+                            <button>1</button>
+                            <button>&gt;</button>
+                        </div>
+                    </div>
+                </article>
+
+            </section>
+        </main>
+    </div>
+
+    <button id="btn-abrir-chat" class="chat-trigger">
+        <img src="../Imagenes/octopus1.png" alt="Chat" style="width:30px;">
+    </button>
+
+    <!-- Ventana del Asistente -->
+    <div id="ventana-chat" class="chat-window oculta">
+        <div class="chat-header">
+            <div class="header-perfil">
+                <div class="avatar"><img src="../Imagenes/octopus.png" alt="Avatar"></div>
+                <div class="info">
+                    <h3>Asistente de Inventario <span>x Gemini</span></h3>
+                    <span class="estado">● Conectado</span>
+                </div>
+            </div>
+            <button id="btn-cerrar-chat" class="btn-cerrar">✕</button>
+        </div>
+        <div class="chat-mensajes" id="chat-mensajes">
+            <div class="mensaje bot">
+                <div class="burbuja">
+                    He analizado las ventas recientes y el inventario actual. ¿En qué te puedo ayudar hoy?
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input-container">
+            <input type="text" id="chat-input" placeholder="Pregunta sobre tu stock...">
+            <button id="btn-enviar-chat" class="btn-enviar">➤</button>
+        </div>
+    </div>
+
+    <!-- Vinculación de los scripts -->
+    <script src="../JavaScript/layout.js"></script>
+    <script src="../JavaScript/chat.js"></script>
+</body>
+</html>

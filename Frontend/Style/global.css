@@ -11,6 +11,17 @@ body {
     overflow-x: hidden;
 }
 
+.main, 
+.seccion-productos, 
+.resumen-seccion,
+.contenido-grid,
+.estadistica-grid {
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
 :root {
     --sidebar-width: 230px;
     --header-height: 60px;
@@ -234,3 +245,63 @@ body.sidebar-collapsed .main-wrapper {
         gap: 5px;
     }
 }
+
+.fade-in-up {
+    animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.nav-link, .menu-item {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+}
+
+.nav-link:hover, .menu-item:hover {
+    background-color: rgb(93, 24, 203);
+    transform: translateX(8px);
+    border-radius: 8px;
+}
+
+.producto-card, .estadistica-card, .panel {
+    transition: transform 0.3s ease, box-shadow 0.4s ease;
+    will-change: transform, box-shadow;
+}
+
+.producto-card:hover, .estadistica-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+}
+
+button, .btn-nuevoCliente, .btnFactura, .btn-guardar {
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s, filter 0.2s;
+    cursor: pointer;
+}
+
+button:hover, .btn-nuevoCliente:hover, .btnFactura:hover, .btn-guardar:hover {
+    transform: scale(1.04);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    filter: brightness(1.1);
+}
+
+button:active {
+    transform: scale(0.96);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+tbody tr:hover {
+    background-color: #f8f9fa;
+}
+

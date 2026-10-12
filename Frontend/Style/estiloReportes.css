@@ -1,0 +1,181 @@
+#page-reportes .main {
+    padding: 30px;
+    background-color: #f4f6fa;
+    color: #171d33;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.panel-full-width {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 25px 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    margin-bottom: 25px;
+    border: 1px solid #eef0f5;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.panel-header {
+    margin-bottom: 25px;
+}
+
+.panel-header h2 {
+    margin: 0 0 10px 0;
+    font-size: 22px;
+    color: #171d33;
+}
+
+.panel-header p {
+    margin: 0;
+    background-color: #f0efff;
+    color: #7367f0;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.filtros-reporte {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.form-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.form-campo label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #171d33;
+}
+
+.form-campo input,
+.form-campo select {
+    padding: 10px 12px;
+    border: 1px solid #dcdfe6;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #4a5568;
+    background-color: #ffffff;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-campo input:focus,
+.form-campo select:focus {
+    border-color: #7367f0;
+}
+
+.btn-guardar {
+    background-color: #7367f0;
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(115, 103, 240, 0.2);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    height: 42px;
+}
+
+.btn-guardar:hover {
+    background-color: #6355eb;
+    transform: translateY(-2px);
+}
+
+.btn-exportar {
+    background-color: #107c41;
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(16, 124, 65, 0.2);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    height: 42px;
+}
+
+.btn-exportar:hover {
+    background-color: #0b5e31;
+    transform: translateY(-2px);
+}
+
+.tabla table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.tabla thead tr {
+    background-color: #f4f6fa;
+}
+
+.tabla th {
+    text-align: left;
+    padding: 12px 15px;
+    font-size: 14px;
+    color: #4a5568;
+    font-weight: 600;
+}
+
+.tabla td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eef0f5;
+    font-size: 14px;
+    color: #171d33;
+}
+
+.footer-tabla {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: #4a5568;
+    padding-top: 15px;
+}
+
+.btnPaginas button {
+    background-color: #ffffff;
+    border: 1px solid #dcdfe6;
+    color: #4a5568;
+    padding: 5px 12px;
+    border-radius: 4px;
+    margin-left: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btnPaginas button:hover {
+    border-color: #7367f0;
+    color: #7367f0;
+}
+
+@media (max-width: 768px) {
+    .filtros-reporte {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn-guardar, .btn-exportar {
+        width: 100%;
+    }
+    
+    .tabla {
+        overflow-x: auto;
+    }
+}
