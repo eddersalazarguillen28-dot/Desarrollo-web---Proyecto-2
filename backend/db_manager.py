@@ -1,257 +1,826 @@
 import os
+from decimal import Decimal, InvalidOperation
+
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-DATABASE_URL = os.getenv('DATABASE_URL')
+
+# =========================================================
+# CONEXIÓN A POSTGRESQL (RENDER)
+# =========================================================
 
 def obtener_conexion():
-    if not DATABASE_URL:
-        raise Exception("Error: No se ha configurado la variable de entorno DATABASE_URL")
-    return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    """Conecta con PostgreSQL mediante DATABASE_URL."""
+    database_url = os.getenv("DATABASE_URL")
+
+    if not database_url:
+        raise RuntimeError(
+            "No se configuró la variable de entorno DATABASE_URL."
+        )
+
+    return psycopg2.connect(
+        database_url,
+        cursor_factory=RealDictCursor,
+        connect_timeout=10
+    )
+
+
+# =========================================================
+# INICIALIZACIÓN Y MIGRACIÓN DE LA BASE DE DATOS
+# =========================================================
 
 def inicializar_bd():
-    """Crea la estructura de tablas e inserta datos iniciales si está vacía."""
+    """
+    Crea las tablas necesarias y agrega columnas que falten.
+    No borra tablas ni inserta datos de demostración.
+    """
+    conn = obtener_conexion()
+
     try:
-        conn = obtener_conexion()
-        cursor = conn.cursor()
+        with conn.cursor() as cursor:
 
-        # 1. Tabla Usuarios
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS usuarios (
-            id SERIAL PRIMARY KEY,
-            nombre VARCHAR(100) NOT NULL,
-            correo VARCHAR(100) UNIQUE NOT NULL,
-            password VARCHAR(255) NOT NULL,
-            rol VARCHAR(50) DEFAULT 'vendedor'
-        );
-        """)
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS usuarios (
+                    id SERIAL PRIMARY KEY,
+                    nombre VARCHAR(100) NOT NULL,
+                    correo VARCHAR(100) UNIQUE NOT NULL,
+                    password VARCHAR(255) NOT NULL,
+                    rol VARCHAR(50) NOT NULL DEFAULT 'vendedor'
+                );
+            """)
 
-        # 2. Tabla Productos
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS productos (
-            id SERIAL PRIMARY KEY,
-            nombre VARCHAR(150) NOT NULL,
-            precio NUMERIC(10, 2) NOT NULL,
-            stock INTEGER NOT NULL,
-            stock_minimo INTEGER DEFAULT 5
-        );
-        """)
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS productos (
+                    id SERIAL PRIMARY KEY,
+                    nombre VARCHAR(150) NOT NULL,
+                    precio NUMERIC(10, 2) NOT NULL
+                        CHECK (precio >= 0),
+                    stock INTEGER NOT NULL DEFAULT 0
+                        CHECK (stock >= 0),
+                    categoria VARCHAR(100) NOT NULL DEFAULT 'General',
+                    stock_minimo INTEGER NOT NULL DEFAULT 5
+                        CHECK (stock_minimo >= 0)
+                );
+            """)
 
-        # 3. Tabla Clientes
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS clientes (
-            id SERIAL PRIMARY KEY,
-            nombre VARCHAR(150) NOT NULL,
-            correo VARCHAR(150) UNIQUE,
-            telefono VARCHAR(50)
-        );
-        """)
+            cursor.execute("""
+                ALTER TABLE productos
+                    ADD COLUMN IF NOT EXISTS categoria
+                        VARCHAR(100) NOT NULL DEFAULT 'General',
+                    ADD COLUMN IF NOT EXISTS stock_minimo
+                        INTEGER NOT NULL DEFAULT 5;
+            """)
 
-        # 4. Tabla Ventas
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS ventas (
-            id SERIAL PRIMARY KEY,
-            cliente_id INTEGER REFERENCES clientes(id) ON DELETE SET NULL,
-            total NUMERIC(10, 2) NOT NULL,
-            fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-        """)
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS clientes (
+                    id SERIAL PRIMARY KEY,
+                    nombre VARCHAR(150) NOT NULL,
+                    correo VARCHAR(150) UNIQUE,
+                    telefono VARCHAR(50)
+                );
+            """)
 
-        # 5. Tabla Detalle Ventas
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS detalle_ventas (
-            id SERIAL PRIMARY KEY,
-            venta_id INTEGER REFERENCES ventas(id) ON DELETE CASCADE,
-            producto_id INTEGER REFERENCES productos(id) ON DELETE CASCADE,
-            cantidad INTEGER NOT NULL,
-            precio_unitario NUMERIC(10, 2) NOT NULL
-        );
-        """)
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS ventas (
+                    id SERIAL PRIMARY KEY,
+                    cliente_id INTEGER,
+                    total NUMERIC(10, 2) NOT NULL
+                        CHECK (total >= 0),
+                    fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (cliente_id)
+                        REFERENCES clientes(id)
+                        ON DELETE SET NULL
+                );
+            """)
 
-        # Insertar usuario Admin de prueba si no existe
-        cursor.execute("SELECT COUNT(*) AS total FROM usuarios;")
-        if cursor.fetchone()['total'] == 0:
-            cursor.execute(
-                "INSERT INTO usuarios (nombre, correo, password, rol) VALUES (%s, %s, %s, %s);",
-                ('Admin Sistema', 'admin@octo.com', '123456', 'admin')
-            )
+            cursor.execute("""
+                ALTER TABLE ventas
+                ALTER COLUMN cliente_id DROP NOT NULL;
+            """)
 
-        # Insertar datos base si no existen productos
-        cursor.execute("SELECT COUNT(*) AS total FROM productos;")
-        if cursor.fetchone()['total'] == 0:
-            cursor.execute("INSERT INTO productos (nombre, precio, stock, stock_minimo) VALUES (%s, %s, %s, %s)", ('Laptop HP', 335000.00, 15, 5))
-            cursor.execute("INSERT INTO productos (nombre, precio, stock, stock_minimo) VALUES (%s, %s, %s, %s)", ('Mouse Inalámbrico', 8000.00, 2, 5))
-            cursor.execute("INSERT INTO productos (nombre, precio, stock, stock_minimo) VALUES (%s, %s, %s, %s)", ('Teclado Mecánico', 23000.00, 28, 5))
-            cursor.execute("INSERT INTO productos (nombre, precio, stock, stock_minimo) VALUES (%s, %s, %s, %s)", ('Monitor 24"', 95000.00, 8, 5))
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS detalle_ventas (
+                    id SERIAL PRIMARY KEY,
+                    venta_id INTEGER NOT NULL
+                        REFERENCES ventas(id) ON DELETE CASCADE,
+                    producto_id INTEGER NOT NULL
+                        REFERENCES productos(id) ON DELETE RESTRICT,
+                    cantidad INTEGER NOT NULL
+                        CHECK (cantidad > 0),
+                    precio_unitario NUMERIC(10, 2),
+                    subtotal NUMERIC(10, 2)
+                );
+            """)
+
+            cursor.execute("""
+                ALTER TABLE detalle_ventas
+                    ADD COLUMN IF NOT EXISTS precio_unitario
+                        NUMERIC(10, 2),
+                    ADD COLUMN IF NOT EXISTS subtotal
+                        NUMERIC(10, 2);
+            """)
+
+            # Completar precios históricos faltantes.
+            # Se utiliza el precio actual únicamente como estimación
+            # para registros antiguos que no tenían precio guardado.
+            cursor.execute("""
+                UPDATE detalle_ventas AS dv
+                SET precio_unitario = p.precio
+                FROM productos AS p
+                WHERE dv.producto_id = p.id
+                  AND dv.precio_unitario IS NULL;
+            """)
+
+            cursor.execute("""
+                UPDATE detalle_ventas
+                SET subtotal = cantidad * precio_unitario
+                WHERE subtotal IS NULL
+                  AND precio_unitario IS NOT NULL;
+            """)
+
+            cursor.execute("""
+                SELECT id
+                FROM detalle_ventas
+                WHERE precio_unitario IS NULL
+                   OR subtotal IS NULL
+                LIMIT 1;
+            """)
+
+            if cursor.fetchone():
+                raise RuntimeError(
+                    "Hay detalles de venta sin precio o subtotal. "
+                    "Debes revisar esos registros antes de completar "
+                    "la inicialización."
+                )
+
+            cursor.execute("""
+                ALTER TABLE detalle_ventas
+                    ALTER COLUMN precio_unitario SET NOT NULL,
+                    ALTER COLUMN subtotal SET NOT NULL;
+            """)
 
         conn.commit()
-        cursor.close()
-        conn.close()
-        print("✅ Base de datos PostgreSQL inicializada correctamente.")
-    except Exception as e:
-        print("❌ Error al inicializar la base de datos:", e)
+        print("Base de datos OCTO ERP preparada correctamente.")
+        return True
 
-# --- OPERACIONES PRODUCTOS ---
+    except Exception:
+        conn.rollback()
+        raise
+
+    finally:
+        conn.close()
+
+
+# =========================================================
+# VALIDACIONES
+# =========================================================
+
+def _validar_entero_positivo(valor, campo):
+    if (
+        isinstance(valor, bool)
+        or not isinstance(valor, int)
+        or valor <= 0
+    ):
+        raise ValueError(
+            f"{campo} debe ser un entero mayor que cero."
+        )
+
+    return valor
+
+
+def _validar_stock(valor, campo="stock"):
+    if (
+        isinstance(valor, bool)
+        or not isinstance(valor, int)
+        or valor < 0
+    ):
+        raise ValueError(
+            f"{campo} debe ser un entero mayor o igual que cero."
+        )
+
+    return valor
+
+
+def _validar_precio(valor, campo="precio"):
+    try:
+        numero = Decimal(str(valor))
+    except (InvalidOperation, ValueError, TypeError):
+        raise ValueError(f"{campo} no es válido.")
+
+    if not numero.is_finite() or numero < 0:
+        raise ValueError(
+            f"{campo} debe ser un número válido no negativo."
+        )
+
+    if numero.as_tuple().exponent < -2:
+        raise ValueError(
+            f"{campo} admite como máximo dos decimales."
+        )
+
+    if numero >= Decimal("100000000"):
+        raise ValueError(f"{campo} supera el máximo permitido.")
+
+    return numero
+
+
+def _validar_texto(valor, campo, longitud_maxima):
+    if not isinstance(valor, str) or not valor.strip():
+        raise ValueError(f"{campo} es obligatorio.")
+
+    valor = valor.strip()
+
+    if len(valor) > longitud_maxima:
+        raise ValueError(
+            f"{campo} no puede superar {longitud_maxima} caracteres."
+        )
+
+    return valor
+
+
+# =========================================================
+# PRODUCTOS
+# =========================================================
 
 def obtener_productos():
     conn = obtener_conexion()
-    cursor = conn.cursor()
+
     try:
-        cursor.execute("SELECT id, nombre, precio, stock, stock_minimo FROM productos ORDER BY id;")
-        filas = cursor.fetchall()
-        return [{
-            "id": p["id"],
-            "nombre": p["nombre"],
-            "precio": float(p["precio"]),
-            "stock": p["stock"],
-            "stockMinimo": p["stock_minimo"]
-        } for p in filas]
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    id, nombre, precio, stock,
+                    categoria, stock_minimo
+                FROM productos
+                ORDER BY id;
+            """)
+
+            filas = cursor.fetchall()
+
+            return [
+                {
+                    "id": p["id"],
+                    "nombre": p["nombre"],
+                    "precio": float(p["precio"]),
+                    "stock": p["stock"],
+                    "categoria": p["categoria"],
+                    "stock_minimo": p["stock_minimo"],
+                    "stockMinimo": p["stock_minimo"]
+                }
+                for p in filas
+            ]
+
     finally:
-        cursor.close()
         conn.close()
 
-def agregar_producto(nombre, precio, stock, stock_minimo=5):
+
+def agregar_producto(
+    nombre,
+    precio,
+    stock,
+    stock_minimo=5,
+    categoria="General"
+):
+    nombre = _validar_texto(nombre, "nombre", 150)
+    precio = _validar_precio(precio)
+    stock = _validar_stock(stock)
+    stock_minimo = _validar_stock(stock_minimo, "stock_minimo")
+    categoria = _validar_texto(categoria, "categoria", 100)
+
     conn = obtener_conexion()
-    cursor = conn.cursor()
+
     try:
-        cursor.execute(
-            "INSERT INTO productos (nombre, precio, stock, stock_minimo) VALUES (%s, %s, %s, %s) RETURNING id;",
-            (nombre, precio, stock, stock_minimo)
-        )
-        prod_id = cursor.fetchone()['id']
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                INSERT INTO productos (
+                    nombre, precio, stock, categoria, stock_minimo
+                )
+                VALUES (%s, %s, %s, %s, %s)
+                RETURNING id;
+            """, (
+                nombre, precio, stock, categoria, stock_minimo
+            ))
+
+            producto_id = cursor.fetchone()["id"]
+
         conn.commit()
-        return prod_id
+        return producto_id
+
+    except Exception:
+        conn.rollback()
+        raise
+
     finally:
-        cursor.close()
         conn.close()
 
-def actualizar_producto(producto_id, nombre, precio, stock, stock_minimo=5):
+
+def actualizar_producto(
+    producto_id,
+    nombre,
+    precio,
+    stock,
+    stock_minimo=5,
+    categoria="General"
+):
+    _validar_entero_positivo(producto_id, "producto_id")
+    nombre = _validar_texto(nombre, "nombre", 150)
+    precio = _validar_precio(precio)
+    stock = _validar_stock(stock)
+    stock_minimo = _validar_stock(stock_minimo, "stock_minimo")
+    categoria = _validar_texto(categoria, "categoria", 100)
+
     conn = obtener_conexion()
-    cursor = conn.cursor()
+
     try:
-        cursor.execute(
-            "UPDATE productos SET nombre = %s, precio = %s, stock = %s, stock_minimo = %s WHERE id = %s;",
-            (nombre, precio, stock, stock_minimo, producto_id)
-        )
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                UPDATE productos
+                SET nombre = %s,
+                    precio = %s,
+                    stock = %s,
+                    categoria = %s,
+                    stock_minimo = %s
+                WHERE id = %s;
+            """, (
+                nombre, precio, stock, categoria,
+                stock_minimo, producto_id
+            ))
+
+            actualizado = cursor.rowcount > 0
+
         conn.commit()
+        return actualizado
+
+    except Exception:
+        conn.rollback()
+        raise
+
     finally:
-        cursor.close()
         conn.close()
+
 
 def eliminar_producto(producto_id):
+    """Elimina productos que no tengan detalles de ventas."""
+    _validar_entero_positivo(producto_id, "producto_id")
+
     conn = obtener_conexion()
-    cursor = conn.cursor()
+
     try:
-        cursor.execute("DELETE FROM productos WHERE id = %s;", (producto_id,))
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT id
+                FROM productos
+                WHERE id = %s
+                FOR UPDATE;
+            """, (producto_id,))
+
+            if cursor.fetchone() is None:
+                conn.commit()
+                return False
+
+            cursor.execute("""
+                SELECT 1
+                FROM detalle_ventas
+                WHERE producto_id = %s
+                LIMIT 1;
+            """, (producto_id,))
+
+            if cursor.fetchone():
+                raise ValueError(
+                    "El producto tiene ventas registradas y no puede "
+                    "eliminarse. Puedes dejar su stock en cero."
+                )
+
+            cursor.execute("""
+                DELETE FROM productos
+                WHERE id = %s;
+            """, (producto_id,))
+
         conn.commit()
+        return True
+
+    except Exception:
+        conn.rollback()
+        raise
+
     finally:
-        cursor.close()
         conn.close()
 
-# --- OPERACIONES CLIENTES ---
+
+# =========================================================
+# CLIENTES
+# =========================================================
 
 def obtener_clientes():
     conn = obtener_conexion()
-    cursor = conn.cursor()
+
     try:
-        cursor.execute("SELECT * FROM clientes ORDER BY id;")
-        return cursor.fetchall()
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT id, nombre, correo, telefono
+                FROM clientes
+                ORDER BY id;
+            """)
+
+            return cursor.fetchall()
+
     finally:
-        cursor.close()
         conn.close()
 
-def agregar_cliente(nombre, correo, telefono):
+
+def agregar_cliente(nombre, correo=None, telefono=None):
+    nombre = _validar_texto(nombre, "nombre", 150)
+
+    if correo is not None:
+        if not isinstance(correo, str):
+            raise ValueError("El correo no es válido.")
+
+        correo = correo.strip() or None
+
+        if correo and len(correo) > 150:
+            raise ValueError("El correo supera los 150 caracteres.")
+
+    if telefono is not None:
+        if not isinstance(telefono, str):
+            raise ValueError("El teléfono no es válido.")
+
+        telefono = telefono.strip() or None
+
+        if telefono and len(telefono) > 50:
+            raise ValueError("El teléfono supera los 50 caracteres.")
+
     conn = obtener_conexion()
-    cursor = conn.cursor()
+
     try:
-        cursor.execute(
-            "INSERT INTO clientes (nombre, correo, telefono) VALUES (%s, %s, %s) RETURNING id;",
-            (nombre, correo, telefono)
-        )
-        c_id = cursor.fetchone()['id']
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                INSERT INTO clientes (nombre, correo, telefono)
+                VALUES (%s, %s, %s)
+                RETURNING id;
+            """, (nombre, correo, telefono))
+
+            cliente_id = cursor.fetchone()["id"]
+
         conn.commit()
-        return c_id
+        return cliente_id
+
+    except Exception:
+        conn.rollback()
+        raise
+
     finally:
-        cursor.close()
         conn.close()
+
+
+def actualizar_cliente(cliente_id, nombre, correo=None, telefono=None):
+    _validar_entero_positivo(cliente_id, "cliente_id")
+    nombre = _validar_texto(nombre, "nombre", 150)
+
+    if correo is not None:
+        if not isinstance(correo, str):
+            raise ValueError("El correo no es válido.")
+
+        correo = correo.strip() or None
+
+        if correo and len(correo) > 150:
+            raise ValueError("El correo supera los 150 caracteres.")
+
+    if telefono is not None:
+        if not isinstance(telefono, str):
+            raise ValueError("El teléfono no es válido.")
+
+        telefono = telefono.strip() or None
+
+        if telefono and len(telefono) > 50:
+            raise ValueError("El teléfono supera los 50 caracteres.")
+
+    conn = obtener_conexion()
+
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                UPDATE clientes
+                SET nombre = %s,
+                    correo = %s,
+                    telefono = %s
+                WHERE id = %s;
+            """, (nombre, correo, telefono, cliente_id))
+
+            actualizado = cursor.rowcount > 0
+
+        conn.commit()
+        return actualizado
+
+    except Exception:
+        conn.rollback()
+        raise
+
+    finally:
+        conn.close()
+
 
 def eliminar_cliente(cliente_id):
+    _validar_entero_positivo(cliente_id, "cliente_id")
+
     conn = obtener_conexion()
-    cursor = conn.cursor()
+
     try:
-        cursor.execute("DELETE FROM clientes WHERE id = %s;", (cliente_id,))
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                DELETE FROM clientes
+                WHERE id = %s;
+            """, (cliente_id,))
+
+            eliminado = cursor.rowcount > 0
+
         conn.commit()
+        return eliminado
+
+    except Exception:
+        conn.rollback()
+        raise
+
     finally:
-        cursor.close()
         conn.close()
 
-# --- OPERACIONES VENTAS ---
+
+# =========================================================
+# REGISTRO DE VENTAS
+# =========================================================
 
 def registrar_venta(cliente_id, detalles):
     """
-    Registra una venta y sus detalles en una transacción atómica, 
-    descontando el stock del producto.
-    'detalles' es una lista de dicts: [{'producto_id': 1, 'cantidad': 2, 'precio_unitario': 8000.0}]
-    """
-    conn = obtener_conexion()
-    cursor = conn.cursor()
-    try:
-        total_venta = sum(item['cantidad'] * item['precio_unitario'] for item in detalles)
-        
-        # 1. Insertar Venta
-        cursor.execute(
-            "INSERT INTO ventas (cliente_id, total) VALUES (%s, %s) RETURNING id;",
-            (cliente_id, total_venta)
-        )
-        venta_id = cursor.fetchone()['id']
+    Registra una venta usando el precio actual de cada producto
+    consultado y bloqueado en PostgreSQL.
 
-        # 2. Insertar Detalle y Descontar Stock
-        for item in detalles:
-            cursor.execute(
-                "INSERT INTO detalle_ventas (venta_id, producto_id, cantidad, precio_unitario) VALUES (%s, %s, %s, %s);",
-                (venta_id, item['producto_id'], item['cantidad'], item['precio_unitario'])
+    Formato esperado:
+    [
+        {"producto_id": 1, "cantidad": 2}
+    ]
+
+    También acepta precio_unitario en los detalles para mantener
+    compatibilidad con el script de consola, pero no confía en
+    ese precio: usa el precio almacenado en la base de datos.
+    """
+
+    if cliente_id is not None:
+        _validar_entero_positivo(cliente_id, "cliente_id")
+
+    if not isinstance(detalles, list) or not detalles:
+        raise ValueError(
+            "La venta debe contener al menos un producto."
+        )
+
+    detalles_validados = []
+
+    for item in detalles:
+        if not isinstance(item, dict):
+            raise ValueError(
+                "Cada detalle de venta debe ser un diccionario."
             )
-            cursor.execute(
-                "UPDATE productos SET stock = stock - %s WHERE id = %s;",
-                (item['cantidad'], item['producto_id'])
-            )
+
+        producto_id = _validar_entero_positivo(
+            item.get("producto_id"), "producto_id"
+        )
+
+        cantidad = _validar_entero_positivo(
+            item.get("cantidad"), "cantidad"
+        )
+
+        detalles_validados.append({
+            "producto_id": producto_id,
+            "cantidad": cantidad
+        })
+
+    conn = obtener_conexion()
+
+    try:
+        with conn.cursor() as cursor:
+
+            if cliente_id is not None:
+                cursor.execute("""
+                    SELECT id
+                    FROM clientes
+                    WHERE id = %s;
+                """, (cliente_id,))
+
+                if cursor.fetchone() is None:
+                    raise ValueError("El cliente indicado no existe.")
+
+            # Combinar cantidades para validar correctamente
+            # cuando un producto aparece varias veces.
+            cantidades = {}
+
+            for item in detalles_validados:
+                pid = item["producto_id"]
+                cantidades[pid] = cantidades.get(pid, 0) + item["cantidad"]
+
+            productos = {}
+
+            # Bloquear los productos en orden para reducir
+            # el riesgo de interbloqueos entre ventas concurrentes.
+            for pid in sorted(cantidades):
+                cursor.execute("""
+                    SELECT id, nombre, precio, stock
+                    FROM productos
+                    WHERE id = %s
+                    FOR UPDATE;
+                """, (pid,))
+
+                producto = cursor.fetchone()
+
+                if producto is None:
+                    raise ValueError(f"No existe el producto {pid}.")
+
+                if producto["stock"] < cantidades[pid]:
+                    raise ValueError(
+                        f"Stock insuficiente para {producto['nombre']}. "
+                        f"Disponible: {producto['stock']}; "
+                        f"solicitado: {cantidades[pid]}."
+                    )
+
+                productos[pid] = producto
+
+            total = Decimal("0.00")
+            detalles_finales = []
+
+            for item in detalles_validados:
+                producto = productos[item["producto_id"]]
+                precio = _validar_precio(
+                    producto["precio"], "precio del producto"
+                )
+
+                subtotal = (
+                    precio * item["cantidad"]
+                ).quantize(Decimal("0.01"))
+
+                total += subtotal
+
+                detalles_finales.append({
+                    "producto_id": item["producto_id"],
+                    "cantidad": item["cantidad"],
+                    "precio_unitario": precio,
+                    "subtotal": subtotal
+                })
+
+            total = total.quantize(Decimal("0.01"))
+
+            if total >= Decimal("100000000"):
+                raise ValueError(
+                    "El total de la venta supera el máximo permitido."
+                )
+
+            cursor.execute("""
+                INSERT INTO ventas (cliente_id, total)
+                VALUES (%s, %s)
+                RETURNING id;
+            """, (cliente_id, total))
+
+            venta_id = cursor.fetchone()["id"]
+
+            for item in detalles_finales:
+                cursor.execute("""
+                    INSERT INTO detalle_ventas (
+                        venta_id,
+                        producto_id,
+                        cantidad,
+                        precio_unitario,
+                        subtotal
+                    )
+                    VALUES (%s, %s, %s, %s, %s);
+                """, (
+                    venta_id,
+                    item["producto_id"],
+                    item["cantidad"],
+                    item["precio_unitario"],
+                    item["subtotal"]
+                ))
+
+            for pid, cantidad in cantidades.items():
+                cursor.execute("""
+                    UPDATE productos
+                    SET stock = stock - %s
+                    WHERE id = %s;
+                """, (cantidad, pid))
 
         conn.commit()
         return venta_id
-    except Exception as e:
+
+    except Exception:
         conn.rollback()
-        raise e
+        raise
+
     finally:
-        cursor.close()
         conn.close()
+
+
+# =========================================================
+# DATOS DE VENTAS PARA INVENTARIO E IA
+# =========================================================
+
+def obtener_ventas_ultimos_30d(cursor, producto_id):
+    """Devuelve las unidades vendidas durante los últimos 30 días."""
+    _validar_entero_positivo(producto_id, "producto_id")
+
+    cursor.execute("""
+        SELECT COALESCE(SUM(dv.cantidad), 0) AS total_vendido
+        FROM detalle_ventas AS dv
+        INNER JOIN ventas AS v ON v.id = dv.venta_id
+        WHERE dv.producto_id = %s
+          AND v.fecha >= NOW() - INTERVAL '30 days';
+    """, (producto_id,))
+
+    return int(cursor.fetchone()["total_vendido"])
+
+
+def obtener_datos_inventario():
+    """Devuelve productos y ventas de los últimos 30 días."""
+    conn = obtener_conexion()
+
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    p.id,
+                    p.nombre,
+                    p.precio,
+                    p.stock,
+                    p.stock_minimo,
+                    p.categoria,
+                    COALESCE(
+                        SUM(dv.cantidad) FILTER (
+                            WHERE v.fecha >=
+                                NOW() - INTERVAL '30 days'
+                        ),
+                        0
+                    ) AS vendidos_30d
+                FROM productos AS p
+                LEFT JOIN detalle_ventas AS dv
+                    ON dv.producto_id = p.id
+                LEFT JOIN ventas AS v
+                    ON v.id = dv.venta_id
+                GROUP BY
+                    p.id, p.nombre, p.precio,
+                    p.stock, p.stock_minimo, p.categoria
+                ORDER BY p.id;
+            """)
+
+            filas = cursor.fetchall()
+
+            return [
+                {
+                    "id": p["id"],
+                    "nombre": p["nombre"],
+                    "precio": float(p["precio"]),
+                    "stock": p["stock"],
+                    "stock_minimo": p["stock_minimo"],
+                    "categoria": p["categoria"],
+                    "vendidos_30d": int(p["vendidos_30d"])
+                }
+                for p in filas
+            ]
+
+    finally:
+        conn.close()
+
+
+# =========================================================
+# DETALLES DE VENTAS PARA EL DASHBOARD
+# =========================================================
 
 def obtener_detalles_dashboard():
     conn = obtener_conexion()
-    cursor = conn.cursor()
-    try: 
-        cursor.execute("""
-            SELECT 
-                v.id AS id,
-                dv.id AS "detalleId",
-                TO_CHAR(v.fecha, 'DD/MM/YYYY') AS fecha,
-                dv.producto_id AS "productoId",
-                dv.cantidad AS cantidad,
-                (dv.cantidad * dv.precio_unitario) AS subtotal,
-                dv.precio_unitario AS "precioUnitario"
-            FROM ventas v 
-            JOIN detalle_ventas dv ON dv.venta_id = v.id 
-            ORDER BY v.fecha, v.id, dv.id;
-        """)
-        filas = cursor.fetchall()
-        return [{
-            "id": v["id"],
-            "detalleId": v["detalleId"],
-            "fecha": v["fecha"],
-            "productoId": v["productoId"],
-            "cantidad": v["cantidad"],
-            "subtotal": float(v["subtotal"]),
-            "precioUnitario": float(v["precioUnitario"])
-        } for v in filas]
-    finally: 
-        cursor.close()
+
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    v.id AS id,
+                    dv.id AS "detalleId",
+                    TO_CHAR(v.fecha, 'DD/MM/YYYY') AS fecha,
+                    dv.producto_id AS "productoId",
+                    dv.cantidad AS cantidad,
+                    dv.subtotal AS subtotal,
+                    dv.precio_unitario AS "precioUnitario"
+                FROM ventas AS v
+                INNER JOIN detalle_ventas AS dv
+                    ON dv.venta_id = v.id
+                ORDER BY v.fecha, v.id, dv.id;
+            """)
+
+            filas = cursor.fetchall()
+
+            return [
+                {
+                    "id": v["id"],
+                    "detalleId": v["detalleId"],
+                    "fecha": v["fecha"],
+                    "productoId": v["productoId"],
+                    "cantidad": v["cantidad"],
+                    "subtotal": float(v["subtotal"]),
+                    "precioUnitario": float(v["precioUnitario"])
+                }
+                for v in filas
+            ]
+
+    finally:
         conn.close()
