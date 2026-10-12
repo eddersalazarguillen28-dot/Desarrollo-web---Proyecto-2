@@ -47,6 +47,17 @@ def inicializar_bd():
         );
         """)
 
+        cursor.execute("""
+            ALTER TABLE clientes
+            ADD COLUMN IF NOT EXISTS direccion VARCHAR(255);
+        """)
+
+        cursor.execute("""
+            ALTER TABLE clientes
+            ADD COLUMN IF NOT EXISTS estado VARCHAR(20)
+            DEFAULT 'Activo'
+            """)
+
         # 4. Tabla Ventas
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS ventas (
@@ -87,9 +98,10 @@ def inicializar_bd():
         conn.commit()
         cursor.close()
         conn.close()
-        print("✅ Base de datos PostgreSQL inicializada correctamente.")
+        print("Base de datos PostgreSQL inicializada correctamente.")
     except Exception as e:
-        print("❌ Error al inicializar la base de datos:", e)
+        print("Error al inicializar la base de datos:", e)
+        raise
 
 # --- OPERACIONES PRODUCTOS ---
 
@@ -154,23 +166,31 @@ def obtener_clientes():
     conn = obtener_conexion()
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT * FROM clientes ORDER BY id;")
+        cursor.execute("""
+            SELECT id, nombre, telefono, correo, direccion, estado FROM clientes
+            ORDER BY id;
+            """)
         return cursor.fetchall()
     finally:
         cursor.close()
         conn.close()
 
-def agregar_cliente(nombre, correo, telefono):
+def agregar_cliente(nombre, telefono,  correo=None, direccion=None, estado="Activo"):
     conn = obtener_conexion()
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "INSERT INTO clientes (nombre, correo, telefono) VALUES (%s, %s, %s) RETURNING id;",
-            (nombre, correo, telefono)
+            "INSERT INTO clientes (nombre, telefono, correo, direccion, estado) VALUES (%s, %s, %s) RETURNING id;",
+            (nombre, telefono, correo or None, direccion, estado)
         )
-        c_id = cursor.fetchone()['id']
+        cliente_id = cursor.fetchone()['id']
         conn.commit()
-        return c_id
+        return cliente_id
+
+    except Exception:
+        conn.rollback()
+        raise
+
     finally:
         cursor.close()
         conn.close()

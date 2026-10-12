@@ -1,6 +1,7 @@
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from werkzeug.security import generate_password_hash, check_password_hash
 from google import genai
 
 # Importación directa desde la raíz del proyecto
@@ -23,41 +24,70 @@ def inicio():
         "message": "Servidor OCTO ERP corriendo correctamente en Render"
     })
 
-# ==========================================
-# RUTA DE INICIALIZACIÓN MANUAL
-# ==========================================
-
-@app.route('/api/init-db', methods=['POST', 'GET'])
-def inicializar_bd_manual():
-    try:
-        db.inicializar_bd()
-        return jsonify({"mensaje": "Base de datos inicializada y datos cargados con éxito"}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-# ==========================================
-# RUTAS DE AUTENTICACIÓN
-# ==========================================
-
 @app.route('/api/registro', methods=['POST'])
 def registro():
     datos = request.get_json() or {}
+
+    correo = str(datos.get('correo') or '').strip().lower()
+    password = str(datos.get('password') or '')
+
+    if not correo or not password:
+        return jsonify({
+            'status': "error",
+            "message": "Correo y contraseña obligatorios"
+        }), 400
+
     try:
         conn = db.obtener_conexion()
         cursor = conn.cursor()
-        query = "INSERT INTO usuarios (nombre, correo, password) VALUES (%s, %s, %s) RETURNING id;"
-        cursor.execute(query, (
-            datos.get('nombre'), 
-            datos.get('correo', '').strip().lower(), 
-            datos.get('password')
-        ))
-        usuario_id = cursor.fetchone()['id']
-        conn.commit()
+
+        cursor.execute("""
+            SELECT id, nombre, correo, rol, password
+            FROM usuarios
+            WHERE LOWER(correo) = %s;
+            """, (correo,))
+
+        usuario = cursor.fetchone()
+
         cursor.close()
         conn.close()
-        return jsonify({"status": "ok", "usuario_id": usuario_id}), 201
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 400
+
+        if not usuario:
+            return jsonify({
+                "status": "error",
+                "message": "Credenciales incorrectas"
+            }), 401
+
+        password_guardada = usuario["password"]
+
+        if not password_guardada.startswith("scrypt:") and not password_guardada("pbkdf2"):
+            return jsonify({
+                "status": "error",
+                "message": "La cuenta requiere restablecer su contraseña"
+            }), 401
+        
+        if not check_password_hash(password_guardada, password):
+            return jsonify({
+                "status": "error",
+                "message": "Credenciales incorrectas"
+            }), 401
+
+        return jsonify({
+            "status": "ok",
+            "usuario": {
+                "id": usuario["id"],
+                "nomnre": usuario["nombre"],
+                "correo": usuario["correo"],
+                "rol": usuario["rol"]
+            }
+        }), 200
+    except Exception:
+        app.logger.exception("Error en login")
+        return jsonify({
+            "status": "error",
+            "message": "Error al iniciar sesión"
+        }), 500
+        
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -80,9 +110,7 @@ def login():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# ==========================================
-# RUTAS DE PRODUCTOS (CRUD)
-# ==========================================
+
 
 @app.route('/api/productos', methods=['GET'])
 def listar_productos():
@@ -117,9 +145,57 @@ def borrar_producto(p_id):
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# ==========================================
-# RUTAS DE DASHBOARD Y VENTAS
-# ==========================================
+@app.route('/api/clientes', methods=['GET'])
+def listar_clientes():
+    try:
+        clientes = db.obtener_clientes()
+
+        return jsonify({
+            "status": "ok",
+            "clientes": clientes
+        }), 200
+    
+    except Exception:
+        app.logger.exception("Error al cargar clientes")
+        return jsonify({
+            "status": "error",
+            "message": "No se pudieron cargar los clientes"
+        }), 500
+
+@app.route('/api/clientes', methods=['POST'])
+def crear_cliente():
+    datos = request.get_json() or {}
+
+    nombre = str(datos.get('nombre') or '').strip()
+    telefono = str(datos.get('telefono') or '').strip()
+
+    if not nombre or not telefono:
+        return jsonify({
+            "status": "error",
+            "message": "Nombre y telefono son obligatorios"
+        }), 400
+
+    try:
+        cliente_id = db.agregar_cliente(
+            nombre,
+            telefono,
+            datos.get('correo'),
+            datos.get('direccion'),
+            datos.get('estado', "Activo")
+        )
+
+        return jsonify({
+            "status": "ok",
+            "cliente_id": cliente_id
+        }), 201
+
+    except Exception:
+        app.logger.exception("Error al registrar cliente")
+        return jsonify({
+            "status": "error",
+            "message": "No se pudo registrar el cliente"
+        }),500
+
 
 @app.route('/api/dashboard', methods=['GET'])
 def obtener_dashboard():
@@ -146,9 +222,7 @@ def crear_venta():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 400
 
-# ==========================================
-# RUTAS DEL ASISTENTE DE VENTAS (IA)
-# ==========================================
+
 
 @app.route('/chat', methods=['POST'])
 def chat_asistente():
