@@ -125,19 +125,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Utiliza la URL almacenada en la base de datos.
             // Si no hay imagen, muestra el logo.
-            imagen.src = prod.imagen_url || IMAGEN_POR_DEFECTO;
-            imagen.alt = prod.nombre || "Producto";
-            imagen.loading = "lazy";
-            imagen.style.cssText =
-                "width: 90px; height: 90px; object-fit: contain; border-radius: 8px; background-color: #f8f9fa; display: block; margin: auto;";
-                
-            // Si la imagen falla, se intenta mostrar el logo una vez.
-            imagen.addEventListener("error", () => {
-                if (imagen.dataset.fallback !== "true") {
-                    imagen.dataset.fallback = "true";
-                    imagen.src = IMAGEN_POR_DEFECTO;
-                }
-            });
+           imagen.src = prod.imagen_url || IMAGEN_POR_DEFECTO;
+imagen.alt = prod.nombre || "Producto";
+imagen.loading = "lazy";
+imagen.decoding = "async";
+
+imagen.style.cssText = `
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    margin: auto;
+    padding: 6px;
+    box-sizing: border-box;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+`;
+
+// Efecto al pasar el cursor.
+imagen.addEventListener("mouseenter", () => {
+    imagen.style.transform = "scale(1.06)";
+    imagen.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.14)";
+});
+
+imagen.addEventListener("mouseleave", () => {
+    imagen.style.transform = "scale(1)";
+    imagen.style.boxShadow = "0 2px 6px rgba(0, 0, 0, 0.08)";
+});
+
+// Si la imagen falla, se muestra el logo una sola vez.
+imagen.addEventListener("error", () => {
+    if (imagen.dataset.fallback !== "true") {
+        imagen.dataset.fallback = "true";
+        imagen.src = IMAGEN_POR_DEFECTO;
+    }
+});
 
             contenedorImagen.appendChild(imagen);
             imagenTd.appendChild(contenedorImagen);
