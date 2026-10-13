@@ -84,3 +84,48 @@ if __name__ == "__main__":
             f"Mínimo: {producto['stock_minimo']} | "
             f"Vendidos 30 días: {producto['vendidos_30d']}"
         )
+
+# db_reader.py
+
+from backend.db_manager import obtener_conexion
+
+
+def obtener_datos_ia():
+    """Obtiene productos y ventas recientes desde PostgreSQL."""
+
+    conn = obtener_conexion()
+
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    p.id,
+                    p.nombre,
+                    p.categoria,
+                    p.stock AS stock_actual,
+                    p.stock_minimo,
+                    COALESCE(
+                        SUM(dv.cantidad) FILTER (
+                            WHERE v.fecha >= CURRENT_TIMESTAMP
+                                - INTERVAL '30 days'
+                        ),
+                        0
+                    ) AS vendidos_30d
+                FROM productos p
+                LEFT JOIN detalle_ventas dv
+                    ON dv.producto_id = p.id
+                LEFT JOIN ventas v
+                    ON v.id = dv.venta_id
+                GROUP BY
+                    p.id,
+                    p.nombre,
+                    p.categoria,
+                    p.stock,
+                    p.stock_minimo
+                ORDER BY p.nombre;
+            """)
+
+            return [dict(fila) for fila in cursor.fetchall()]
+
+    finally:
+        conn.close()
