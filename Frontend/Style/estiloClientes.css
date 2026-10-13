@@ -255,7 +255,7 @@ body{
 
 }
 
-.btn-nuevoCliente, btn-guardar{
+.btn-nuevoCliente, .btn-guardar{
     background: linear-gradient(900deg,#6056f4,#7669ff);
     color: white;
     border: none;
