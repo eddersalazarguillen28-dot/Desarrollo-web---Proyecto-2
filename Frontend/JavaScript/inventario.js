@@ -129,8 +129,8 @@ document.addEventListener("DOMContentLoaded", () => {
             imagen.alt = prod.nombre || "Producto";
             imagen.loading = "lazy";
             imagen.style.cssText =
-                "width:50px;height:50px;object-fit:contain;border-radius:6px";
-
+                "width: 90px; height: 90px; object-fit: contain; border-radius: 8px; background-color: #f8f9fa; display: block; margin: auto;";
+                
             // Si la imagen falla, se intenta mostrar el logo una vez.
             imagen.addEventListener("error", () => {
                 if (imagen.dataset.fallback !== "true") {
