@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="../Imagenes/Logo.png">
+    <link rel="icon" type="image/png" href="../Imagenes/logoVentana.jpeg">
     <link rel="stylesheet" href="../Style/estiloProductos.css">
     <link rel="stylesheet" href="../Style/global.css">
     <title>Productos</title>
@@ -16,81 +16,40 @@
         <main class="main">
             <section class="seccion-productos">
                 <div class="contenedorTitulo">
-                    <h2>Catalogo</h2>
+                    <h2>Productos</h2>
                 </div>
 
                 <!--Buscador-->
                 <div class="contenedor-buscador">
-                    <input type="text" placeholder="Buscar producto">
+                    <input type="text" id="buscador-productos" placeholder="Buscar producto...">
                 </div>
 
-                <!--cards-->
-                <div class="grid-productos">
-
-                    <!-- Card Producto 1 -->
-                    <div class="producto-card" onclick="abrirModal('Laptop', 'Electrónica', '₡999', 'Laptop de alta gama ideal para trabajo y diseño. Cuenta con 16GB de memoria RAM, disco de estado sólido de 512GB y procesador de última generación.', '../Imagenes/laptop.png')">
-                        <img src="../Imagenes/laptop.png" alt="Laptop" class="card-img">
-                        <h3 class="card-titulo">Laptop</h3>
-                        <span class="card-categoria">Electrónica</span>
-                        <p class="card-precio">₡999</p>
-                    </div>
-                    <!-- Card Producto 2 -->
-                    <div class="producto-card" onclick="abrirModal('Mouse Inalámbrico', 'Accesorios', '₡25', 'Mouse ergonómico con conexión Bluetooth de baja latencia. Batería recargable con duración de hasta 30 días continuos.', '../Imagenes/mouse.png')">
-                        <img src="../Imagenes/mouse.png" alt="Mouse" class="card-img">
-                        <h3 class="card-titulo">Mouse Inalámbrico</h3>
-                        <span class="card-categoria">Accesorios</span>
-                        <p class="card-precio">₡25</p>
-                    </div>
-
-                    <!-- Card Producto 3 -->
-                    <div class="producto-card" onclick="abrirModal('Teclado Mecánico', 'Accesorios', '₡75', 'Teclado con switches mecánicos para mejor respuesta táctil y luces RGB configurables. Formato compacto.', '../Imagenes/teclado.png')">
-                        <img src="../Imagenes/teclado.png" alt="Teclado" class="card-img">
-                        <h3 class="card-titulo">Teclado Mecánico</h3>
-                        <span class="card-categoria">Accesorios</span>
-                        <p class="card-precio">₡75</p>
-                    </div>
-
-                    <!-- Card Producto 4 -->
-                    <div class="producto-card" onclick="abrirModal('Monitor 24 pulgadas', 'Electrónica', '₡199', 'Monitor Full HD de 24 pulgadas con tasa de refresco de 144Hz y panel IPS para colores más vivos.', '../Imagenes/monitor.png')">
-                        <img src="../Imagenes/monitor.png" alt="Monitor" class="card-img">
-                        <h3 class="card-titulo">Monitor 24"</h3>
-                        <span class="card-categoria">Electrónica</span>
-                        <p class="card-precio">₡199</p>
-                    </div>
-
-                    <!-- Card Producto 5 -->
-                    <div class="producto-card" onclick="abrirModal('Silla Gamer', 'Muebles', '₡149', 'Silla ergonómica para largas sesiones de juego o trabajo. Respaldo reclinable, soporte lumbar y cervical ajustables.', '../Imagenes/sillaGamer.png')">
-                        <img src="../Imagenes/sillaGamer.png" alt="Silla Gamer" class="card-img">
-                        <h3 class="card-titulo">Silla Gamer</h3>
-                        <span class="card-categoria">Muebles</span>
-                        <p class="card-precio">₡149</p>
-                    </div>
+                <!-- Contenedor dinámico de Cards -->
+                <div class="grid-productos" id="grid-productos">
+                    <!-- Las tarjetas se insertarán aquí con JavaScript -->
                 </div>
-                
 
                 <!--Pie de tabla-->
                 <div class="footer-tabla">
-                    <span>Mostrando 1-5 de 5 productos</span>
+                    <span id="contador-productos">Cargando productos...</span>
 
                     <div class="btnPaginas">
-                        <button><</button>
+                        <button>&lt;</button>
                         <button>1</button>
-                        <button>></button>
+                        <button>&gt;</button>
                     </div>
-
                 </div>
-
             </section>
         </main>
     </div>
 
-    <!--Pie de pagina de producto-->
+    <!--Pie de pagina de producto (Modal)-->
     <div id="modal-producto" class="modal-overlay">
         <div class="modal-content">
             <span class="cerrar-modal" onclick="cerrarModal()">✕</span>
 
             <div class="modal-header">
-                <img id="modal-img" src="" alt="Producto" class="modal-imagen">
+                <img id="modal-img" src="" alt="Producto" class="modal-imagen" style="object-fit: contain;">
                 <h2 id="modal-titulo">Nombre</h2>
                 <span id="modal-categoria" class="modal-categoria-badge">Categoría</span>
             </div>
@@ -107,11 +66,11 @@
         </div>
     </div>
 
+    <!-- Botón y Ventana de Chat -->
     <button id="btn-abrir-chat" class="chat-trigger">
       <img src="../Imagenes/octopus1.png" alt="Chat" style="width:30px;">
     </button>
 
-    <!-- Ventana del Asistente -->
     <div id="ventana-chat" class="chat-window oculta">
       <div class="chat-header">
         <div class="header-perfil">
@@ -138,33 +97,9 @@
       </div>
     </div>
 
+    <!-- Vinculación de scripts -->
     <script src="../JavaScript/layout.js"></script>
     <script src="../JavaScript/chat.js"></script> 
-    <script>
-        // Función para abrir la ventana modal y llenar los datos
-        function abrirModal(titulo, categoria, precio, descripcion, imagen) {
-            document.getElementById('modal-titulo').innerText = titulo;
-            document.getElementById('modal-categoria').innerText = categoria;
-            document.getElementById('modal-precio').innerText = precio;
-            document.getElementById('modal-desc').innerText = descripcion;
-            document.getElementById('modal-img').src = imagen;
-
-            // Muestra el modal añadiendo la clase "activo"
-            document.getElementById('modal-producto').classList.add('activo');
-        }
-
-        // Función para cerrar la ventana modal
-        function cerrarModal() {
-            document.getElementById('modal-producto').classList.remove('activo');
-        }
-
-        // Opcional: Cerrar el modal al hacer clic en el fondo oscuro
-        window.onclick = function(event) {
-            const modal = document.getElementById('modal-producto');
-            if (event.target == modal) {
-                cerrarModal();
-            }
-        }
-    </script>
+    <script src="../JavaScript/productos.js"></script>
 </body>
 </html>
