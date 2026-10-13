@@ -98,113 +98,239 @@ document.addEventListener("DOMContentLoaded", () => {
     // MOSTRAR PRODUCTOS Y SUS IMÁGENES
     // =====================================================
 
-    function renderizarTabla() {
-        if (!tbody) return;
+  function renderizarTabla() {
+    if (!tbody) return;
 
-        tbody.innerHTML = "";
+    tbody.innerHTML = "";
 
-        if (inventario.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="6">No hay productos registrados.</td>
-                </tr>`;
+    if (inventario.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6">No hay productos registrados.</td>
+            </tr>`;
+        
+        if (contador) {
+            contador.textContent = "No hay productos en inventario";
         }
+        return;
+    }
 
-        inventario.forEach((prod) => {
-            const tr = document.createElement("tr");
-            const stock = Number(prod.stock) || 0;
-            const claseStock = stock > 10 ? "good" : "low";
+    inventario.forEach((prod) => {
+        const tr = document.createElement("tr");
+        const stock = Number(prod.stock) || 0;
+        const claseStock = stock > 10 ? "good" : "low";
 
-            // Columna de imagen
-            const imagenTd = document.createElement("td");
-            const contenedorImagen = document.createElement("div");
+        // Columna de imagen
+        const imagenTd = document.createElement("td");
+        const contenedorImagen = document.createElement("div");
+        contenedorImagen.className = "imagen-producto";
 
-            contenedorImagen.className = "imagen-producto";
+        const imagen = document.createElement("img");
+        imagen.src = prod.imagen_url || IMAGEN_POR_DEFECTO;
+        imagen.alt = prod.nombre || "Producto";
+        imagen.loading = "lazy";
+        imagen.decoding = "async";
+        imagen.style.cssText = `
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            object-position: center;
+            display: block;
+            margin: auto;
+            padding: 6px;
+            box-sizing: border-box;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: zoom-in;
+        `;
 
-            const imagen = document.createElement("img");
+        imagen.title = "Haz clic para ampliar";
 
-            // Utiliza la URL almacenada en la base de datos.
-            // Si no hay imagen, muestra el logo.
-            imagen.src = prod.imagen_url || IMAGEN_POR_DEFECTO;
-            imagen.alt = prod.nombre || "Producto";
-            imagen.loading = "lazy";
-            imagen.style.cssText =
-                "width:50px;height:50px;object-fit:contain;border-radius:6px";
-
-            // Si la imagen falla, se intenta mostrar el logo una vez.
-            imagen.addEventListener("error", () => {
-                if (imagen.dataset.fallback !== "true") {
-                    imagen.dataset.fallback = "true";
-                    imagen.src = IMAGEN_POR_DEFECTO;
-                }
-            });
-
-            contenedorImagen.appendChild(imagen);
-            imagenTd.appendChild(contenedorImagen);
-            tr.appendChild(imagenTd);
-
-            function crearCelda(valor) {
-                const td = document.createElement("td");
-                td.textContent = valor ?? "";
-                return td;
-            }
-
-            // Nombre
-            const nombreTd = crearCelda("");
-            const nombreStrong = document.createElement("strong");
-
-            nombreStrong.textContent = prod.nombre || "";
-            nombreTd.appendChild(nombreStrong);
-            tr.appendChild(nombreTd);
-
-            // Categoría
-            tr.appendChild(crearCelda(prod.categoria || "General"));
-
-            // La base de datos actual no tiene una columna SKU.
-            tr.appendChild(crearCelda(`#PROD-${prod.id}`));
-
-            // Stock
-            const stockTd = document.createElement("td");
-            const stockSpan = document.createElement("span");
-
-            stockSpan.className = `stock ${claseStock}`;
-            stockSpan.textContent = stock;
-
-            stockTd.appendChild(stockSpan);
-            tr.appendChild(stockTd);
-
-            // Acciones
-            const accionesTd = document.createElement("td");
-            const acciones = document.createElement("div");
-
-            acciones.className = "actions";
-
-            const btnEditar = document.createElement("button");
-            btnEditar.className = "edit";
-            btnEditar.dataset.id = prod.id;
-            btnEditar.textContent = "Ajustar";
-            btnEditar.style.cssText =
-                "padding:5px 10px;cursor:pointer;background:#eef0ff;color:#7367f0;border:0;border-radius:4px";
-
-            const btnEliminar = document.createElement("button");
-            btnEliminar.className = "delete";
-            btnEliminar.dataset.id = prod.id;
-            btnEliminar.textContent = "Baja";
-            btnEliminar.style.cssText =
-                "padding:5px 10px;cursor:pointer;background:#ffebeb;color:#dc3545;border:0;border-radius:4px;margin-left:5px";
-
-            acciones.append(btnEditar, btnEliminar);
-            accionesTd.appendChild(acciones);
-            tr.appendChild(accionesTd);
-
-            tbody.appendChild(tr);
+        // Efecto al pasar el cursor
+        imagen.addEventListener("mouseenter", () => {
+            imagen.style.transform = "scale(1.06)";
+            imagen.style.boxShadow =
+                "0 4px 12px rgba(0, 0, 0, 0.14)";
         });
 
-        if (contador) {
-            contador.textContent =
-                `Mostrando ${inventario.length} artículos en inventario`;
+        imagen.addEventListener("mouseleave", () => {
+            imagen.style.transform = "scale(1)";
+            imagen.style.boxShadow =
+                "0 2px 6px rgba(0, 0, 0, 0.08)";
+        });
+
+        // Imagen de respaldo, solo una vez
+        imagen.addEventListener("error", () => {
+            if (imagen.dataset.fallback !== "true") {
+                imagen.dataset.fallback = "true";
+                imagen.src = IMAGEN_POR_DEFECTO;
+            }
+        });
+
+        // Ampliar imagen al hacer clic
+        imagen.addEventListener("click", () => {
+            let visor = document.getElementById(
+                "visor-imagen-producto"
+            );
+
+            if (!visor) {
+                visor = document.createElement("div");
+                visor.id = "visor-imagen-producto";
+
+                visor.style.cssText = `
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(0, 0, 0, 0.85);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 20px;
+                    box-sizing: border-box;
+                    z-index: 99999;
+                    cursor: zoom-out;
+                    backdrop-filter: blur(4px);
+                `;
+
+                const grande = document.createElement("img");
+                grande.id = "imagen-ampliada-producto";
+                grande.style.cssText = `
+                    max-width: 90vw;
+                    max-height: 85vh;
+                    object-fit: contain;
+                    border-radius: 14px;
+                    background: white;
+                    padding: 10px;
+                    box-sizing: border-box;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+                    cursor: default;
+                `;
+
+                const cerrar = document.createElement("button");
+                cerrar.type = "button";
+                cerrar.textContent = "×";
+                cerrar.setAttribute(
+                    "aria-label",
+                    "Cerrar imagen ampliada"
+                );
+                cerrar.style.cssText = `
+                    position: absolute;
+                    top: 20px;
+                    right: 25px;
+                    width: 44px;
+                    height: 44px;
+                    border: none;
+                    border-radius: 50%;
+                    background: white;
+                    color: #222;
+                    font-size: 28px;
+                    cursor: pointer;
+                `;
+
+                cerrar.addEventListener("click", () => {
+                    visor.remove();
+                });
+
+                visor.addEventListener("click", (e) => {
+                    if (e.target === visor) {
+                        visor.remove();
+                    }
+                });
+
+                visor.append(grande, cerrar);
+                document.body.appendChild(visor);
+            }
+
+            const grande = document.getElementById(
+                "imagen-ampliada-producto"
+            );
+
+            grande.src = imagen.src;
+            grande.alt = imagen.alt;
+        });
+
+        // Agregar imagen una sola vez
+        contenedorImagen.appendChild(imagen);
+        imagenTd.appendChild(contenedorImagen);
+        tr.appendChild(imagenTd);
+
+        // Función para crear celdas
+        function crearCelda(valor) {
+            const td = document.createElement("td");
+            td.textContent = valor ?? "";
+            return td;
         }
+
+        // Nombre
+        const nombreTd = crearCelda("");
+        const nombreStrong = document.createElement("strong");
+        nombreStrong.textContent = prod.nombre || "";
+        nombreTd.appendChild(nombreStrong);
+        tr.appendChild(nombreTd);
+
+        // Categoría
+        tr.appendChild(
+            crearCelda(prod.categoria || "General")
+        );
+
+        // Identificador del producto
+        tr.appendChild(crearCelda(`#PROD-${prod.id}`));
+
+        // Stock
+        const stockTd = document.createElement("td");
+        const stockSpan = document.createElement("span");
+        stockSpan.className = `stock ${claseStock}`;
+        stockSpan.textContent = stock;
+        stockTd.appendChild(stockSpan);
+        tr.appendChild(stockTd);
+
+        // Acciones
+        const accionesTd = document.createElement("td");
+        const acciones = document.createElement("div");
+        acciones.className = "actions";
+
+        const btnEditar = document.createElement("button");
+        btnEditar.className = "edit";
+        btnEditar.dataset.id = prod.id;
+        btnEditar.textContent = "Ajustar";
+        btnEditar.style.cssText = `
+            padding: 5px 10px;
+            cursor: pointer;
+            background: #eef0ff;
+            color: #7367f0;
+            border: 0;
+            border-radius: 4px;
+        `;
+
+        const btnEliminar = document.createElement("button");
+        btnEliminar.className = "delete";
+        btnEliminar.dataset.id = prod.id;
+        btnEliminar.textContent = "Baja";
+        btnEliminar.style.cssText = `
+            padding: 5px 10px;
+            cursor: pointer;
+            background: #ffebeb;
+            color: #dc3545;
+            border: 0;
+            border-radius: 4px;
+            margin-left: 5px;
+        `;
+
+        acciones.append(btnEditar, btnEliminar);
+        accionesTd.appendChild(acciones);
+        tr.appendChild(accionesTd);
+
+        tbody.appendChild(tr);
+    });
+
+    // Contador
+    if (contador) {
+        contador.textContent =
+            `Mostrando ${inventario.length} artículos en inventario`;
     }
+}
 
     // =====================================================
     // CONTROLES DEL MODAL
@@ -428,10 +554,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     });
-    <img src="${imagen}" width="40" height="40"></img>
-    // =====================================================
-    // CARGAR INVENTARIO AL ABRIR LA PÁGINA
-    // =====================================================
+    
+   
 
     cargarInventario();
 });

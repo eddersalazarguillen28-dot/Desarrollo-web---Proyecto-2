@@ -12,7 +12,7 @@ def chat():
     datos_peticion = request.json
     mensaje_usuario = datos_peticion.get("mensaje", "")
 
-    # 1. Obtener y analizar datos frescos de MariaDB
+    # 1. Obtener y analizar datos frescos
     productos_crudos = obtener_datos_ia()
     if not productos_crudos:
         return jsonify({"respuesta": "No pude conectar a la base de datos o está vacía."})
