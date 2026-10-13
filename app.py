@@ -11,6 +11,8 @@ CORS(app, resources={r"/*": {"origins": [
     "https://eddersalazarguillen28-dot.github.io",
     "http://localhost:5500",
     "http://127.0.0.1:5500",
+    "http://localhost:5501",
+    "http://127.0.0.1:5501",
 ]}})
 
 # Inicializar el esquema al arrancar; si falla, registrar el error.
