@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="../Imagenes/logoLinea.png">
+    <link rel="icon" type="image/png" href="../Imagenes/Logo.png">
     <link rel="stylesheet" href="../Style/global.css">
     <link rel="stylesheet" href="../Style/estiloProductos.css">
     <title>Inventario</title>
@@ -16,14 +16,14 @@
         <main class="main">
             <section class="seccion-productos">
                 <div class="contenedorTitulo">
-                    <button class="btnNuevoProducto">
+                    <button class="btnNuevoProducto" id="btn-abrir-modal">
                         <span>+</span> Ingresar Stock
                     </button>
                 </div>
 
                 <!-- Buscador -->
                 <div class="contenedor-buscador">
-                    <input type="text" placeholder="Buscar por nombre, SKU o categoría...">
+                    <input type="text" id="buscador-inventario" placeholder="Buscar por nombre, SKU o categoría...">
                 </div>
 
                 <!-- Tabla de Inventario -->
@@ -39,114 +39,87 @@
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Producto 1 -->
-                            <tr>
-                                <td>
-                                    <div class="imagen-producto">
-                                        <img src="../Imagenes/laptop.png" alt="Laptop" class="imagen-producto">
-                                    </div>
-                                </td>
-                                <td><strong>Laptop Dell XPS</strong></td>
-                                <td>Electrónica</td>
-                                <td>#ELC-1001</td>
-                                <td><span class="stock good">15</span></td>
-                                <td>
-                                    <div class="actions">
-                                        <button class="edit">Ajustar</button>
-                                        <button class="delete">Baja</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Producto 2 -->
-                            <tr>
-                                <td>
-                                    <div class="imagen-producto">
-                                        <img src="../Imagenes/mouse.png" alt="Mouse" class="imagen-producto">
-                                    </div>
-                                </td>
-                                <td><strong>Mouse inalámbrico Logitech</strong></td>
-                                <td>Accesorios</td>
-                                <td>#ACC-2045</td>
-                                <td><span class="stock good">50</span></td>
-                                <td>
-                                    <div class="actions">
-                                        <button class="edit">Ajustar</button>
-                                        <button class="delete">Baja</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Producto 3 -->
-                            <tr>
-                                <td>
-                                    <div class="imagen-producto">
-                                        <img src="../Imagenes/teclado.png" alt="Teclado" class="imagen-producto">
-                                    </div>
-                                </td>
-                                <td><strong>Teclado Mecánico</strong></td>
-                                <td>Accesorios</td>
-                                <td>#ACC-2088</td>
-                                <td><span class="stock good">28</span></td>
-                                <td>
-                                    <div class="actions">
-                                        <button class="edit">Ajustar</button>
-                                        <button class="delete">Baja</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Producto 4 (Stock Bajo) -->
-                            <tr>
-                                <td>
-                                    <div class="imagen-producto">
-                                        <img src="../Imagenes/monitor.png" alt="Monitor" class="imagen-producto">
-                                    </div>
-                                </td>
-                                <td><strong>Monitor LG 24"</strong></td>
-                                <td>Electrónica</td>
-                                <td>#ELC-1090</td>
-                                <td><span class="stock low">8</span></td>
-                                <td>
-                                    <div class="actions">
-                                        <button class="edit">Ajustar</button>
-                                        <button class="delete">Baja</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Producto 5 -->
-                            <tr>
-                                <td>
-                                    <div class="imagen-producto">
-                                        <img src="../Imagenes/sillaGamer.png" alt="Silla Gamer" class="imagen-producto">
-                                    </div>
-                                </td>
-                                <td><strong>Silla Gamer Corsair</strong></td>
-                                <td>Muebles</td>
-                                <td>#MUE-5002</td>
-                                <td><span class="stock good">12</span></td>
-                                <td>
-                                    <div class="actions">
-                                        <button class="edit">Ajustar</button>
-                                        <button class="delete">Baja</button>
-                                    </div>
-                                </td>
-                            </tr>
+                        <tbody id="cuerpo-inventario">
                         </tbody>
                     </table>
                 </div>
 
                 <!-- Pie de tabla -->
                 <div class="footer-tabla">
-                    <span>Mostrando 1-5 de 120 artículos en inventario</span>
+                    <span id="contador-inventario">Cargando inventario...</span>
                     <div class="btnPaginas">
                         <button><</button>
                         <button>1</button>
-                        <button>2</button>
-                        <button>3</button>
                         <button>></button>
                     </div>
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- MODAL PARA INGRESAR NUEVO PRODUCTO / STOCK -->
+    <div id="modal-nuevo-producto" class="modal-overlay">
+        <div class="modal-content panel-full-width" style="max-width: 550px; padding: 30px; box-sizing: border-box;">
+            <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h2 style="margin: 0; color: #171d33;">Ingresar Nuevo Producto</h2>
+                    <p style="margin: 5px 0 0 0; color: #4a5568; font-size: 14px;">Añade un nuevo producto con imagen y descripción</p>
+                </div>
+                <span class="cerrar-modal" id="btn-cerrar-modal" style="cursor: pointer; font-size: 20px; font-weight: bold; color: #171d33;">✕</span>
+            </div>
+
+            <form id="form-nuevo-producto" style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+                
+                <div class="form-campo" style="display: flex; flex-direction: column; gap: 5px;">
+                    <label for="nombreProd" style="font-size: 14px; font-weight: 600;">Nombre del Artículo</label>
+                    <input type="text" id="nombreProd" style="padding: 10px; border: 1px solid #dcdfe6; border-radius: 6px; box-sizing: border-box; width: 100%;" required>
+                </div>
+                
+                <div class="form-campo" style="display: flex; flex-direction: column; gap: 5px;">
+                    <label for="descProd" style="font-size: 14px; font-weight: 600;">Descripción del Producto</label>
+                    <textarea id="descProd" rows="3" placeholder="Ej: Laptop de alta gama con 16GB RAM..." style="padding: 10px; border: 1px solid #dcdfe6; border-radius: 6px; box-sizing: border-box; width: 100%; resize: vertical;" required></textarea>
+                </div>
+
+                <!-- Fila de Categoría y SKU -->
+                <div style="display: flex; gap: 15px; width: 100%;">
+                    <div class="form-campo" style="display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0;">
+                        <label for="categoriaProd" style="font-size: 14px; font-weight: 600;">Categoría</label>
+                        <select id="categoriaProd" style="padding: 10px; border: 1px solid #dcdfe6; border-radius: 6px; box-sizing: border-box; width: 100%;" required>
+                            <option value="Electrónica">Electrónica</option>
+                            <option value="Accesorios">Accesorios</option>
+                            <option value="Muebles">Muebles</option>
+                        </select>
+                    </div>
+                    <div class="form-campo" style="display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0;">
+                        <label for="skuProd" style="font-size: 14px; font-weight: 600;">Código (SKU)</label>
+                        <input type="text" id="skuProd" placeholder="Ej: #ELC-1099" style="padding: 10px; border: 1px solid #dcdfe6; border-radius: 6px; box-sizing: border-box; width: 100%;" required>
+                    </div>
+                </div>
+
+                <!-- Fila de Stock y Precio -->
+                <div style="display: flex; gap: 15px; width: 100%;">
+                    <div class="form-campo" style="display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0;">
+                        <label for="stockProd" style="font-size: 14px; font-weight: 600;">Stock Inicial</label>
+                        <input type="number" id="stockProd" min="1" style="padding: 10px; border: 1px solid #dcdfe6; border-radius: 6px; box-sizing: border-box; width: 100%;" required>
+                    </div>
+                    <div class="form-campo" style="display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0;">
+                        <label for="precioProd" style="font-size: 14px; font-weight: 600;">Precio de Venta (₡)</label>
+                        <input type="number" id="precioProd" min="1" placeholder="Ej: 25000" style="padding: 10px; border: 1px solid #dcdfe6; border-radius: 6px; box-sizing: border-box; width: 100%;" required>
+                    </div>
+                </div>
+
+                <!-- Subir Imagen -->
+                <div class="form-campo" style="display: flex; flex-direction: column; gap: 5px;">
+                    <label for="imagenProd" style="font-size: 14px; font-weight: 600;">Subir Imagen (Opcional)</label>
+                    <input type="file" id="imagenProd" accept="image/*" style="padding: 8px; border: 1px dashed #7367f0; border-radius: 6px; box-sizing: border-box; width: 100%; background-color: #f0efff; cursor: pointer; color: #4a5568; font-size: 13px;">
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button type="submit" class="btn-guardar" style="background: #7367f0; color: white; border: none; padding: 12px; border-radius: 8px; flex: 1; cursor: pointer; font-weight: bold;">Guardar Producto</button>
+                    <button type="button" id="btn-cancelar-modal" style="background: #f4f6fa; color: #171d33; border: 1px solid #dcdfe6; padding: 12px; border-radius: 8px; flex: 1; cursor: pointer; font-weight: bold;">Cancelar</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- Botón Flotante del Chat -->
@@ -179,7 +152,7 @@
             <button id="btn-enviar-chat" class="btn-enviar">➤</button>
         </div>
     </div>
-
+    <script src="../JavaScript/inventario.js"></script>
     <script src="../JavaScript/layout.js"></script>
     <script src="../JavaScript/chat.js"></script>
 </body>
