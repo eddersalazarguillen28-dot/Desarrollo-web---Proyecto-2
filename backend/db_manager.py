@@ -5,6 +5,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 
+
 # =========================================================
 # CONEXIÓN A POSTGRESQL (RENDER)
 # =========================================================
@@ -259,11 +260,11 @@ def _validar_texto(valor, campo, longitud_maxima):
 # =========================================================
 
 def obtener_productos():
-    """Devuelve productos incluyendo la URL de su imagen."""
+    """Devuelve los productos con su URL de imagen."""
     conn = obtener_conexion()
 
     try:
-        with conn.cursor() as cursor:
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
             cursor.execute("""
                 SELECT
                     id,
@@ -283,9 +284,9 @@ def obtener_productos():
                 {
                     "id": p["id"],
                     "nombre": p["nombre"],
-                    "precio": float(p["precio"]),
+                    "precio": float(p["precio"] or 0),
                     "stock": p["stock"],
-                    "categoria": p["categoria"],
+                    "categoria": p["categoria"] or "General",
                     "stock_minimo": p["stock_minimo"],
                     "stockMinimo": p["stock_minimo"],
                     "imagen_url": p["imagen_url"]
@@ -295,7 +296,6 @@ def obtener_productos():
 
     finally:
         conn.close()
-
 
 def agregar_producto(
     nombre,
