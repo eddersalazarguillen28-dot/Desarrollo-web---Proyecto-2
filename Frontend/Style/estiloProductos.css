@@ -862,3 +862,22 @@ td:nth-child(6){
 
 
 
+
+
+/* Imágenes de los productos en el inventario */
+#cuerpo-inventario img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    border-radius: 8px;
+    display: block;
+    margin: auto;
+}
+
+/* Espacio para que la imagen se vea completa */
+#cuerpo-inventario td:first-child {
+    min-width: 120px;
+    height: 115px;
+    text-align: center;
+    vertical-align: middle;
+}
