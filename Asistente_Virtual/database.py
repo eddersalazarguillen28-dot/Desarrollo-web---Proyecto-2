@@ -37,7 +37,7 @@ def inicializar_esquema(schema_file_path="schema.sql"):
                 if stmt:
                     connection.execute(text(stmt))
             trans.commit()
-            print("Esquema SQL ejecutado e inicializado correctamente en MariaDB.")
+            print("Esquema SQL ejecutado e inicializado correctamente.")
         except Exception as e:
             trans.rollback()
             print(f"Error al ejecutar schema.sql: {e}")

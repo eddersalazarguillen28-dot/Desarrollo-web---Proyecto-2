@@ -7,6 +7,7 @@ import cloudinary.uploader
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous import URLSafeSerializer
 from psycopg2.extras import RealDictCursor
 from google import genai
 
@@ -25,6 +26,8 @@ cloudinary.config(
 # =========================================================
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = os.environ["SECRET_KEY"]
+firmador = URLSafeSerializer(app.config["SECRET_KEY"])
 
 # Límite máximo de cada solicitud, incluidas las imágenes.
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
@@ -239,9 +242,15 @@ def iniciar_sesion():
                 "message": "Correo o contraseña incorrectos."
             }), 401
 
+        token = firmador.dumps({
+            "id": usuario["id"],
+            "rol": usuario["rol"]
+        })
+
         return jsonify({
             "status": "ok",
             "message": "Inicio de sesión correcto.",
+            "token": token,
             "usuario": {
                 "id": usuario["id"],
                 "nombre": usuario["nombre"],

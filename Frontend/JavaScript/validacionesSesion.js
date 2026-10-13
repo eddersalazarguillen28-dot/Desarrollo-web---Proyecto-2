@@ -85,11 +85,18 @@ formulario.addEventListener("submit", async function (evento) {
         const datos = await respuesta.json();
 
         if (datos.status === "ok") {
+            if(!datos.token){
+                contrasenaError.style.color = "red";
+                contrasenaError.textContent = "El servidor no devolvió el token";
+                return;
+            }
+
             contrasenaError.style.color = "green";
             contrasenaError.textContent = "¡Inicio de sesión exitoso!";
 
             // Guardar credenciales en el navegador
             localStorage.setItem("usuario", JSON.stringify(datos.usuario));
+            localStorage.setItem("token", datos.token);
 
             // Redirigir al Dashboard tras 1 segundo
             setTimeout(() => {
