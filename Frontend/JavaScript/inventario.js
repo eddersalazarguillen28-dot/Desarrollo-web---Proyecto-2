@@ -1,114 +1,288 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const API_BASE = "https://octo-erp.onrender.com";
+
     const tbody = document.getElementById("cuerpo-inventario");
     const contador = document.getElementById("contador-inventario");
-    
+
     const modal = document.getElementById("modal-nuevo-producto");
     const formNuevo = document.getElementById("form-nuevo-producto");
     const btnAbrirModal = document.getElementById("btn-abrir-modal");
     const btnCerrarModal = document.getElementById("btn-cerrar-modal");
     const btnCancelarModal = document.getElementById("btn-cancelar-modal");
 
-    // 1. Inicializar datos si el LocalStorage está vacío
-    if (!localStorage.getItem("db_inventario")) {
-        const inventarioBase = [
-            { img: "../Imagenes/laptop.png", nombre: "Laptop Dell XPS", categoria: "Electrónica", sku: "#ELC-1001", stock: 15 },
-            { img: "../Imagenes/mouse.png", nombre: "Mouse inalámbrico Logitech", categoria: "Accesorios", sku: "#ACC-2045", stock: 50 },
-            { img: "../Imagenes/teclado.png", nombre: "Teclado Mecánico", categoria: "Accesorios", sku: "#ACC-2088", stock: 28 },
-            { img: "../Imagenes/monitor.png", nombre: "Monitor LG 24\"", categoria: "Electrónica", sku: "#ELC-1090", stock: 8 },
-            { img: "../Imagenes/sillaGamer.png", nombre: "Silla Gamer Corsair", categoria: "Muebles", sku: "#MUE-5002", stock: 12 }
-        ];
-        localStorage.setItem("db_inventario", JSON.stringify(inventarioBase));
+    let inventario = [];
+
+    // Consultar la API de Flask
+    async function consultarAPI(ruta, opciones = {}) {
+        const respuesta = await fetch(`${API_BASE}${ruta}`, {
+            ...opciones,
+            headers: {
+                "Content-Type": "application/json",
+                ...opciones.headers
+            }
+        });
+
+        const texto = await respuesta.text();
+        let datos = {};
+
+        try {
+            datos = texto ? JSON.parse(texto) : {};
+        } catch {
+            throw new Error(`El servidor no devolvió JSON válido (${respuesta.status}).`);
+        }
+
+        if (!respuesta.ok) {
+            throw new Error(
+                datos.error || `Error del servidor: ${respuesta.status}`
+            );
+        }
+
+        return datos;
     }
 
-    // 2. Función para dibujar la tabla leyendo la Base de Datos simulada
-    function renderizarTabla() {
-        const inventario = JSON.parse(localStorage.getItem("db_inventario")) || [];
-        tbody.innerHTML = ""; 
+    // Cargar los productos guardados en PostgreSQL
+    async function cargarInventario() {
+        tbody.innerHTML = "<tr><td colspan='6'>Cargando inventario...</td></tr>";
 
-        inventario.forEach((prod, index) => {
-            const claseStock = prod.stock > 10 ? 'good' : 'low';
+        try {
+            const respuesta = await consultarAPI("/api/productos");
+
+            inventario = Array.isArray(respuesta)
+                ? respuesta
+                : respuesta.productos || [];
+
+            renderizarTabla();
+        } catch (error) {
+            console.error("Error cargando inventario:", error);
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6">
+                        No se pudo cargar el inventario.
+                        Revisá la conexión con Render.
+                    </td>
+                </tr>`;
+            contador.textContent = "Error al cargar los productos";
+        }
+    }
+
+    // Dibujar la tabla con los datos recibidos del backend
+    function renderizarTabla() {
+        tbody.innerHTML = "";
+
+        if (inventario.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6">No hay productos registrados.</td>
+                </tr>`;
+        }
+
+        inventario.forEach((prod) => {
+            const stock = Number(prod.stock) || 0;
+            const claseStock = stock > 10 ? "good" : "low";
             const tr = document.createElement("tr");
-            
-            tr.innerHTML = `
-                <td>
-                    <div class="imagen-producto">
-                        <img src="${prod.img}" alt="${prod.nombre}" style="width: 50px; height: 50px; object-fit: contain;">
-                    </div>
-                </td>
-                <td><strong>${prod.nombre}</strong></td>
-                <td>${prod.categoria}</td>
-                <td>${prod.sku}</td>
-                <td><span class="stock ${claseStock}">${prod.stock}</span></td>
-                <td>
-                    <div class="actions">
-                        <button class="edit" data-index="${index}" style="padding: 5px 10px; cursor: pointer; background: #eef0ff; color: #7367f0; border: none; border-radius: 4px;">Ajustar</button>
-                        <button class="delete" data-index="${index}" style="padding: 5px 10px; cursor: pointer; background: #ffebeb; color: #dc3545; border: none; border-radius: 4px; margin-left: 5px;">Baja</button>
-                    </div>
-                </td>
-            `;
+
+            // Los datos de texto se insertan de forma segura
+            const imagenTd = document.createElement("td");
+            const contenedorImagen = document.createElement("div");
+            contenedorImagen.className = "imagen-producto";
+
+            const imagen = document.createElement("img");
+            imagen.src = "../Imagenes/Logo.png";
+            imagen.alt = prod.nombre || "Producto";
+            imagen.style.cssText =
+                "width:50px;height:50px;object-fit:contain";
+
+            contenedorImagen.appendChild(imagen);
+            imagenTd.appendChild(contenedorImagen);
+
+            function crearCelda(valor) {
+                const td = document.createElement("td");
+                td.textContent = valor ?? "";
+                return td;
+            }
+
+            tr.appendChild(imagenTd);
+
+            const nombreTd = crearCelda(prod.nombre);
+            const nombreStrong = document.createElement("strong");
+            nombreStrong.textContent = prod.nombre || "";
+            nombreTd.replaceChildren(nombreStrong);
+            tr.appendChild(nombreTd);
+
+            tr.appendChild(crearCelda(prod.categoria || "General"));
+
+            // La tabla original usa SKU, pero la BD no tiene esa columna.
+            tr.appendChild(crearCelda(`#PROD-${prod.id}`));
+
+            const stockTd = document.createElement("td");
+            const stockSpan = document.createElement("span");
+            stockSpan.className = `stock ${claseStock}`;
+            stockSpan.textContent = stock;
+            stockTd.appendChild(stockSpan);
+            tr.appendChild(stockTd);
+
+            const accionesTd = document.createElement("td");
+            const acciones = document.createElement("div");
+            acciones.className = "actions";
+
+            const btnEditar = document.createElement("button");
+            btnEditar.className = "edit";
+            btnEditar.dataset.id = prod.id;
+            btnEditar.textContent = "Ajustar";
+            btnEditar.style.cssText =
+                "padding:5px 10px;cursor:pointer;background:#eef0ff;color:#7367f0;border:0;border-radius:4px";
+
+            const btnEliminar = document.createElement("button");
+            btnEliminar.className = "delete";
+            btnEliminar.dataset.id = prod.id;
+            btnEliminar.textContent = "Baja";
+            btnEliminar.style.cssText =
+                "padding:5px 10px;cursor:pointer;background:#ffebeb;color:#dc3545;border:0;border-radius:4px;margin-left:5px";
+
+            acciones.append(btnEditar, btnEliminar);
+            accionesTd.appendChild(acciones);
+            tr.appendChild(accionesTd);
+
             tbody.appendChild(tr);
         });
 
-        contador.innerText = `Mostrando ${inventario.length} artículos en inventario`;
+        contador.textContent =
+            `Mostrando ${inventario.length} artículos en inventario`;
     }
 
-    // 3. Controles del Modal
-    const cerrarModal = () => {
-        modal.classList.remove("activo");
-        formNuevo.reset();
-    };
+    // Controles del modal
+    function cerrarModal() {
+        modal?.classList.remove("activo");
+        formNuevo?.reset();
+    }
 
-    btnAbrirModal.addEventListener("click", () => modal.classList.add("activo"));
-    btnCerrarModal.addEventListener("click", cerrarModal);
-    btnCancelarModal.addEventListener("click", cerrarModal);
-
-    // 4. Guardar un nuevo producto desde el formulario visual
-    formNuevo.addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        // Crear el objeto del nuevo producto
-        const nuevoProducto = {
-            img: "../Imagenes/Logo.png", // Usa el logo por defecto para los nuevos
-            nombre: document.getElementById("nombreProd").value,
-            categoria: document.getElementById("categoriaProd").value,
-            sku: document.getElementById("skuProd").value,
-            stock: parseInt(document.getElementById("stockProd").value)
-        };
-
-        // Leer DB, agregar producto y guardar
-        const inventario = JSON.parse(localStorage.getItem("db_inventario"));
-        inventario.unshift(nuevoProducto); // Lo añade al inicio de la lista
-        localStorage.setItem("db_inventario", JSON.stringify(inventario));
-
-        // Actualizar la vista y cerrar
-        renderizarTabla();
-        cerrarModal();
+    btnAbrirModal?.addEventListener("click", () => {
+        modal?.classList.add("activo");
     });
 
-    // 5. Ajustar o Eliminar producto (Usando delegación de eventos)
-    tbody.addEventListener("click", (e) => {
-        const inventario = JSON.parse(localStorage.getItem("db_inventario"));
-        const index = e.target.getAttribute("data-index");
+    btnCerrarModal?.addEventListener("click", cerrarModal);
+    btnCancelarModal?.addEventListener("click", cerrarModal);
 
-        if (e.target.classList.contains("edit")) {
-            const prod = inventario[index];
-            const nuevoStock = prompt(`Actualizar stock de: ${prod.nombre}\nStock actual: ${prod.stock}`, prod.stock);
-            
-            if (nuevoStock !== null && !isNaN(nuevoStock) && nuevoStock >= 0) {
-                inventario[index].stock = parseInt(nuevoStock);
-                localStorage.setItem("db_inventario", JSON.stringify(inventario));
-                renderizarTabla();
+    // Crear un producto en la base de datos
+    formNuevo?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const nombre = document.getElementById("nombreProd").value.trim();
+        const categoria =
+            document.getElementById("categoriaProd").value.trim() || "General";
+        const stock = Number(document.getElementById("stockProd").value);
+
+        // Si el formulario ya tiene un campo precioProd, se utiliza.
+        // Si no existe, el precio inicial será 0.
+        const campoPrecio = document.getElementById("precioProd");
+        const precio = campoPrecio ? Number(campoPrecio.value) : 0;
+
+        if (!nombre || !Number.isInteger(stock) || stock < 0) {
+            alert("Ingresá un nombre y un stock entero igual o mayor que cero.");
+            return;
+        }
+
+        if (!Number.isFinite(precio) || precio < 0) {
+            alert("Ingresá un precio válido.");
+            return;
+        }
+
+        const botonEnviar = formNuevo.querySelector(
+            'button[type="submit"]'
+        );
+
+        try {
+            if (botonEnviar) botonEnviar.disabled = true;
+
+            await consultarAPI("/api/productos", {
+                method: "POST",
+                body: JSON.stringify({
+                    nombre,
+                    categoria,
+                    precio,
+                    stock,
+                    stock_minimo: 5
+                })
+            });
+
+            await cargarInventario();
+            cerrarModal();
+            alert("Producto guardado en la base de datos.");
+        } catch (error) {
+            console.error("Error guardando producto:", error);
+            alert(`No se pudo guardar el producto: ${error.message}`);
+        } finally {
+            if (botonEnviar) botonEnviar.disabled = false;
+        }
+    });
+
+    // Ajustar el stock o dar de baja el producto
+    tbody.addEventListener("click", async (e) => {
+        const boton = e.target.closest("button[data-id]");
+        if (!boton) return;
+
+        const id = Number(boton.dataset.id);
+        const producto = inventario.find(p => Number(p.id) === id);
+
+        if (!producto) return;
+
+        if (boton.classList.contains("edit")) {
+            const nuevoStockTexto = prompt(
+                `Actualizar stock de: ${producto.nombre}\nStock actual: ${producto.stock}`,
+                producto.stock
+            );
+
+            if (nuevoStockTexto === null) return;
+
+            const nuevoStock = Number(nuevoStockTexto);
+
+            if (!Number.isInteger(nuevoStock) || nuevoStock < 0) {
+                alert("El stock debe ser un número entero igual o mayor que cero.");
+                return;
             }
-        } 
-        else if (e.target.classList.contains("delete")) {
-            if (confirm("¿Seguro que deseas eliminar este producto permanentemente?")) {
-                inventario.splice(index, 1);
-                localStorage.setItem("db_inventario", JSON.stringify(inventario));
-                renderizarTabla();
+
+            try {
+                await consultarAPI(`/api/productos/${id}`, {
+                    method: "PUT",
+                    body: JSON.stringify({
+                        nombre: producto.nombre,
+                        precio: Number(producto.precio) || 0,
+                        categoria: producto.categoria || "General",
+                        stock: nuevoStock,
+                        stock_minimo: Number(
+                            producto.stock_minimo ?? producto.stockMinimo ?? 5
+                        )
+                    })
+                });
+
+                await cargarInventario();
+                alert("Stock actualizado.");
+            } catch (error) {
+                console.error("Error actualizando stock:", error);
+                alert(`No se pudo actualizar: ${error.message}`);
+            }
+        }
+
+        if (boton.classList.contains("delete")) {
+            if (!confirm(`¿Dar de baja a "${producto.nombre}"?`)) return;
+
+            try {
+                await consultarAPI(`/api/productos/${id}`, {
+                    method: "DELETE"
+                });
+
+                await cargarInventario();
+                alert("Producto eliminado.");
+            } catch (error) {
+                console.error("Error eliminando producto:", error);
+                alert(
+                    `No se pudo eliminar: ${error.message}\n` +
+                    "Puede que el producto tenga ventas registradas."
+                );
             }
         }
     });
 
-    // Ejecutar renderizado inicial
-    renderizarTabla();
+    // Cargar datos reales al abrir la página
+    cargarInventario();
 });
