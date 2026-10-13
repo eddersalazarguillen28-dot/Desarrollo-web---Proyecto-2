@@ -189,6 +189,14 @@ body{
 
 /*icono*/
 
+.estadistica-icon{
+    min-width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: grid;
+    
+}
+
 
 /***********************************************************/
 
@@ -215,6 +223,7 @@ body{
     grid-template-columns: minmax(0,1.8fr) minmax(285px,0.9fr);
     gap:20px;
     align-items: start;
+    padding-top: 50px;
 }
 
 
