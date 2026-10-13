@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../Style/estiloRecuperar.css">
+    <title>Document</title>
+</head>
+<body>
+    <main class="recuperacion">
+        <!--Panel izquierdo-->
+        <section class="panel-visual">
+            <a href="inicioSesion.html" class="brand">
+                <img src="../Imagenes/logoLineaNegro.png" alt="logoOctoERP">
+            </a>
+
+            <div class="imagen">
+                <div class="bubble bubble1"></div>
+                <div class="bubble bubble2"></div>
+
+                <img src="../Imagenes/pulpoContrasena.png" alt="">
+
+            </div>
+
+            <div class="texto-visual">
+                <h2>No te preocupes</h2>
+
+                <p>Te ayudaremos a recuperar <br> el acceso a tu cuenta</p>
+
+            </div>
+
+            <div class="decoracion-abajo"></div>
+
+        </section>
+
+        <!--Panel derecho-->
+
+        <section class="form-panel">
+            <div class="card-recuperacion">
+                <a href="inicioSesion.html" class="volverLink">
+                    <span>←</span>
+                    volver al inicio de sesión
+                </a>
+
+                <div class="form-head">
+                    <h1>¿Olvidaste tu contraseña?</h1>
+                    <p>Ingresa tu correo electrónico y te ayudaremos <br>a restablecer tu contraseña</p>
+
+                </div>
+
+                <form id="recuperarForm">
+                    <div class="form-campo">
+                        <label for="correo">
+                            Correo electrónico
+                        </label>
+
+                        <div class="campo-input">
+                            <input type="email" id="correo" name="correo" placeholder="Correo" autocomplete="email" required>
+                        </div>
+                         
+                    </div>
+                    <button type="submit" id="enviarBtn">Enviar enlace</button>
+
+                    
+                    
+                </form>
+
+            </div>
+        </section>
+
+    </main>
+    
+</body>
+</html>
