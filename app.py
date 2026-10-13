@@ -250,7 +250,7 @@ def iniciar_sesion():
         return jsonify({
             "status": "ok",
             "message": "Inicio de sesión correcto.",
-            "toke": token,
+            "token": token,
             "usuario": {
                 "id": usuario["id"],
                 "nombre": usuario["nombre"],
