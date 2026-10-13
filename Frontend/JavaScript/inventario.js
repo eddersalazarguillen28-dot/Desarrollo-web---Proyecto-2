@@ -429,9 +429,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
     
-    // =====================================================
-    // CARGAR INVENTARIO AL ABRIR LA PÁGINA
-    // =====================================================
+   
 
     cargarInventario();
 });
