@@ -242,7 +242,7 @@ def iniciar_sesion():
                 "message": "Correo o contraseña incorrectos."
             }), 401
 
-        token = firmador.dumpsP({
+        token = firmador.dumps({
             "id": usuario["id"],
             "rol": usuario["rol"]
         })
