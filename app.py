@@ -1,364 +1,738 @@
 import os
+from decimal import Decimal, InvalidOperation
+
+import cloudinary
+import cloudinary.uploader
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
+from psycopg2.extras import RealDictCursor
 from google import genai
+
 from backend import db_manager as db
 
+cloudinary.config(
+    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.environ.get("CLOUDINARY_API_KEY"),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+    secure=True
+)
+
+
+# =========================================================
+# CONFIGURACIÓN DE FLASK
+# =========================================================
+
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": [
+
+# Límite máximo de cada solicitud, incluidas las imágenes.
+app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
+
+ORIGENES_PERMITIDOS = [
     "https://eddersalazarguillen28-dot.github.io",
     "http://localhost:5500",
     "http://127.0.0.1:5500",
     "http://localhost:5501",
     "http://127.0.0.1:5501",
-]}})
+]
 
-# Inicializar el esquema al arrancar; si falla, registrar el error.
+CORS(
+    app,
+    resources={
+        r"/*": {
+            "origins": ORIGENES_PERMITIDOS
+        }
+    }
+)
+
+
+# =========================================================
+# CONFIGURACIÓN DE CLOUDINARY
+# Las credenciales se configuran en las variables de Render.
+# =========================================================
+
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True
+)
+
+
+def cloudinary_configurado():
+    """Comprueba que las tres credenciales estén configuradas."""
+    variables = [
+        "CLOUDINARY_CLOUD_NAME",
+        "CLOUDINARY_API_KEY",
+        "CLOUDINARY_API_SECRET",
+    ]
+
+    return all(os.getenv(variable) for variable in variables)
+
+
+# =========================================================
+# CONFIGURACIÓN DE GEMINI
+# =========================================================
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+cliente_gemini = (
+    genai.Client(api_key=GEMINI_API_KEY)
+    if GEMINI_API_KEY
+    else None
+)
+
+
+# =========================================================
+# INICIALIZAR BASE DE DATOS
+# =========================================================
+
 try:
     db.inicializar_bd()
+    app.logger.info("Base de datos inicializada correctamente.")
 except Exception:
-    app.logger.exception("No se pudo inicializar PostgreSQL")
+    app.logger.exception(
+        "No se pudo inicializar la base de datos al arrancar."
+    )
 
 
-@app.route("/")
+# =========================================================
+# RUTA PRINCIPAL
+# =========================================================
+
+@app.route("/", methods=["GET"])
 def inicio():
-    return jsonify({"status": "ok", "message": "Servidor OCTO ERP corriendo correctamente en Render"}), 200
+    return jsonify({
+        "status": "ok",
+        "mensaje": "API de OCTO ERP funcionando",
+        "base_datos": "PostgreSQL",
+        "imagenes": "Cloudinary"
+    })
 
+
+@app.route("/api/health", methods=["GET"])
+def health():
+    """Comprobación sencilla del servicio."""
+    return jsonify({
+        "status": "ok",
+        "servicio": "OCTO ERP API"
+    })
+
+
+# =========================================================
+# REGISTRO DE USUARIOS
+# =========================================================
 
 @app.route("/api/registro", methods=["POST"])
-def registro():
-    datos = request.get_json(silent=True) or {}
-    nombre = str(datos.get("nombre") or "").strip()
-    correo = str(datos.get("correo") or "").strip().lower()
-    password = str(datos.get("password") or "")
-    if not nombre or not correo or not password:
-        return jsonify({"status": "error", "message": "Nombre, correo y contraseña son obligatorios"}), 400
-    if len(nombre) > 100 or len(correo) > 100 or len(password) < 8:
-        return jsonify({"status": "error", "message": "Revisa las longitudes de los campos; la contraseña necesita al menos 8 caracteres"}), 400
+def registrar_usuario():
+    conexion = None
 
-    conn = None
     try:
-        conn = db.obtener_conexion()
-        with conn.cursor() as cursor:
-            cursor.execute("""
-                INSERT INTO usuarios (nombre, correo, password, rol)
-                VALUES (%s, %s, %s, 'vendedor') RETURNING id;
-            """, (nombre, correo, generate_password_hash(password)))
-            usuario_id = cursor.fetchone()["id"]
-        conn.commit()
-        return jsonify({"status": "ok", "usuario_id": usuario_id}), 201
-    except Exception:
-        if conn:
-            conn.rollback()
-        app.logger.exception("Error al registrar usuario")
-        return jsonify({"status": "error", "message": "No se pudo registrar el usuario"}), 400
-    finally:
-        if conn:
-            conn.close()
+        datos = request.get_json(silent=True) or {}
 
+        nombre = (datos.get("nombre") or "").strip()
+        correo = (datos.get("correo") or "").strip().lower()
+        password = datos.get("password") or ""
+
+        if not nombre or not correo or not password:
+            return jsonify({
+                "status": "error",
+                "message": "Nombre, correo y contraseña son obligatorios."
+            }), 400
+
+        if len(password) < 6:
+            return jsonify({
+                "status": "error",
+                "message": "La contraseña debe tener al menos 6 caracteres."
+            }), 400
+
+        conexion = db.obtener_conexion()
+
+        with conexion.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute(
+                "SELECT id FROM usuarios WHERE correo = %s",
+                (correo,)
+            )
+
+            if cursor.fetchone():
+                return jsonify({
+                    "status": "error",
+                    "message": "Ese correo ya está registrado."
+                }), 409
+
+            password_hash = generate_password_hash(password)
+
+            cursor.execute(
+                """
+                INSERT INTO usuarios (nombre, correo, password, rol)
+                VALUES (%s, %s, %s, %s)
+                RETURNING id, nombre, correo, rol
+                """,
+                (nombre, correo, password_hash, "vendedor")
+            )
+
+            usuario = cursor.fetchone()
+
+        conexion.commit()
+
+        return jsonify({
+            "status": "ok",
+            "message": "Usuario registrado correctamente.",
+            "usuario": dict(usuario)
+        }), 201
+
+    except Exception:
+        if conexion:
+            conexion.rollback()
+
+        app.logger.exception("Error durante el registro.")
+
+        return jsonify({
+            "status": "error",
+            "message": "No se pudo registrar el usuario."
+        }), 500
+
+    finally:
+        if conexion:
+            conexion.close()
+
+
+# =========================================================
+# INICIO DE SESIÓN
+# =========================================================
 
 @app.route("/api/login", methods=["POST"])
-def login():
-    datos = request.get_json(silent=True) or {}
-    correo = str(datos.get("correo") or "").strip().lower()
-    password = str(datos.get("password") or "")
-    if not correo or not password:
-        return jsonify({"status": "error", "message": "Correo y contraseña son obligatorios"}), 400
+def iniciar_sesion():
+    conexion = None
 
-    conn = None
     try:
-        conn = db.obtener_conexion()
-        with conn.cursor() as cursor:
-            cursor.execute("""
-                SELECT id, nombre, correo, rol, password
-                FROM usuarios WHERE LOWER(correo) = %s;
-            """, (correo,))
-            usuario = cursor.fetchone()
-        if not usuario:
-            return jsonify({"status": "error", "message": "Credenciales incorrectas"}), 401
-        password_guardada = usuario["password"]
-        if not isinstance(password_guardada, str) or not password_guardada.startswith(("scrypt:", "pbkdf2:")):
-            return jsonify({"status": "error", "message": "La cuenta requiere restablecer su contraseña"}), 401
-        if not check_password_hash(password_guardada, password):
-            return jsonify({"status": "error", "message": "Credenciales incorrectas"}), 401
-        return jsonify({"status": "ok", "usuario": {
-            "id": usuario["id"], "nombre": usuario["nombre"],
-            "correo": usuario["correo"], "rol": usuario["rol"]
-        }}), 200
-    except Exception:
-        app.logger.exception("Error al iniciar sesión")
-        return jsonify({"status": "error", "message": "Error al iniciar sesión"}), 500
-    finally:
-        if conn:
-            conn.close()
+        datos = request.get_json(silent=True) or {}
 
+        correo = (datos.get("correo") or "").strip().lower()
+        password = datos.get("password") or ""
+
+        if not correo or not password:
+            return jsonify({
+                "status": "error",
+                "message": "Ingresa tu correo y contraseña."
+            }), 400
+
+        conexion = db.obtener_conexion()
+
+        with conexion.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute(
+                """
+                SELECT id, nombre, correo, password, rol
+                FROM usuarios
+                WHERE correo = %s
+                """,
+                (correo,)
+            )
+
+            usuario = cursor.fetchone()
+
+        if not usuario or not check_password_hash(
+            usuario["password"], password
+        ):
+            return jsonify({
+                "status": "error",
+                "message": "Correo o contraseña incorrectos."
+            }), 401
+
+        return jsonify({
+            "status": "ok",
+            "message": "Inicio de sesión correcto.",
+            "usuario": {
+                "id": usuario["id"],
+                "nombre": usuario["nombre"],
+                "correo": usuario["correo"],
+                "rol": usuario["rol"]
+            }
+        }), 200
+
+    except Exception:
+        app.logger.exception("Error durante el inicio de sesión.")
+
+        return jsonify({
+            "status": "error",
+            "message": "No se pudo iniciar sesión."
+        }), 500
+
+    finally:
+        if conexion:
+            conexion.close()
+
+
+# =========================================================
+# CONSULTAR PRODUCTOS
+# =========================================================
 
 @app.route("/api/productos", methods=["GET"])
 def listar_productos():
     try:
-        return jsonify({"status": "ok", "productos": db.obtener_productos()}), 200
-    except Exception:
-        app.logger.exception("Error al consultar productos")
-        return jsonify({"status": "error", "message": "No se pudieron consultar los productos"}), 500
+        productos = db.obtener_productos()
 
+        return jsonify({
+            "status": "ok",
+            "productos": productos
+        }), 200
+
+    except Exception:
+        app.logger.exception("Error al consultar productos.")
+
+        return jsonify({
+            "status": "error",
+            "message": "No se pudieron consultar los productos."
+        }), 500
+
+
+# =========================================================
+# CREAR PRODUCTOS CON O SIN IMAGEN
+# =========================================================
 
 @app.route("/api/productos", methods=["POST"])
 def crear_producto():
-    datos = request.get_json(silent=True) or {}
-    try:
-        producto_id = db.agregar_producto(
-            nombre=datos.get("nombre"), precio=datos.get("precio"),
-            stock=datos.get("stock"),
-            stock_minimo=datos.get("stockMinimo", datos.get("stock_minimo", 5)),
-            categoria=datos.get("categoria", "General")
-        )
-        return jsonify({"status": "ok", "producto_id": producto_id}), 201
-    except (ValueError, TypeError) as e:
-        return jsonify({"status": "error", "message": str(e)}), 400
-    except Exception:
-        app.logger.exception("Error al crear producto")
-        return jsonify({"status": "error", "message": "No se pudo crear el producto"}), 500
+    imagen_url = None
 
+    try:
+        # También se admiten las solicitudes JSON anteriores.
+        if request.is_json:
+            datos = request.get_json(silent=True) or {}
+
+            nombre = datos.get("nombre")
+            precio = datos.get("precio")
+            stock = datos.get("stock")
+
+            stock_minimo = datos.get(
+                "stockMinimo",
+                datos.get("stock_minimo", 5)
+            )
+
+            categoria = datos.get("categoria", "General")
+
+            # Compatibilidad con clientes que ya envíen una URL.
+            imagen_url = datos.get("imagen_url")
+
+        else:
+            # FormData: permite enviar campos y un archivo de imagen.
+            datos = request.form
+
+            nombre = datos.get("nombre")
+            precio = datos.get("precio")
+            stock = datos.get("stock")
+
+            stock_minimo = datos.get(
+                "stockMinimo",
+                datos.get("stock_minimo", 5)
+            )
+
+            categoria = datos.get("categoria", "General")
+
+            archivo = request.files.get("imagen")
+
+            if archivo and archivo.filename:
+                if not cloudinary_configurado():
+                    return jsonify({
+                        "status": "error",
+                        "message": (
+                            "Cloudinary no está configurado "
+                            "correctamente en Render."
+                        )
+                    }), 500
+
+                tipos_permitidos = {
+                    "image/jpeg",
+                    "image/png",
+                    "image/webp",
+                    "image/gif",
+                }
+
+                if archivo.mimetype not in tipos_permitidos:
+                    return jsonify({
+                        "status": "error",
+                        "message": (
+                            "Formato no permitido. "
+                            "Utiliza JPG, PNG, WEBP o GIF."
+                        )
+                    }), 400
+
+                # Subir el archivo a Cloudinary.
+                resultado = cloudinary.uploader.upload(
+                    archivo,
+                    folder="octo-erp/productos",
+                    resource_type="image",
+                    allowed_formats=[
+                        "jpg", "jpeg", "png", "webp", "gif"
+                    ]
+                )
+
+                imagen_url = resultado.get("secure_url")
+
+                if not imagen_url:
+                    raise RuntimeError(
+                        "Cloudinary no devolvió la URL de la imagen."
+                    )
+
+        nombre = (nombre or "").strip()
+        categoria = (categoria or "General").strip()
+
+        if not nombre:
+            return jsonify({
+                "status": "error",
+                "message": "El nombre del producto es obligatorio."
+            }), 400
+
+        if not categoria:
+            categoria = "General"
+
+        try:
+            precio = Decimal(str(precio))
+            stock = int(stock)
+            stock_minimo = int(stock_minimo)
+        except (InvalidOperation, ValueError, TypeError):
+            return jsonify({
+                "status": "error",
+                "message": (
+                    "El precio, el stock y el stock mínimo "
+                    "deben tener valores válidos."
+                )
+            }), 400
+
+        if not precio.is_finite() or precio < 0:
+            return jsonify({
+                "status": "error",
+                "message": "El precio no puede ser negativo."
+            }), 400
+
+        if stock < 0 or stock_minimo < 0:
+            return jsonify({
+                "status": "error",
+                "message": (
+                    "El stock y el stock mínimo no pueden ser negativos."
+                )
+            }), 400
+
+        producto_id = db.agregar_producto(
+            nombre=nombre,
+            precio=precio,
+            stock=stock,
+            stock_minimo=stock_minimo,
+            categoria=categoria,
+            imagen_url=imagen_url
+        )
+
+        return jsonify({
+            "status": "ok",
+            "message": "Producto creado correctamente.",
+            "producto_id": producto_id,
+            "imagen_url": imagen_url
+        }), 201
+
+    except Exception:
+        app.logger.exception("Error al crear producto.")
+
+        return jsonify({
+            "status": "error",
+            "message": (
+                "No se pudo crear el producto. "
+                "Revisa los registros del servicio en Render."
+            )
+        }), 500
+
+
+# =========================================================
+# ELIMINAR PRODUCTOS
+# =========================================================
 
 @app.route("/api/productos/<int:p_id>", methods=["DELETE"])
 def borrar_producto(p_id):
     try:
-        if not db.eliminar_producto(p_id):
-            return jsonify({"status": "error", "message": "Producto no encontrado"}), 404
-        return jsonify({"status": "ok", "message": "Producto eliminado"}), 200
-    except ValueError as e:
-        return jsonify({"status": "error", "message": str(e)}), 400
-    except Exception:
-        app.logger.exception("Error al eliminar producto")
-        return jsonify({"status": "error", "message": "No se pudo eliminar el producto"}), 500
+        resultado = db.eliminar_producto(p_id)
 
+        if resultado is False:
+            return jsonify({
+                "status": "error",
+                "message": (
+                    "No se pudo eliminar el producto. "
+                    "Puede que no exista o tenga ventas asociadas."
+                )
+            }), 400
+
+        return jsonify({
+            "status": "ok",
+            "message": "Solicitud de eliminación procesada."
+        }), 200
+
+    except Exception:
+        app.logger.exception("Error al eliminar producto.")
+
+        return jsonify({
+            "status": "error",
+            "message": (
+                "No se pudo eliminar el producto. "
+                "Comprueba si tiene ventas asociadas."
+            )
+        }), 500
+
+
+# =========================================================
+# CONSULTAR CLIENTES
+# =========================================================
 
 @app.route("/api/clientes", methods=["GET"])
 def listar_clientes():
     try:
-        return jsonify({"status": "ok", "clientes": db.obtener_clientes()}), 200
-    except Exception:
-        app.logger.exception("Error al consultar clientes")
-        return jsonify({"status": "error", "message": "No se pudieron consultar los clientes"}), 500
+        clientes = db.obtener_clientes()
 
-
-@app.route("/api/clientes", methods=["POST"])
-def crear_cliente():
-    datos = request.get_json(silent=True) or {}
-    nombre = str(datos.get("nombre") or "").strip()
-    telefono = str(datos.get("telefono") or "").strip()
-    if not nombre or not telefono:
-        return jsonify({"status": "error", "message": "Nombre y teléfono son obligatorios"}), 400
-    try:
-        cliente_id = db.agregar_cliente(
-            nombre=nombre, telefono=telefono,
-            correo=datos.get("correo"), direccion=datos.get("direccion"),
-            estado=datos.get("estado", "Activo")
-        )
-        return jsonify({"status": "ok", "cliente_id": cliente_id}), 201
-    except ValueError as e:
-        return jsonify({"status": "error", "message": str(e)}), 400
-    except Exception:
-        app.logger.exception("Error al registrar cliente")
-        return jsonify({"status": "error", "message": "No se pudo registrar el cliente"}), 500
-
-
-@app.route("/api/dashboard", methods=["GET"])
-def obtener_dashboard():
-    try:
         return jsonify({
-            "productos": db.obtener_productos(),
-            "ventas": db.obtener_detalles_dashboard()
+            "status": "ok",
+            "clientes": clientes
         }), 200
+
     except Exception:
-        app.logger.exception("Error al consultar dashboard")
-        return jsonify({"status": "error", "message": "No se pudo consultar el dashboard"}), 500
-
-
-@app.route("/api/ventas", methods=["POST"])
-def crear_venta():
-    datos = request.get_json(silent=True) or {}
-    detalles = datos.get("detalles", [])
-    if not isinstance(detalles, list) or not detalles:
-        return jsonify({"status": "error", "message": "Debes incluir al menos un producto"}), 400
-    try:
-        venta_id = db.registrar_venta(datos.get("cliente_id"), detalles)
-        return jsonify({"status": "ok", "venta_id": venta_id}), 201
-    except ValueError as e:
-        return jsonify({"status": "error", "message": str(e)}), 400
-    except Exception:
-        app.logger.exception("Error al registrar venta")
-        return jsonify({"status": "error", "message": "No se pudo registrar la venta"}), 500
-
-
-@app.route("/chat", methods=["POST"])
-
-def chat_asistente():
-
-    datos = request.get_json(silent=True) or {}
-
-    mensaje_usuario = datos.get("mensaje", "").strip()
-
-
-
-    if not mensaje_usuario:
+        app.logger.exception("Error al consultar clientes.")
 
         return jsonify({
-
-            "respuesta": "Por favor ingresa una pregunta o consulta válida."
-
-        }), 400
-
-
-
-    try:
-
-        productos = db.obtener_productos()
-
-        ventas = db.obtener_detalles_dashboard()
-
-
-
-        api_key = os.getenv("GEMINI_API_KEY")
-
-
-
-        if api_key:
-
-            client = genai.Client(api_key=api_key)
-
-
-
-            prompt_contexto = f"""
-
-Eres el asistente virtual inteligente de OCTO ERP.
-
-Responde en español, de forma clara, profesional y concisa.
-
-
-
-INVENTARIO ACTUAL:
-
-{productos}
-
-
-
-HISTORIAL RECIENTE DE VENTAS:
-
-{ventas}
-
-
-
-PREGUNTA DEL USUARIO:
-
-{mensaje_usuario}
-
-
-
-Utiliza los datos proporcionados. No inventes productos, cantidades
-
-ni ventas que no aparezcan en el contexto.
-
-"""
-
-
-
-            response = client.models.generate_content(
-
-                model="gemini-2.5-flash",
-
-                contents=prompt_contexto
-
-            )
-
-
-
-            return jsonify({
-
-                "respuesta": response.text or "No se obtuvo una respuesta."
-
-            }), 200
-
-
-
-        stock_bajo = [
-
-            p.get("nombre", "Producto sin nombre")
-
-            for p in productos
-
-            if int(p.get("stock", 0) or 0)
-
-            <= int(
-
-                p.get("stockMinimo", p.get("stock_minimo", 5)) or 0
-
-            )
-
-        ]
-
-
-
-        mensaje_lower = mensaje_usuario.lower()
-
-
-
-        if "stock" in mensaje_lower or "inventario" in mensaje_lower:
-
-            if stock_bajo:
-
-                respuesta = (
-
-                    f"Hay {len(stock_bajo)} producto(s) con stock bajo: "
-
-                    + ", ".join(stock_bajo)
-
-                    + "."
-
-                )
-
-            else:
-
-                respuesta = "El inventario está en óptimas condiciones."
-
-        else:
-
-            respuesta = (
-
-                "OCTO ERP está conectado, pero la variable GEMINI_API_KEY "
-
-                "no está configurada para responder con inteligencia artificial."
-
-            )
-
-
-
-        return jsonify({"respuesta": respuesta}), 200
-
-
-
-    except Exception:
-
-        app.logger.exception("Error al procesar consulta de IA")
-
-        return jsonify({
-
-            "respuesta": "Ocurrió un error al procesar tu consulta."
-
+            "status": "error",
+            "message": "No se pudieron consultar los clientes."
         }), 500
 
 
+# =========================================================
+# CREAR CLIENTES
+# =========================================================
+
+@app.route("/api/clientes", methods=["POST"])
+def crear_cliente():
+    try:
+        datos = request.get_json(silent=True) or {}
+
+        nombre = (datos.get("nombre") or "").strip()
+        correo = (datos.get("correo") or "").strip() or None
+        telefono = (datos.get("telefono") or "").strip() or None
+
+        if not nombre:
+            return jsonify({
+                "status": "error",
+                "message": "El nombre del cliente es obligatorio."
+            }), 400
+
+        cliente_id = db.agregar_cliente(
+            nombre=nombre,
+            correo=correo,
+            telefono=telefono
+        )
+
+        return jsonify({
+            "status": "ok",
+            "message": "Cliente creado correctamente.",
+            "cliente_id": cliente_id
+        }), 201
+
+    except Exception:
+        app.logger.exception("Error al crear cliente.")
+
+        return jsonify({
+            "status": "error",
+            "message": "No se pudo crear el cliente."
+        }), 500
 
 
+# =========================================================
+# DASHBOARD
+# =========================================================
 
-# ==========================================
+@app.route("/api/dashboard", methods=["GET"])
+def dashboard():
+    try:
+        productos = db.obtener_productos()
+        detalles = db.obtener_detalles_dashboard()
 
-# EJECUCIÓN LOCAL
+        # Convertir valores numéricos especiales para JSON.
+        detalles_json = []
 
-# ==========================================
+        for detalle in detalles:
+            detalle_dict = dict(detalle)
+
+            for clave, valor in detalle_dict.items():
+                if isinstance(valor, Decimal):
+                    detalle_dict[clave] = float(valor)
+
+            detalles_json.append(detalle_dict)
+
+        return jsonify({
+            "status": "ok",
+            "productos": productos,
+            "detalles": detalles_json
+        }), 200
+
+    except Exception:
+        app.logger.exception("Error al cargar el dashboard.")
+
+        return jsonify({
+            "status": "error",
+            "message": "No se pudo cargar el dashboard."
+        }), 500
+
+
+# =========================================================
+# REGISTRAR VENTAS
+# =========================================================
+
+@app.route("/api/ventas", methods=["POST"])
+def crear_venta():
+    try:
+        datos = request.get_json(silent=True) or {}
+
+        cliente_id = datos.get("cliente_id")
+        detalles = datos.get("detalles")
+
+        if not isinstance(detalles, list) or not detalles:
+            return jsonify({
+                "status": "error",
+                "message": "La venta debe incluir al menos un producto."
+            }), 400
+
+        if cliente_id in ("", 0, "0"):
+            cliente_id = None
+
+        if cliente_id is not None:
+            try:
+                cliente_id = int(cliente_id)
+            except (TypeError, ValueError):
+                return jsonify({
+                    "status": "error",
+                    "message": "El identificador del cliente no es válido."
+                }), 400
+
+        venta_id = db.registrar_venta(
+            cliente_id=cliente_id,
+            detalles=detalles
+        )
+
+        return jsonify({
+            "status": "ok",
+            "message": "Venta registrada correctamente.",
+            "venta_id": venta_id
+        }), 201
+
+    except ValueError as e:
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 400
+
+    except Exception:
+        app.logger.exception("Error al registrar venta.")
+
+        return jsonify({
+            "status": "error",
+            "message": (
+                "No se pudo registrar la venta. "
+                "Revisa el stock y los registros de Render."
+            )
+        }), 500
+
+
+# =========================================================
+# CHAT CON GEMINI
+# =========================================================
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    try:
+        datos = request.get_json(silent=True) or {}
+        pregunta = (datos.get("pregunta") or "").strip()
+
+        if not pregunta:
+            return jsonify({
+                "status": "error",
+                "message": "Escribe una pregunta."
+            }), 400
+
+        # Si Gemini no está configurado, responder sin detener el ERP.
+        if not cliente_gemini:
+            return jsonify({
+                "status": "ok",
+                "respuesta": (
+                    "El asistente de IA no está configurado todavía. "
+                    "Agrega GEMINI_API_KEY en las variables de Render."
+                )
+            }), 200
+
+        productos = db.obtener_productos()
+
+        contexto = []
+
+        for producto in productos:
+            contexto.append({
+                "nombre": producto.get("nombre"),
+                "stock": producto.get("stock"),
+                "stock_minimo": producto.get(
+                    "stock_minimo",
+                    producto.get("stockMinimo", 5)
+                ),
+                "categoria": producto.get("categoria", "General"),
+                "precio": producto.get("precio")
+            })
+
+        prompt = f"""
+Eres el asistente de inventario de OCTO ERP.
+Responde en español, de forma clara y práctica.
+Usa los datos reales del inventario cuando sean relevantes.
+No inventes cantidades, ventas ni datos que no aparezcan aquí.
+
+Inventario actual:
+{contexto}
+
+Pregunta del usuario:
+{pregunta}
+"""
+
+        respuesta = cliente_gemini.models.generate_content(
+            model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
+            contents=prompt
+        )
+
+        texto = getattr(respuesta, "text", None)
+
+        if not texto:
+            texto = "No pude generar una respuesta. Inténtalo nuevamente."
+
+        return jsonify({
+            "status": "ok",
+            "respuesta": texto
+        }), 200
+
+    except Exception:
+        app.logger.exception("Error en el chat de Gemini.")
+
+        return jsonify({
+            "status": "error",
+            "message": "No se pudo procesar la pregunta."
+        }), 500
+
+
+# =========================================================
+# MANEJO DE ARCHIVOS DEMASIADO GRANDES
+# =========================================================
+
+@app.errorhandler(413)
+def archivo_demasiado_grande(error):
+    return jsonify({
+        "status": "error",
+        "message": (
+            "La solicitud supera el límite de 5 MB. "
+            "Reduce el tamaño de la imagen e inténtalo de nuevo."
+        )
+    }), 413
+
+
+# =========================================================
+# INICIAR SERVIDOR
+# Render utiliza el servidor definido en el comando de arranque.
+# =========================================================
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    puerto = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=puerto)
