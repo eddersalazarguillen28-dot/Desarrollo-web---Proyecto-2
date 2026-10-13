@@ -513,6 +513,7 @@ def eliminar_producto(producto_id):
 # =========================================================
 
 def obtener_clientes():
+    """Obtiene todos los clientes guardados en PostgreSQL."""
     conn = obtener_conexion()
 
     try:
@@ -526,10 +527,10 @@ def obtener_clientes():
                     direccion,
                     estado
                 FROM clientes
-                ORDER BY id;
+                ORDER BY id DESC;
             """)
 
-            return cursor.fetchall()
+            return [dict(cliente) for cliente in cursor.fetchall()]
 
     finally:
         conn.close()
@@ -537,40 +538,32 @@ def obtener_clientes():
 
 def agregar_cliente(
     nombre,
-    telefono,
+    telefono=None,
     correo=None,
     direccion=None,
     estado="Activo"
 ):
+    """Guarda un cliente nuevo en PostgreSQL y devuelve su ID."""
     nombre = _validar_texto(nombre, "nombre", 150)
-    telefono = _validar_texto(telefono, "telefono", 50)
+
+    if telefono is not None:
+        telefono = str(telefono).strip() or None
+        if telefono and len(telefono) > 50:
+            raise ValueError("El teléfono no puede superar los 50 caracteres.")
 
     if correo is not None:
-        if not isinstance(correo, str):
-            raise ValueError("El correo no es válido.")
-
-        correo = correo.strip() or None
-
+        correo = str(correo).strip().lower() or None
         if correo and len(correo) > 150:
-            raise ValueError(
-                "El correo supera los 150 caracteres."
-            )
+            raise ValueError("El correo no puede superar los 150 caracteres.")
 
     if direccion is not None:
-        if not isinstance(direccion, str):
-            raise ValueError("La dirección no es válida.")
-
-        direccion = direccion.strip() or None
-
+        direccion = str(direccion).strip() or None
         if direccion and len(direccion) > 255:
-            raise ValueError(
-                "La dirección supera los 255 caracteres."
-            )
+            raise ValueError("La dirección no puede superar los 255 caracteres.")
 
+    estado = (estado or "Activo").strip()
     if estado not in ("Activo", "Inactivo"):
-        raise ValueError(
-            "El estado debe ser Activo o Inactivo."
-        )
+        raise ValueError("El estado debe ser Activo o Inactivo.")
 
     conn = obtener_conexion()
 
@@ -578,21 +571,11 @@ def agregar_cliente(
         with conn.cursor() as cursor:
             cursor.execute("""
                 INSERT INTO clientes (
-                    nombre,
-                    telefono,
-                    correo,
-                    direccion,
-                    estado
+                    nombre, telefono, correo, direccion, estado
                 )
                 VALUES (%s, %s, %s, %s, %s)
                 RETURNING id;
-            """, (
-                nombre,
-                telefono,
-                correo,
-                direccion,
-                estado
-            ))
+            """, (nombre, telefono, correo, direccion, estado))
 
             cliente_id = cursor.fetchone()["id"]
 
@@ -611,32 +594,32 @@ def actualizar_cliente(
     cliente_id,
     nombre,
     correo=None,
-    telefono=None
+    telefono=None,
+    direccion=None,
+    estado="Activo"
 ):
+    """Actualiza los datos de un cliente existente."""
     _validar_entero_positivo(cliente_id, "cliente_id")
     nombre = _validar_texto(nombre, "nombre", 150)
 
     if correo is not None:
-        if not isinstance(correo, str):
-            raise ValueError("El correo no es válido.")
-
-        correo = correo.strip() or None
-
+        correo = str(correo).strip().lower() or None
         if correo and len(correo) > 150:
-            raise ValueError(
-                "El correo supera los 150 caracteres."
-            )
+            raise ValueError("El correo supera los 150 caracteres.")
 
     if telefono is not None:
-        if not isinstance(telefono, str):
-            raise ValueError("El teléfono no es válido.")
-
-        telefono = telefono.strip() or None
-
+        telefono = str(telefono).strip() or None
         if telefono and len(telefono) > 50:
-            raise ValueError(
-                "El teléfono supera los 50 caracteres."
-            )
+            raise ValueError("El teléfono supera los 50 caracteres.")
+
+    if direccion is not None:
+        direccion = str(direccion).strip() or None
+        if direccion and len(direccion) > 255:
+            raise ValueError("La dirección supera los 255 caracteres.")
+
+    estado = (estado or "Activo").strip()
+    if estado not in ("Activo", "Inactivo"):
+        raise ValueError("El estado debe ser Activo o Inactivo.")
 
     conn = obtener_conexion()
 
@@ -646,16 +629,21 @@ def actualizar_cliente(
                 UPDATE clientes
                 SET nombre = %s,
                     correo = %s,
-                    telefono = %s
-                WHERE id = %s;
+                    telefono = %s,
+                    direccion = %s,
+                    estado = %s
+                WHERE id = %s
+                RETURNING id;
             """, (
                 nombre,
                 correo,
                 telefono,
+                direccion,
+                estado,
                 cliente_id
             ))
 
-            actualizado = cursor.rowcount > 0
+            actualizado = cursor.fetchone() is not None
 
         conn.commit()
         return actualizado
@@ -669,6 +657,7 @@ def actualizar_cliente(
 
 
 def eliminar_cliente(cliente_id):
+    """Elimina un cliente; las ventas conservan su historial."""
     _validar_entero_positivo(cliente_id, "cliente_id")
 
     conn = obtener_conexion()
@@ -677,10 +666,11 @@ def eliminar_cliente(cliente_id):
         with conn.cursor() as cursor:
             cursor.execute("""
                 DELETE FROM clientes
-                WHERE id = %s;
+                WHERE id = %s
+                RETURNING id;
             """, (cliente_id,))
 
-            eliminado = cursor.rowcount > 0
+            eliminado = cursor.fetchone() is not None
 
         conn.commit()
         return eliminado
@@ -691,7 +681,6 @@ def eliminar_cliente(cliente_id):
 
     finally:
         conn.close()
-
 
 # =========================================================
 # REGISTRO DE VENTAS
