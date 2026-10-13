@@ -115,17 +115,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const stock = Number(prod.stock) || 0;
             const claseStock = stock > 10 ? "good" : "low";
 
-            // Columna de imagen
-            const imagenTd = document.createElement("td");
-            const contenedorImagen = document.createElement("div");
+           // Columna de imagen
+const imagenTd = document.createElement("td");
+const contenedorImagen = document.createElement("div");
 
-            contenedorImagen.className = "imagen-producto";
+contenedorImagen.className = "imagen-producto";
 
-            const imagen = document.createElement("img");
+const imagen = document.createElement("img");
 
-            // Utiliza la URL almacenada en la base de datos.
-            // Si no hay imagen, muestra el logo.
-           imagen.src = prod.imagen_url || IMAGEN_POR_DEFECTO;
+imagen.src = prod.imagen_url || IMAGEN_POR_DEFECTO;
 imagen.alt = prod.nombre || "Producto";
 imagen.loading = "lazy";
 imagen.decoding = "async";
@@ -146,7 +144,6 @@ imagen.style.cssText = `
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 `;
 
-// Efecto al pasar el cursor.
 imagen.addEventListener("mouseenter", () => {
     imagen.style.transform = "scale(1.06)";
     imagen.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.14)";
@@ -156,6 +153,18 @@ imagen.addEventListener("mouseleave", () => {
     imagen.style.transform = "scale(1)";
     imagen.style.boxShadow = "0 2px 6px rgba(0, 0, 0, 0.08)";
 });
+
+imagen.addEventListener("error", () => {
+    if (imagen.dataset.fallback !== "true") {
+        imagen.dataset.fallback = "true";
+        imagen.src = IMAGEN_POR_DEFECTO;
+    }
+});
+
+// Insertar la imagen dentro de su columna.
+contenedorImagen.appendChild(imagen);
+imagenTd.appendChild(contenedorImagen);
+tr.appendChild(imagenTd);
 
 // Si la imagen falla, se muestra el logo una sola vez.
 imagen.addEventListener("error", () => {
