@@ -1,5 +1,6 @@
 const API_CLIENTE = "https://octo-erp.onreder.com";
 
+
 let listaClientes = [];
 
 const tabla = document.getElementById("tablaCliente");
