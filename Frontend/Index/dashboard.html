@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,65 +9,61 @@
     <link rel="icon" type="image/jpeg" href="../Imagenes/logoVentana.jpeg">
 
     <link rel="stylesheet" href="../Style/estiloDashboard.css">
+    <link rel="stylesheet" href="../Style/global.css">
 
-    
+
 </head>
 
-<body>
-    <header class="encabezado">
-        <h1>Dashboard OctoERP</h1>
-        <p>Resumen de ventas e inventario de la empresa</p>
-        <p id="ultima-actualizacion" role="status"></p>
-    </header>
-
-<div id="sidebar-container"></div>
+<body id="page-dashboard">
+    <div id="sidebar-container"></div>
     <div id="header-container"></div>
-    
-    <main class="contenedor">
-        <section class="controles" aria-label="Controles del dashboard">
+
+    <div class="main-wrapper">
+        <main class="main">
+            <section class="controles" aria-label="Controles del dashboard">
                 <div>
                     <label for="mes">Seleccionar mes:</label>
-                        <select id="mes">
-                            <option value="todos">Todos los meses</option>
-                            <option value="1">Enero</option>
-                            <option value="2">Febrero</option>
-                            <option value="3">Marzo</option>
-                            <option value="4">Abril</option>
-                            <option value="5">Mayo</option>
-                            <option value="6">Junio</option>
-                            <option value="7">Julio</option>
-                            <option value="8">Agosto</option>
-                            <option value="9">Septiembre</option>
-                            <option value="10">Octubre</option>
-                            <option value="11">Noviembre</option>
-                            <option value="12">Diciembre</option>
-                        </select>
+                    <select id="mes">
+                        <option value="todos">Todos los meses</option>
+                        <option value="1">Enero</option>
+                        <option value="2">Febrero</option>
+                        <option value="3">Marzo</option>
+                        <option value="4">Abril</option>
+                        <option value="5">Mayo</option>
+                        <option value="6">Junio</option>
+                        <option value="7">Julio</option>
+                        <option value="8">Agosto</option>
+                        <option value="9">Septiembre</option>
+                        <option value="10">Octubre</option>
+                        <option value="11">Noviembre</option>
+                        <option value="12">Diciembre</option>
+                    </select>
                 </div>
 
                 <button id="actualizar" type="button">actualizar dashboard</button>
-        </section>
-        <p class="aviso">Datos de venta e inventario <br> Moneda. colones costarricenses</p>
+            </section>
+            <p class="aviso">Datos de venta e inventario <br> Moneda. colones costarricenses</p>
 
-        <!--Indicar clave de rendimiento (KPIs) -->
+            <!--Indicar clave de rendimiento (KPIs) -->
             <section class="indicadores" aria-label="indicadores de la empresa">
                 <article class="tarjeta">
-                    <h2>Ventas del periodo</h2>    
+                    <h2>Ventas del periodo</h2>
                     <p id="total-ventas">₡0</p>
                     <small>Ingresos del periodo seleccionado</small>
                 </article>
 
                 <article class="tarjeta">
-                    <h2>Cantidad de ventas</h2>    
+                    <h2>Cantidad de ventas</h2>
                     <p id="cantidad-ventas">0</p>
                     <small>Ventas registradas en el periodo</small>
                 </article>
                 <article class="tarjeta">
-                    <h2>Ticket promedio</h2>    
+                    <h2>Ticket promedio</h2>
                     <p id="ticket-promedio">₡0</p>
                     <small>Ingresos primedio por ventas</small>
                 </article>
                 <article class="tarjeta">
-                    <h2>Productos con stock bajo</h2>    
+                    <h2>Productos con stock bajo</h2>
                     <p id="cantidad-stock-bajo">0</p>
                 </article>
             </section>
@@ -84,10 +81,11 @@
             <section class="panel">
                 <h2 id="titulo-productos">Productos más vendidos - Unidades vendidas</h2>
                 <div class="contenedor-grafico">
-                    <canvas id="grafico-productos" role="img" aria-label="Gráfico de unidades vendidas por producto"></canvas>
+                    <canvas id="grafico-productos" role="img"
+                        aria-label="Gráfico de unidades vendidas por producto"></canvas>
                 </div>
             </section>
-<br>
+            <br>
             <section class="panel">
                 <h2>Detalles de ventas del periodo</h2>
                 <p>Cada fila respresenta un producto dentro de una venta registrada</p>
@@ -108,7 +106,7 @@
                     </table>
                 </div>
             </section>
-<br>
+            <br>
             <!--Alertas de inventario-->
             <section class="panel" aria-labelledby="titulo-alertas">
                 <h2 id="titulo-alertas">Alertas de stock bajo</h2>
@@ -132,8 +130,8 @@
                     </table>
                 </div>
             </section>
-    </main>
-
+        </main>
+    </div>
     <footer>
         <p>©TODOS LOS DERECHOS RESERVADOS</p>
     </footer>
@@ -141,4 +139,5 @@
     <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
     <script defer src="../JavaScript/dashboard.js"></script>
 </body>
+
 </html>
