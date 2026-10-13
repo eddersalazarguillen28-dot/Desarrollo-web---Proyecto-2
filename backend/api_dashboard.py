@@ -1,36 +1,51 @@
-from flask import Flask, jsonify
+import os
+from flask import Flask, jsonify, request
 import db_manager as db
 
 app = Flask(__name__)
 
-ORIGEN_PERMITIDO = "http://127.0.0.1:5501"
+# En Render, configura FRONTEND_ORIGIN con la URL real
+# de tu página web. Puedes indicar varios orígenes separados
+# por comas si tienes frontend local y publicado.
+ORIGENES_PERMITIDOS = {
+    origen.strip().rstrip("/")
+    for origen in os.getenv(
+        "FRONTEND_ORIGIN",
+        "http://127.0.0.1:5501,http://localhost:5501"
+    ).split(",")
+    if origen.strip()
+}
 
 
 @app.after_request
 def permitir_dashboard(respuesta):
-    respuesta.headers["Access-Control-Allow-Origin"] = ORIGEN_PERMITIDO
+    origen = request.headers.get("Origin", "").rstrip("/")
+
+    if origen in ORIGENES_PERMITIDOS:
+        respuesta.headers["Access-Control-Allow-Origin"] = origen
+        respuesta.headers["Vary"] = "Origin"
+
     respuesta.headers["Access-Control-Allow-Methods"] = "GET, OPTIONS"
     respuesta.headers["Access-Control-Allow-Headers"] = "Content-Type"
+
     return respuesta
 
 
 @app.get("/api/dashboard")
 def obtener_dashboard():
     try:
+        # Consultar PostgreSQL mediante db_manager
         productos = db.obtener_productos()
         ventas = db.obtener_detalles_dashboard()
 
-        # Preparar productos para el JSON
         productos_json = []
 
         for producto in productos:
             producto = dict(producto)
 
-            # Convertir precios a números compatibles con JavaScript
             if producto.get("precio") is not None:
                 producto["precio"] = float(producto["precio"])
 
-            # Compatibilidad con los nombres del dashboard
             stock_minimo = producto.get(
                 "stock_minimo",
                 producto.get("stockMinimo", 5)
@@ -41,7 +56,6 @@ def obtener_dashboard():
 
             productos_json.append(producto)
 
-        # Preparar ventas para el JSON
         ventas_json = []
 
         for venta in ventas:
@@ -50,7 +64,6 @@ def obtener_dashboard():
             if venta.get("subtotal") is not None:
                 venta["subtotal"] = float(venta["subtotal"])
 
-            # Aceptar ambos nombres de columna
             precio_unitario = venta.get(
                 "precioUnitario",
                 venta.get("precio_unitario")
@@ -64,19 +77,28 @@ def obtener_dashboard():
         return jsonify({
             "productos": productos_json,
             "ventas": ventas_json
-        })
+        }), 200
 
     except Exception:
-        app.logger.exception("Error al consultar el dashboard")
+        app.logger.exception(
+            "Error al consultar los datos del dashboard"
+        )
 
         return jsonify({
-            "error": "No se pudieron consultar los datos"
+            "error": "No se pudieron consultar los datos del dashboard"
         }), 500
 
 
-if __name__ == "_main_":
+@app.get("/health")
+def health():
+    return jsonify({"estado": "ok"}), 200
+
+
+if __name__ == "__main__":
+    puerto = int(os.environ.get("PORT", 5000))
+
     app.run(
-        host="127.0.0.1",
-        port=5000,
+        host="0.0.0.0",
+        port=puerto,
         debug=False
     )
