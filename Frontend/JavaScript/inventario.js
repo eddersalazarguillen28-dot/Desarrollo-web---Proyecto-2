@@ -428,7 +428,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     });
-
+    <img src="${imagen}" width="40" height="40"></img>
     // =====================================================
     // CARGAR INVENTARIO AL ABRIR LA PÁGINA
     // =====================================================
