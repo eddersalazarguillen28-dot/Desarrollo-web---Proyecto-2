@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const API_BASE = "https://octo-erp.onrender.com";
+    const IMAGEN_POR_DEFECTO = "../Imagenes/Logo.png";
 
     const tbody = document.getElementById("cuerpo-inventario");
     const contador = document.getElementById("contador-inventario");
@@ -12,14 +13,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let inventario = [];
 
-    // Consultar la API de Flask
+    // =====================================================
+    // CONSULTAR LA API DE FLASK
+    // Admite JSON y FormData con imágenes.
+    // =====================================================
+
     async function consultarAPI(ruta, opciones = {}) {
+        const headers = { ...opciones.headers };
+        const esFormData = opciones.body instanceof FormData;
+
+        // El navegador debe definir el Content-Type de FormData.
+        if (!esFormData && opciones.body !== undefined) {
+            headers["Content-Type"] = "application/json";
+        }
+
         const respuesta = await fetch(`${API_BASE}${ruta}`, {
             ...opciones,
-            headers: {
-                "Content-Type": "application/json",
-                ...opciones.headers
-            }
+            headers
         });
 
         const texto = await respuesta.text();
@@ -28,21 +38,36 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             datos = texto ? JSON.parse(texto) : {};
         } catch {
-            throw new Error(`El servidor no devolvió JSON válido (${respuesta.status}).`);
+            throw new Error(
+                `El servidor no devolvió JSON válido (${respuesta.status}).`
+            );
         }
 
         if (!respuesta.ok) {
             throw new Error(
-                datos.error || `Error del servidor: ${respuesta.status}`
+                datos.message ||
+                datos.error ||
+                `Error del servidor: ${respuesta.status}`
             );
         }
 
         return datos;
     }
 
-    // Cargar los productos guardados en PostgreSQL
+    // =====================================================
+    // CARGAR PRODUCTOS DESDE POSTGRESQL
+    // =====================================================
+
     async function cargarInventario() {
-        tbody.innerHTML = "<tr><td colspan='6'>Cargando inventario...</td></tr>";
+        if (!tbody) {
+            console.error("No se encontró #cuerpo-inventario.");
+            return;
+        }
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6">Cargando inventario...</td>
+            </tr>`;
 
         try {
             const respuesta = await consultarAPI("/api/productos");
@@ -54,6 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
             renderizarTabla();
         } catch (error) {
             console.error("Error cargando inventario:", error);
+
             tbody.innerHTML = `
                 <tr>
                     <td colspan="6">
@@ -61,12 +87,20 @@ document.addEventListener("DOMContentLoaded", () => {
                         Revisá la conexión con Render.
                     </td>
                 </tr>`;
-            contador.textContent = "Error al cargar los productos";
+
+            if (contador) {
+                contador.textContent = "Error al cargar los productos";
+            }
         }
     }
 
-    // Dibujar la tabla con los datos recibidos del backend
+    // =====================================================
+    // MOSTRAR PRODUCTOS Y SUS IMÁGENES
+    // =====================================================
+
     function renderizarTabla() {
+        if (!tbody) return;
+
         tbody.innerHTML = "";
 
         if (inventario.length === 0) {
@@ -77,23 +111,37 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         inventario.forEach((prod) => {
+            const tr = document.createElement("tr");
             const stock = Number(prod.stock) || 0;
             const claseStock = stock > 10 ? "good" : "low";
-            const tr = document.createElement("tr");
 
-            // Los datos de texto se insertan de forma segura
+            // Columna de imagen
             const imagenTd = document.createElement("td");
             const contenedorImagen = document.createElement("div");
+
             contenedorImagen.className = "imagen-producto";
 
             const imagen = document.createElement("img");
-            imagen.src = "../Imagenes/Logo.png";
+
+            // Utiliza la URL almacenada en la base de datos.
+            // Si no hay imagen, muestra el logo.
+            imagen.src = prod.imagen_url || IMAGEN_POR_DEFECTO;
             imagen.alt = prod.nombre || "Producto";
+            imagen.loading = "lazy";
             imagen.style.cssText =
-                "width:50px;height:50px;object-fit:contain";
+                "width:50px;height:50px;object-fit:contain;border-radius:6px";
+
+            // Si la imagen falla, se intenta mostrar el logo una vez.
+            imagen.addEventListener("error", () => {
+                if (imagen.dataset.fallback !== "true") {
+                    imagen.dataset.fallback = "true";
+                    imagen.src = IMAGEN_POR_DEFECTO;
+                }
+            });
 
             contenedorImagen.appendChild(imagen);
             imagenTd.appendChild(contenedorImagen);
+            tr.appendChild(imagenTd);
 
             function crearCelda(valor) {
                 const td = document.createElement("td");
@@ -101,28 +149,34 @@ document.addEventListener("DOMContentLoaded", () => {
                 return td;
             }
 
-            tr.appendChild(imagenTd);
-
-            const nombreTd = crearCelda(prod.nombre);
+            // Nombre
+            const nombreTd = crearCelda("");
             const nombreStrong = document.createElement("strong");
+
             nombreStrong.textContent = prod.nombre || "";
-            nombreTd.replaceChildren(nombreStrong);
+            nombreTd.appendChild(nombreStrong);
             tr.appendChild(nombreTd);
 
+            // Categoría
             tr.appendChild(crearCelda(prod.categoria || "General"));
 
-            // La tabla original usa SKU, pero la BD no tiene esa columna.
+            // La base de datos actual no tiene una columna SKU.
             tr.appendChild(crearCelda(`#PROD-${prod.id}`));
 
+            // Stock
             const stockTd = document.createElement("td");
             const stockSpan = document.createElement("span");
+
             stockSpan.className = `stock ${claseStock}`;
             stockSpan.textContent = stock;
+
             stockTd.appendChild(stockSpan);
             tr.appendChild(stockTd);
 
+            // Acciones
             const accionesTd = document.createElement("td");
             const acciones = document.createElement("div");
+
             acciones.className = "actions";
 
             const btnEditar = document.createElement("button");
@@ -146,11 +200,16 @@ document.addEventListener("DOMContentLoaded", () => {
             tbody.appendChild(tr);
         });
 
-        contador.textContent =
-            `Mostrando ${inventario.length} artículos en inventario`;
+        if (contador) {
+            contador.textContent =
+                `Mostrando ${inventario.length} artículos en inventario`;
+        }
     }
 
-    // Controles del modal
+    // =====================================================
+    // CONTROLES DEL MODAL
+    // =====================================================
+
     function cerrarModal() {
         modal?.classList.remove("activo");
         formNuevo?.reset();
@@ -163,22 +222,42 @@ document.addEventListener("DOMContentLoaded", () => {
     btnCerrarModal?.addEventListener("click", cerrarModal);
     btnCancelarModal?.addEventListener("click", cerrarModal);
 
-    // Crear un producto en la base de datos
+    // =====================================================
+    // CREAR PRODUCTO CON IMAGEN OPCIONAL
+    // =====================================================
+
     formNuevo?.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const nombre = document.getElementById("nombreProd").value.trim();
-        const categoria =
-            document.getElementById("categoriaProd").value.trim() || "General";
-        const stock = Number(document.getElementById("stockProd").value);
-
-        // Si el formulario ya tiene un campo precioProd, se utiliza.
-        // Si no existe, el precio inicial será 0.
+        const campoNombre = document.getElementById("nombreProd");
+        const campoCategoria = document.getElementById("categoriaProd");
+        const campoStock = document.getElementById("stockProd");
         const campoPrecio = document.getElementById("precioProd");
-        const precio = campoPrecio ? Number(campoPrecio.value) : 0;
+        const campoStockMinimo = document.getElementById("stockMinimoProd");
+        const campoImagen = document.getElementById("imagenProd");
 
-        if (!nombre || !Number.isInteger(stock) || stock < 0) {
-            alert("Ingresá un nombre y un stock entero igual o mayor que cero.");
+        const nombre = campoNombre?.value.trim() || "";
+        const categoria =
+            campoCategoria?.value.trim() || "General";
+
+        const stock = Number(campoStock?.value);
+        const precio = campoPrecio
+            ? Number(campoPrecio.value)
+            : 0;
+
+        const stockMinimo = campoStockMinimo
+            ? Number(campoStockMinimo.value)
+            : 5;
+
+        const archivo = campoImagen?.files?.[0] || null;
+
+        if (!nombre) {
+            alert("Ingresá el nombre del producto.");
+            return;
+        }
+
+        if (!Number.isInteger(stock) || stock < 0) {
+            alert("El stock debe ser un número entero igual o mayor que cero.");
             return;
         }
 
@@ -187,48 +266,103 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        if (!Number.isInteger(stockMinimo) || stockMinimo < 0) {
+            alert("El stock mínimo debe ser un entero igual o mayor que cero.");
+            return;
+        }
+
+        // Comprobación básica del archivo antes de subirlo.
+        if (archivo) {
+            const tiposPermitidos = [
+                "image/jpeg",
+                "image/png",
+                "image/webp",
+                "image/gif"
+            ];
+
+            if (!tiposPermitidos.includes(archivo.type)) {
+                alert("La imagen debe ser JPG, PNG, WEBP o GIF.");
+                return;
+            }
+
+            if (archivo.size > 5 * 1024 * 1024) {
+                alert("La imagen no puede superar los 5 MB.");
+                return;
+            }
+        }
+
         const botonEnviar = formNuevo.querySelector(
             'button[type="submit"]'
         );
 
         try {
-            if (botonEnviar) botonEnviar.disabled = true;
+            if (botonEnviar) {
+                botonEnviar.disabled = true;
+                botonEnviar.textContent = "Guardando...";
+            }
+
+            // FormData permite enviar el archivo y los datos juntos.
+            const formulario = new FormData();
+
+            formulario.append("nombre", nombre);
+            formulario.append("categoria", categoria);
+            formulario.append("precio", String(precio));
+            formulario.append("stock", String(stock));
+            formulario.append("stock_minimo", String(stockMinimo));
+
+            if (archivo) {
+                formulario.append("imagen", archivo);
+            }
 
             await consultarAPI("/api/productos", {
                 method: "POST",
-                body: JSON.stringify({
-                    nombre,
-                    categoria,
-                    precio,
-                    stock,
-                    stock_minimo: 5
-                })
+                body: formulario
             });
 
             await cargarInventario();
             cerrarModal();
-            alert("Producto guardado en la base de datos.");
+
+            alert(
+                archivo
+                    ? "Producto e imagen guardados correctamente."
+                    : "Producto guardado correctamente."
+            );
         } catch (error) {
             console.error("Error guardando producto:", error);
-            alert(`No se pudo guardar el producto: ${error.message}`);
+
+            alert(
+                `No se pudo guardar el producto: ${error.message}`
+            );
         } finally {
-            if (botonEnviar) botonEnviar.disabled = false;
+            if (botonEnviar) {
+                botonEnviar.disabled = false;
+                botonEnviar.textContent = "Guardar producto";
+            }
         }
     });
 
-    // Ajustar el stock o dar de baja el producto
-    tbody.addEventListener("click", async (e) => {
+    // =====================================================
+    // AJUSTAR STOCK Y DAR DE BAJA PRODUCTOS
+    // =====================================================
+
+    tbody?.addEventListener("click", async (e) => {
         const boton = e.target.closest("button[data-id]");
+
         if (!boton) return;
 
         const id = Number(boton.dataset.id);
-        const producto = inventario.find(p => Number(p.id) === id);
+
+        const producto = inventario.find(
+            p => Number(p.id) === id
+        );
 
         if (!producto) return;
 
+        // Ajustar stock
         if (boton.classList.contains("edit")) {
             const nuevoStockTexto = prompt(
-                `Actualizar stock de: ${producto.nombre}\nStock actual: ${producto.stock}`,
+                `Actualizar stock de: ${producto.nombre}\n` +
+                `Stock actual: ${producto.stock}`,
                 producto.stock
             );
 
@@ -237,7 +371,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const nuevoStock = Number(nuevoStockTexto);
 
             if (!Number.isInteger(nuevoStock) || nuevoStock < 0) {
-                alert("El stock debe ser un número entero igual o mayor que cero.");
+                alert(
+                    "El stock debe ser un número entero igual o mayor que cero."
+                );
                 return;
             }
 
@@ -250,8 +386,11 @@ document.addEventListener("DOMContentLoaded", () => {
                         categoria: producto.categoria || "General",
                         stock: nuevoStock,
                         stock_minimo: Number(
-                            producto.stock_minimo ?? producto.stockMinimo ?? 5
-                        )
+                            producto.stock_minimo ??
+                            producto.stockMinimo ??
+                            5
+                        ),
+                        imagen_url: producto.imagen_url || null
                     })
                 });
 
@@ -259,12 +398,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 alert("Stock actualizado.");
             } catch (error) {
                 console.error("Error actualizando stock:", error);
-                alert(`No se pudo actualizar: ${error.message}`);
+
+                alert(
+                    `No se pudo actualizar: ${error.message}`
+                );
             }
         }
 
+        // Eliminar producto
         if (boton.classList.contains("delete")) {
-            if (!confirm(`¿Dar de baja a "${producto.nombre}"?`)) return;
+            if (!confirm(`¿Dar de baja a "${producto.nombre}"?`)) {
+                return;
+            }
 
             try {
                 await consultarAPI(`/api/productos/${id}`, {
@@ -275,6 +420,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 alert("Producto eliminado.");
             } catch (error) {
                 console.error("Error eliminando producto:", error);
+
                 alert(
                     `No se pudo eliminar: ${error.message}\n` +
                     "Puede que el producto tenga ventas registradas."
@@ -283,6 +429,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Cargar datos reales al abrir la página
+    // =====================================================
+    // CARGAR INVENTARIO AL ABRIR LA PÁGINA
+    // =====================================================
+
     cargarInventario();
 });
