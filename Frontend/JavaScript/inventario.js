@@ -40,30 +40,47 @@ document.addEventListener("DOMContentLoaded", () => {
         return datos;
     }
 
-    // Cargar los productos guardados en PostgreSQL
-    async function cargarInventario() {
-        tbody.innerHTML = "<tr><td colspan='6'>Cargando inventario...</td></tr>";
+   async function cargarInventario() {
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="6">Cargando inventario...</td>
+        </tr>`;
 
-        try {
-            const respuesta = await consultarAPI("/api/productos");
+    try {
+        const respuesta = await fetch(
+            `${API_BASE}/api/productos`,
+            { cache: "no-store" }
+        );
 
-            inventario = Array.isArray(respuesta)
-                ? respuesta
-                : respuesta.productos || [];
+        const datos = await respuesta.json();
 
-            renderizarTabla();
-        } catch (error) {
-            console.error("Error cargando inventario:", error);
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="6">
-                        No se pudo cargar el inventario.
-                        Revisá la conexión con Render.
-                    </td>
-                </tr>`;
-            contador.textContent = "Error al cargar los productos";
+        if (!respuesta.ok) {
+            throw new Error(
+                datos.message || datos.error || `Error HTTP ${respuesta.status}`
+            );
         }
+
+        // Tu Flask devuelve { status: "ok", productos: [...] }
+        if (!Array.isArray(datos.productos)) {
+            throw new Error("La API no devolvió una lista de productos válida.");
+        }
+
+        inventario = datos.productos;
+        renderizarTabla();
+
+    } catch (error) {
+        console.error("Error cargando inventario:", error);
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6">
+                    Error al cargar productos. Revisá la consola del navegador.
+                </td>
+            </tr>`;
+
+        contador.textContent = "No se pudo cargar el inventario";
     }
+}
 
     // Dibujar la tabla con los datos recibidos del backend
     function renderizarTabla() {
