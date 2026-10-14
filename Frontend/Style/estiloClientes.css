@@ -219,13 +219,23 @@ body{
 
 /*Paneles*/
 .contenido-grid{
-    display: grid;
-    grid-template-columns: minmax(0,1.8fr) minmax(285px,0.9fr);
+    display: flex;
     gap:20px;
     align-items: start;
     padding-top: 50px;
+    width: 100%;
 }
 
+.clientes-panel-lista{
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+}
+
+.form-panel{
+    width: 340px;
+    flex-shrink: 0;
+}
 
 .panel{
     background: white;

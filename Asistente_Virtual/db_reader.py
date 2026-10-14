@@ -1,32 +1,22 @@
-import os
-import psycopg2
+
 from psycopg2.extras import RealDictCursor
-from dotenv import load_dotenv
+from backend.db_manager import obtener_conexion
 
-load_dotenv()
-
-def obtener_conexion():
-    try:
-        database_url = os.getenv("DATABASE_URL")
-
-        if not database_url:
-            print("Error: No se encontró la variable DATABASE_URL.")
-            return None
-
-        conexion = psycopg2.connect(database_url)
-        print("Conexión exitosa a PostgreSQL")
-        return conexion
-    except Exception as e:
-        print(f"Error de conexión: {e}")
-        return None  
 
 def obtener_datos_ia():
+    """Obtiene el inventario y las ventas de los últimos 30 días."""
+
     conexion = obtener_conexion()
+
     if conexion is None:
+        print("Error: no se pudo conectar con la base de datos.")
         return []
-    cursor = conexion.cursor(cursor_factory=RealDictCursor)
+
+    cursor = None
 
     try:
+        cursor = conexion.cursor(cursor_factory=RealDictCursor)
+
         consulta = """
             SELECT
                 p.id AS producto_id,
@@ -34,14 +24,10 @@ def obtener_datos_ia():
                 p.precio,
                 p.stock AS stock_actual,
                 p.stock_minimo,
-
                 COALESCE(
-                    SUM(
-                        CASE
-                            WHEN v.fecha >= CURRENT_DATE - INTERVAL '30 days'
-                            THEN dv.cantidad
-                            ELSE 0
-                        END
+                    SUM(dv.cantidad) FILTER (
+                        WHERE v.fecha >= CURRENT_TIMESTAMP
+                            - INTERVAL '30 days'
                     ),
                     0
                 ) AS vendidos_30d
@@ -49,10 +35,10 @@ def obtener_datos_ia():
             FROM productos p
 
             LEFT JOIN detalle_ventas dv
-                ON p.id = dv.producto_id
+                ON dv.producto_id = p.id
 
             LEFT JOIN ventas v
-                ON dv.venta_id = v.id
+                ON v.id = dv.venta_id
 
             GROUP BY
                 p.id,
@@ -63,69 +49,55 @@ def obtener_datos_ia():
 
             ORDER BY p.nombre;
         """
+
         cursor.execute(consulta)
-        datos = cursor.fetchall()
+        filas = cursor.fetchall()
+
+        datos = []
+
+        for fila in filas:
+            producto = dict(fila)
+
+            # Convertir valores NUMERIC de PostgreSQL a float.
+            if producto["precio"] is not None:
+                producto["precio"] = float(producto["precio"])
+
+            # Facilitar el procesamiento de cantidades por la IA.
+            producto["stock_actual"] = int(
+                producto["stock_actual"] or 0
+            )
+            producto["stock_minimo"] = int(
+                producto["stock_minimo"] or 0
+            )
+            producto["vendidos_30d"] = int(
+                producto["vendidos_30d"] or 0
+            )
+
+            datos.append(producto)
+
+        print(f"Productos obtenidos para la IA: {len(datos)}")
         return datos
+
     except Exception as e:
-        print(f"Error consultando datos: {e}")
+        print(f"Error consultando el inventario para la IA: {e}")
         return []
+
     finally:
-        cursor.close()
+        if cursor is not None:
+            cursor.close()
+
         conexion.close()
 
 
 if __name__ == "__main__":
-   datos = obtener_datos_ia()
-   print("\n========== DATOS PARA LA IA ==========\n")
-   for producto in datos:
+    datos = obtener_datos_ia()
+
+    print("\n========== INVENTARIO PARA LA IA ==========\n")
+
+    for producto in datos:
         print(
             f"{producto['nombre']} | "
             f"Stock: {producto['stock_actual']} | "
             f"Mínimo: {producto['stock_minimo']} | "
-            f"Vendidos 30 días: {producto['vendidos_30d']}"
+            f"Vendidos en 30 días: {producto['vendidos_30d']}"
         )
-
-# db_reader.py
-
-from backend.db_manager import obtener_conexion
-
-
-def obtener_datos_ia():
-    """Obtiene productos y ventas recientes desde PostgreSQL."""
-
-    conn = obtener_conexion()
-
-    try:
-        with conn.cursor() as cursor:
-            cursor.execute("""
-                SELECT
-                    p.id,
-                    p.nombre,
-                    p.categoria,
-                    p.stock AS stock_actual,
-                    p.stock_minimo,
-                    COALESCE(
-                        SUM(dv.cantidad) FILTER (
-                            WHERE v.fecha >= CURRENT_TIMESTAMP
-                                - INTERVAL '30 days'
-                        ),
-                        0
-                    ) AS vendidos_30d
-                FROM productos p
-                LEFT JOIN detalle_ventas dv
-                    ON dv.producto_id = p.id
-                LEFT JOIN ventas v
-                    ON v.id = dv.venta_id
-                GROUP BY
-                    p.id,
-                    p.nombre,
-                    p.categoria,
-                    p.stock,
-                    p.stock_minimo
-                ORDER BY p.nombre;
-            """)
-
-            return [dict(fila) for fila in cursor.fetchall()]
-
-    finally:
-        conn.close()

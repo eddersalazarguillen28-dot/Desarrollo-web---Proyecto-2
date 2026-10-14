@@ -6,174 +6,146 @@
 
     <title>Dashboard</title>
     <link rel="icon" type="image/jpeg" href="../Imagenes/logoVentana.jpeg">
-
+    <link rel="stylesheet" href="../Style/global.css">
     <link rel="stylesheet" href="../Style/estiloDashboard.css">
-
-    
 </head>
 
-<body>
+<body id="page-dashboard">
+    <!-- Contenedor para inyección modular del Sidebar -->
+    <div id="sidebar-container"></div>
+
+    <!-- Encabezado propio del Dashboard -->
     <header class="encabezado">
         <h1>Dashboard OctoERP</h1>
         <p>Resumen de ventas e inventario de la empresa</p>
         <p id="ultima-actualizacion" role="status"></p>
     </header>
-
-     <aside class = "barraLateral">
-
-         <img src="../Imagenes/logoLinea.png" alt="Logo" id="logo">
-        
-        <nav class="menu">
-            <a href="../Index/inicio.html" class="menu-item ">
-                <p>Inicio</p>
-            </a>
-
-            <a href="../Index/productos.html" class="menu-item">
-                <p>Productos</p>
-            </a>
-
-            <a href="../Index/clientes.html" class="menu-item">
-                <p>Clientes</p>
-            </a>
-
-            <a href="../Index/ventas.html" class="menu-item">
-                <p>Ventas</p>
-            </a>
-
-            <a href="../Index/inventario.html" class="menu-item">
-                <p>Inventario</p>
-            </a>
-
-            <a href="../Index/dashboard.html" class="menu-item active" aria-current="page">
-                <p>Dashboard</p>
-            </a>
-
-            <a href="../Index/reportes.html" class="menu-item">
-                <p>Reportes</p>
-            </a>
-
-
-        </nav>
-       
-    </aside>
     
     <main class="contenedor">
         <section class="controles" aria-label="Controles del dashboard">
-                <div>
-                    <label for="mes">Seleccionar mes:</label>
-                        <select id="mes">
-                            <option value="todos">Todos los meses</option>
-                            <option value="1">Enero</option>
-                            <option value="2">Febrero</option>
-                            <option value="3">Marzo</option>
-                            <option value="4">Abril</option>
-                            <option value="5">Mayo</option>
-                            <option value="6">Junio</option>
-                            <option value="7">Julio</option>
-                            <option value="8">Agosto</option>
-                            <option value="9">Septiembre</option>
-                            <option value="10">Octubre</option>
-                            <option value="11">Noviembre</option>
-                            <option value="12">Diciembre</option>
-                        </select>
-                </div>
+            <div>
+                <label for="mes">Seleccionar mes:</label>
+                <select id="mes">
+                    <option value="todos">Todos los meses</option>
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+            </div>
 
-                <button id="actualizar" type="button">actualizar dashboard</button>
+            <button id="actualizar" type="button">Actualizar dashboard</button>
         </section>
-        <p class="aviso">Datos de venta e inventario <br> Moneda. colones costarricenses</p>
+        
+        <p class="aviso">Datos de venta e inventario <br> Moneda: colones costarricenses</p>
 
-        <!--Indicar clave de rendimiento (KPIs) -->
-            <section class="indicadores" aria-label="indicadores de la empresa">
-                <article class="tarjeta">
-                    <h2>Ventas del periodo</h2>    
-                    <p id="total-ventas">₡0</p>
-                    <small>Ingresos del periodo seleccionado</small>
-                </article>
+        <!-- Indicadores Clave de Rendimiento (KPIs) -->
+        <section class="indicadores" aria-label="Indicadores de la empresa">
+            <article class="tarjeta">
+                <h2>Ventas del periodo</h2>    
+                <p id="total-ventas">₡0</p>
+                <small>Ingresos del periodo seleccionado</small>
+            </article>
 
-                <article class="tarjeta">
-                    <h2>Cantidad de ventas</h2>    
-                    <p id="cantidad-ventas">0</p>
-                    <small>Ventas registradas en el periodo</small>
-                </article>
-                <article class="tarjeta">
-                    <h2>Ticket promedio</h2>    
-                    <p id="ticket-promedio">₡0</p>
-                    <small>Ingresos primedio por ventas</small>
-                </article>
-                <article class="tarjeta">
-                    <h2>Productos con stock bajo</h2>    
-                    <p id="cantidad-stock-bajo">0</p>
-                </article>
-            </section>
-            <!--Gráficos-->
-            <p id="aviso-sin-ventas" hidden>No hay ventas registradas en el periodo seleccionado</p>
-            <section class="graficos" aria-label="Gráficos de ventas">
-                <article class="panel">
-                    <h2 id="titulo-ventas">Ventas por mes - Ingresos (₡)</h2>
-                    <div class="contenedor-grafico">
-                        <canvas id="grafico-ventas" role="img" aria-label="Gráfico de ingresos por mes"></canvas>
-                    </div>
-                </article>
-            </section>
+            <article class="tarjeta">
+                <h2>Cantidad de ventas</h2>    
+                <p id="cantidad-ventas">0</p>
+                <small>Ventas registradas en el periodo</small>
+            </article>
+            
+            <article class="tarjeta">
+                <h2>Ticket promedio</h2>    
+                <p id="ticket-promedio">₡0</p>
+                <small>Ingresos promedio por ventas</small>
+            </article>
 
-            <section class="panel">
-                <h2 id="titulo-productos">Productos más vendidos - Unidades vendidas</h2>
+            <article class="tarjeta">
+                <h2>Productos con stock bajo</h2>    
+                <p id="cantidad-stock-bajo">0</p>
+            </article>
+        </section>
+
+        <!-- Gráficos -->
+        <p id="aviso-sin-ventas" hidden>No hay ventas registradas en el periodo seleccionado</p>
+        
+        <section class="graficos" aria-label="Gráficos de ventas">
+            <article class="panel">
+                <h2 id="titulo-ventas">Ventas por mes - Ingresos (₡)</h2>
                 <div class="contenedor-grafico">
-                    <canvas id="grafico-productos" role="img" aria-label="Gráfico de unidades vendidas por producto"></canvas>
+                    <canvas id="grafico-ventas" role="img" aria-label="Gráfico de ingresos por mes"></canvas>
                 </div>
-            </section>
-<br>
-            <section class="panel">
-                <h2>Detalles de ventas del periodo</h2>
-                <p>Cada fila respresenta un producto dentro de una venta registrada</p>
+            </article>
+        </section>
 
-                <div class="contenedor-tabla">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th scope="col">Ventas</th>
-                                <th scope="col">Fecha</th>
-                                <th scope="col">Producto</th>
-                                <th scope="col">Unidades</th>
-                                <th scope="col">Precio unitario</th>
-                                <th scope="col">Importe</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-ventas"></tbody>
-                    </table>
-                </div>
-            </section>
-<br>
-            <!--Alertas de inventario-->
-            <section class="panel" aria-labelledby="titulo-alertas">
-                <h2 id="titulo-alertas">Alertas de stock bajo</h2>
-                <p>Productos con existencia iguales o inferiores al minimo</p>
+        <section class="panel">
+            <h2 id="titulo-productos">Productos más vendidos - Unidades vendidas</h2>
+            <div class="contenedor-grafico">
+                <canvas id="grafico-productos" role="img" aria-label="Gráfico de unidades vendidas por producto"></canvas>
+            </div>
+        </section>
 
-                <div class="contenedor-tabla">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th scope="col">Producto</th>
-                                <th scope="col">Stock actual</th>
-                                <th scope="col">Minimo</th>
-                                <th scope="col">Faltan para el mínimo</th>
-                                <th scope="col">Estado</th>
-                            </tr>
-                        </thead>
+        <br>
 
-                        <tbody id="tabla-stock">
-                            <!-- JavaScript agregará los productos aquí-->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+        <section class="panel">
+            <h2>Detalles de ventas del periodo</h2>
+            <p>Cada fila representa un producto dentro de una venta registrada</p>
+
+            <div class="contenedor-tabla">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Ventas</th>
+                            <th scope="col">Fecha</th>
+                            <th scope="col">Producto</th>
+                            <th scope="col">Unidades</th>
+                            <th scope="col">Precio unitario</th>
+                            <th scope="col">Importe</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-ventas"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <br>
+
+        <!-- Alertas de inventario -->
+        <section class="panel" aria-labelledby="titulo-alertas">
+            <h2 id="titulo-alertas">Alertas de stock bajo</h2>
+            <p>Productos con existencia igual o inferior al mínimo</p>
+
+            <div class="contenedor-tabla">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Producto</th>
+                            <th scope="col">Stock actual</th>
+                            <th scope="col">Mínimo</th>
+                            <th scope="col">Faltan para el mínimo</th>
+                            <th scope="col">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-stock"></tbody>
+                </table>
+            </div>
+        </section>
     </main>
 
     <footer>
-        <p>©TODOS LOS DERECHOS RESERVADOS</p>
+        <p>© TODOS LOS DERECHOS RESERVADOS</p>
     </footer>
 
+    <!-- Scripts -->
     <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script src="../JavaScript/layout.js"></script>
     <script defer src="../JavaScript/dashboard.js"></script>
 </body>
 </html>
