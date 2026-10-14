@@ -330,7 +330,7 @@ function actualizarBotones() {
         carrito.length === 0;
 }
 
-async function cargarPoplares() {
+async function cargarPopulares() {
     const contenedor = document.getElementById("productos-populares-lista");
 
     if (!contenedor) return;
