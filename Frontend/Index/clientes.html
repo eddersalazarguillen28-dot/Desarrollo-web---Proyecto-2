@@ -136,6 +136,22 @@
             </section>
         </main>
     </div>
+    <!-- Modal de Confirmación Personalizado -->
+    <div id="modalConfirmar" class="modal-overlay" style="display: none;">
+        <div class="modal-content-confirm">
+            <div class="modal-header-confirm">
+                <h3>Confirmar eliminación</h3>
+                <button type="button" id="btnCerrarModalConfirm" class="btn-x-modal">✕</button>
+            </div>
+            <div class="modal-body-confirm">
+                <p id="textoModalConfirm">¿Estás seguro de que deseas eliminar este cliente?</p>
+            </div>
+            <div class="modal-footer-confirm">
+                <button type="button" id="btnCancelarConfirm" class="btn-modal-cancelar">Cancelar</button>
+                <button type="button" id="btnAceptarConfirm" class="btn-modal-eliminar">Eliminar</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Botón Flotante del Chat -->
     <button id="btn-abrir-chat" class="chat-trigger">
