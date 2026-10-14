@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded',() => {
     form.addEventListener('submit',async(e) => {
         e.preventDefault();
 
-        const correo = inputCorreo.ariaValueMax.trim();
+        const correo = inputCorreo.value.trim();
 
         if(!correo){
             mostrarMensaje("Por favor, ingresa tu correo electrónico","error");
@@ -16,14 +16,14 @@ document.addEventListener('DOMContentLoaded',() => {
         const textoOriginal = btnEnviar.innerHTML;
         btnEnviar.disabled = true;
         btnEnviar.style.cursor="wait";
-        btnEnviar.textContent="Enviando enlace...";
+        btnEnviar.textContent="Enviando enlace..."; 
 
         try{
             //conexion con backend API
-            const respuesta = await fetch(,{//Endpoint
+            const respuesta = await fetch('/api/recuperar-password',{//Endpoint
                 method:'POST',
                 headers:{
-                    'content-Type':''
+                    'content-Type':'application/json'
                 },
                 body:JSON.stringify({correo})
             });
