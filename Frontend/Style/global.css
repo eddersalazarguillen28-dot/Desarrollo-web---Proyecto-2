@@ -25,7 +25,7 @@ body {
 :root {
     --sidebar-width: 230px;
     --header-height: 60px;
-    --sidebar-bg: #0b1221;
+    --sidebar-bg: linear-gradient(180deg, #0e1425 0%, #000000 100%);
     --active-bg: #4f5be3;
 }
 
@@ -305,3 +305,18 @@ tbody tr:hover {
     background-color: #f8f9fa;
 }
 
+.sidebar{
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+.sidebar-nav{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 8px;
+}
+.nav-logout{
+    margin-top: auto;
+}

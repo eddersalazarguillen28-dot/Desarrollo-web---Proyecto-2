@@ -721,7 +721,7 @@ PREGUNTA DEL USUARIO:
 """
 
         # 6. Consultar Gemini con reintentos automáticos
-        modelo = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+        modelo = os.getenv("GEMINI_MODEL", "gemini-3.7-flash")
         app.logger.info(
             "Modelo de Gemini configurado: %s", modelo
         )
