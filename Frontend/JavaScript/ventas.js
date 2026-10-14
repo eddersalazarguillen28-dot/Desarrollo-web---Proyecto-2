@@ -378,6 +378,7 @@ async function cargarPopulares() {
 }
 
 async function registrarVenta() {
+    console.log("Se presiono Registrar venta");
     if (guardandoVenta || !datosCargados) return;
 
     const clienteId = Number(selectCliente.value);
@@ -443,6 +444,7 @@ async function registrarVenta() {
 selectProducto.addEventListener("change", actualizarPrecio);
 botonAgregar.addEventListener("click", agregarProducto);
 botonFactura.addEventListener("click", registrarVenta);
+console.log("Boton de registar venta conectado");
 
 async function iniciarPagina() {
     mostrarFecha();
