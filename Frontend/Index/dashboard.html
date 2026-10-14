@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Dashboard</title>
     <link rel="icon" type="image/jpeg" href="../Imagenes/logoVentana.jpeg">
     <link rel="stylesheet" href="../Style/global.css">
@@ -11,16 +10,17 @@
 </head>
 
 <body id="page-dashboard">
-    <!-- Contenedor para inyección modular del Sidebar -->
+    <!-- Contenedor del Sidebar Modular -->
     <div id="sidebar-container"></div>
 
-    <!-- Encabezado propio del Dashboard -->
+    <!-- Encabezado del Dashboard -->
     <header class="encabezado">
         <h1>Dashboard OctoERP</h1>
         <p>Resumen de ventas e inventario de la empresa</p>
         <p id="ultima-actualizacion" role="status"></p>
     </header>
     
+    <!-- Contenido Principal -->
     <main class="contenedor">
         <section class="controles" aria-label="Controles del dashboard">
             <div>
@@ -47,7 +47,7 @@
         
         <p class="aviso">Datos de venta e inventario <br> Moneda: colones costarricenses</p>
 
-        <!-- Indicadores Clave de Rendimiento (KPIs) -->
+        <!-- Indicadores Clave (KPIs) -->
         <section class="indicadores" aria-label="Indicadores de la empresa">
             <article class="tarjeta">
                 <h2>Ventas del periodo</h2>    
@@ -117,7 +117,7 @@
 
         <br>
 
-        <!-- Alertas de inventario -->
+        <!-- Alertas de Stock -->
         <section class="panel" aria-labelledby="titulo-alertas">
             <h2 id="titulo-alertas">Alertas de stock bajo</h2>
             <p>Productos con existencia igual o inferior al mínimo</p>
@@ -139,13 +139,42 @@
         </section>
     </main>
 
-    <footer>
-        <p>© TODOS LOS DERECHOS RESERVADOS</p>
-    </footer>
+    <!-- Botón Flotante del Chat -->
+    <button id="btn-abrir-chat" class="chat-trigger" type="button">
+        <img src="../Imagenes/octopus1.png" alt="Chat" style="width:30px;">
+    </button>
+
+    <!-- Ventana del Chat -->
+    <div id="ventana-chat" class="chat-window oculta">
+        <div class="chat-header">
+            <div class="header-perfil">
+                <div class="avatar">
+                    <img src="../Imagenes/octopus.png" alt="Asistente">
+                </div>
+                <div class="info">
+                    <h3>Asistente de Inventario <span>x Gemini</span></h3>
+                    <span class="estado">● Conectado</span>
+                </div>
+            </div>
+            <button type="button" id="btn-cerrar-chat" class="btn-cerrar">✕</button>
+        </div>
+        <div class="chat-mensajes" id="chat-mensajes">
+            <div class="mensaje bot">
+                <div class="burbuja">
+                    He analizado las ventas recientes y el inventario actual. ¿En qué te puedo ayudar hoy?
+                </div>
+            </div>
+        </div>
+        <div class="chat-input-container">
+            <input type="text" id="chat-input" placeholder="Pregunta sobre el stock...">
+            <button type="button" id="btn-enviar-chat" class="btn-enviar">➤</button>
+        </div>
+    </div>
 
     <!-- Scripts -->
     <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
     <script src="../JavaScript/layout.js"></script>
+    <script src="../JavaScript/chat.js"></script>
     <script defer src="../JavaScript/dashboard.js"></script>
 </body>
 </html>

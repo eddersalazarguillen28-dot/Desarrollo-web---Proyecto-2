@@ -92,9 +92,40 @@
             </div>
         </main>
     </div>
+<!-- Botón Flotante del Chat -->
+    <button id="btn-abrir-chat" class="chat-trigger" type="button">
+        <img src="../Imagenes/octopus1.png" alt="Chat" style="width:30px;">
+    </button>
 
-    <script src="../JavaScript/layout.js"></script>
-    <script src="../JavaScript/ventas.js"></script>
+    <!-- Ventana del Asistente -->
+    <div id="ventana-chat" class="chat-window oculta">
+        <div class="chat-header">
+            <div class="header-perfil">
+                <div class="avatar">
+                    <img src="../Imagenes/octopus.png" alt="Asistente">
+                </div>
+                <div class="info">
+                    <h3>Asistente de Inventario <span>x Gemini</span></h3>
+                    <span class="estado">● Conectado</span>
+                </div>
+            </div>
+            <button type="button" id="btn-cerrar-chat" class="btn-cerrar">✕</button>
+        </div>
+        <div class="chat-mensajes" id="chat-mensajes">
+            <div class="mensaje bot">
+                <div class="burbuja">
+                    He analizado las ventas recientes y el inventario actual. ¿En qué te puedo ayudar hoy?
+                </div>
+            </div>
+        </div>
+        <div class="chat-input-container">
+            <input type="text" id="chat-input" placeholder="Pregunta sobre el stock...">
+            <button type="button" id="btn-enviar-chat" class="btn-enviar">➤</button>
+        </div>
+    </div>
     
+    <script src="../JavaScript/layout.js"></script>
+    <script src="../JavaScript/chat.js"></script>
+    <script src="../JavaScript/ventas.js"></script>
 </body>
 </html>
