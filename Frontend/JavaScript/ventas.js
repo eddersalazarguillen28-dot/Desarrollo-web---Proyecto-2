@@ -58,9 +58,29 @@ function mostrarUsuario() {
     const rol = document.getElementById("rol-usuario");
     const avatar = document.getElementById("avatar-usuario");
 
-    if (nombre) nombre.textContent = "Usuario";
-    if (rol) rol.textContent = "";
-    if (avatar) avatar.textContent = "?";
+    let usuario = null;
+
+    try {
+        usuario =  JSON.parse(localStorage.getItem("usuario"));
+    }catch (error) {
+        console.warn("No se pudo leer el usuario", error);
+    }
+
+    if (!usuario) return;
+
+    if (nombre) {
+        nombre.textContent = usuario.nombre;
+    }
+
+    if (rol) {
+        rol.textContent = usuario.rol;
+    }
+
+    if (avatar) {
+        avatar.textContent = usuario.nombre
+        .chartAt(0)
+        .toUpperCase();
+    }
 }
 
 function mostrarMensaje(texto, esError = false) {
@@ -310,39 +330,33 @@ function actualizarBotones() {
         carrito.length === 0;
 }
 
-async function cargarPopulares() {
+async function cargarPoplares() {
     const contenedor = document.getElementById("productos-populares-lista");
+
     if (!contenedor) return;
 
     contenedor.replaceChildren();
 
     const datos = await consultarApi("/api/dashboard");
 
-    if (!Array.isArray(datos.ventas)) {
-        throw new Error("El dashboard no devolvió la lista de ventas.");
+    if (!Array.isArray(datos.detalles)) {
+        throw new Error("No se encontraron los detalles de ventas")
     }
 
-    ventasDashboard = datos.ventas;
+    const detalles = datos.detalles;
 
-    const ranking = productos.map(producto => {
-        const unidades = ventasDashboard
-            .filter(venta =>
-                Number(venta.productoId) === Number(producto.id)
-            )
-            .reduce(
-                (suma, venta) => suma + Number(venta.cantidad),
-                0
-            );
-
-        return { ...producto, unidades };
+    const ranking = productos.map(producto =>{
+        const unidades = detalles.filter(detalle =>  Number(detalle.producto_id ?? detalle.productoId) === Number(producto.id)
+    ).reduce((suma, detalle) => suma + Number(detalle.cantidad || 0),0);
+    return {...producto, unidades}
     });
 
     ranking.sort((a, b) => b.unidades - a.unidades);
 
-    const vendidos = ranking.filter(p => p.unidades > 0).slice(0, 5);
+    const vendidos = ranking.filter(producto => producto.unidades > 0).slice(0, 5);
 
     if (vendidos.length === 0) {
-        contenedor.textContent = "Todavía no hay productos vendidos.";
+        contenedor.textContent = "Todavía no hay productos vendidos";
         return;
     }
 
@@ -350,17 +364,17 @@ async function cargarPopulares() {
         const boton = document.createElement("button");
 
         boton.type = "button";
-        boton.className = "pill-producto";
-        boton.textContent = producto.nombre;
+        boton.className = "pill-prodcuto";
+        boton.textContent = '${producto.nombre} (${producto.unidades} vendidos)';
+
         boton.disabled = Number(producto.stock) <= 0;
 
-        boton.addEventListener("click", () => {
+        boton,addEventListener("click", () => {
             selectProducto.value = String(producto.id);
             actualizarPrecio();
         });
-
-        contenedor.appendChild(boton);
-    });
+        contenedor.appendChild();
+    })
 }
 
 async function registrarVenta() {
