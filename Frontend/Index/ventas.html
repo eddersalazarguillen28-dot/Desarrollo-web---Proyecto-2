@@ -1,96 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/jpeg" href="../Imagenes/logoVentana.jpeg">
-    <link rel="stylesheet" href="../Style/estiloVentas.css">
-    <link rel="stylesheet" href="../Style/global.css">
     <title>Ventas</title>
-</head>
 
+    <link rel="stylesheet" href="../Style/global.css">
+    <link rel="stylesheet" href="../Style/estiloVentas.css">
+</head>
 <body id="page-ventas">
     <div id="sidebar-container"></div>
     <div id="header-container"></div>
+
     <div class="main-wrapper">
         <main class="main">
+
+            <h1>Registrar Venta</h1>
+
+            <p>Selecciona un cliente y agrega los productos de la venta</p>
+
             <section class="nueva-venta">
-                <div class="card-header">
-                    <div class="titulo">
-                        <h2>Nueva venta</h2>
-                    </div>
-                    <div class="instruccion">Selecciona un cliente y agrega producto</div>
-                </div>
+                <h2>Nueva venta</h2>
                 <div class="form-ventas">
-                    <div class="campo-form cliente">
-                        <label for="cliente">cliente</label>
-                        <div class="select-box">
-                            <select id="cliente">
-                                <option value="">Cargando</option>
-                            </select>
-                        </div>
+                    <div class="campo-form">
+                        <label for="cliente">Cliente</label>
+
+                        <section id="cliente">
+                            <option value="">Cargando clientes...</option>
+                        </section>
                     </div>
-                    <div class="campo-form producto">
-                        <label for="producto">Producto</label>
-                        <select id="producto">
-                            <option value="">Cargando producto...</option>
-                        </select>
-                    </div>
-                    <div class="campo-form cantidad">
+
+                    <div class="campo-form">
                         <label for="cantidad">cantidad</label>
-                        <input type="number" id="cantidad" value="1" min="1" step="1">
-                    </div>
-                    <div class="campo-form pecio">
-                        <label for="precio">Precio unitario</label>
-                        <input type="text" id="precio" placeholder="₡0" readonly>
+
+                        <input type="number" id="cantidad" value="1" min="1">
                     </div>
                 </div>
-                <div class="productos-populares">
-                    <div class="popular-titulo">
-                        Productos más vendidos
-                    </div>
-                    <div id="productos-populares-lista"></div>
-                </div>
+
+                <button type="button" id="btn-agregar" class="btn-agregar">+ Agregar al carrito</button>
             </section>
+
             <section class="resumen-seccion">
-                <div class="resumen-card">
-                    <div class="resumen-titulo">
-                        <h2>Resumen de ventas</h2>
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Producto</th>
-                                <th>Cantidad</th>
-                                <th>Precio unitario</th>
-                                <th>Subtotal</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="cuerpo-venta"></tbody>
-                    </table>
-                    <button type="button" id="btn-agregar" class="btn-agregar">+ Agregar producto</button>
-                    <div class="total-card">
-                        <h3 class="total-linea">
-                            <span>Subtotal</span>
-                            <strong id="subtotal-venta">₡0</strong>
-                        </h3>
-                    </div>
-                    <div class="total-linea">
-                        <span>Impuestos</span>
-                        <strong id="iva-venta">No configurado</strong>
-                    </div>
+                <h2>Resumen de la venta</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                            <th>Subtotal</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="cuerpo-venta"></tbody>
+                </table>
+
+                <div class="total-card">
+                    <p>Subtotal: 
+                        <strong id="subtotal-venta">
+                            ₡0
+                        </strong>
+                    </p>
+
+                    <p>Impuestos:
+                        <strong id="iva-venta">
+                            No configurar
+                        </strong>
+                    </p>
+                    
+                    <h2>
+                        Total:
+                        <strong id="total-venta">
+                            ₡0
+                        </strong>
+                    </h2>
                 </div>
-                <div class="total-final">
-                    <span>Total</span>
-                    <strong id="total-venta">₡0</strong>
-                </div>
-                <button type="button" class="btnFactura" id="btn-factura">Registrar venta</button>
+
+                <button type="button" id="btn-factura" class="btnFactura">
+                    Registrar venta
+                </button>
             </section>
-            <div class="mensaje-exitoso" id="contenedor-mensaje" hidden>
+            
+            <div id="contenedor-mensaje" class="mensaje-venta" hidden>
                 <span id="mensaje-venta"></span>
-                <button type="button" id="cerrar-mensaje">X</button>
+                <button type="button" id="cerrar-mensaje">
+                    X
+                </button>
             </div>
         </main>
     </div>
@@ -125,9 +122,9 @@
             <button type="button" id="btn-enviar-chat" class="btn-enviar">➤</button>
         </div>
     </div>
+    
     <script src="../JavaScript/layout.js"></script>
     <script src="../JavaScript/chat.js"></script>
     <script src="../JavaScript/ventas.js"></script>
 </body>
-
 </html>

@@ -12,6 +12,9 @@ from psycopg2.extras import RealDictCursor
 from google import genai
 
 from backend import db_manager as db
+import secrets
+import resend
+
 
 cloudinary.config(
     cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
@@ -798,6 +801,49 @@ def archivo_demasiado_grande(error):
             "Reduce el tamaño de la imagen e inténtalo de nuevo."
         )
     }), 413
+
+#=======================================================
+#Recuperar contraseña
+#=======================================================
+resend.api_key=os.getenv("RESEND_API_KEY")
+@app.route('/api/recuperar-password', methods=['POST'])
+def recuperar_password():
+    datos = request.get_json()
+    if not datos or 'correo' not in datos:
+        return jsonify({'mensaje':'faltan datos en la solicitud'}),400
+
+    correo = datos.get('correo').strip().lower()
+    usuario = db.obtener_usuario_por_correo(correo)
+    if usuario:
+        token = secrets.token_urlsafe(32)
+        enlace =f"https://octo-erp.onrender.com/restablecer?token={token}"
+
+        try:
+            params={
+                "from":"onboarding@resend.dev",
+                "to":[correo],
+                "subject":"Restablecer contraseña-OctoERP",
+                "html":f"""
+                    <div style="font-family:Arial,sans-serif;color:#333;">
+                    <h2>Solicitud de recuperación de contraseña</h2>
+                    <p>Hola, <b>{usuario['nombre']}</b>. Has solicitado restablecer tu contraseña</p>
+                    <p>Haz clic en el siguiente botón para continuar:</p>
+                    <a href = "{enlace}" style="background-color:#007bff;color:white;padding:10px 20px;text-decoration:none;
+                    border-radius:5px;display:inline-block;">Restablecer contraseña</a>
+                    <p style="margin-top:20px;font-size:12px:color:#666;">Si tú no solicitaste este cambio,puedes ignorar este mensaje</p>
+                    </div>
+                """
+            }
+
+            resend.Emails.send(params)
+            print(f"Correo de recuperación enviado exitosamentea:{correo}")
+        except Exception as e:
+            print(f"Error al enviar correo con Resent:{e}")
+    return jsonify({'mensaje':'Si el correo está registrado,recibirás las instrucciones'}),200
+
+        
+
+    
 
 
 # =========================================================
