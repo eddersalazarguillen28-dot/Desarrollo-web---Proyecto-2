@@ -27,7 +27,7 @@ def inicializar_esquema(schema_file_path="schema.sql"):
     with open(schema_file_path, "r", encoding="utf-8") as file:
         sql_commands = file.read()
 
-    # MariaDB / MySQL permite múltiples sentencias separadas por ';'
+    
     with engine.connect() as connection:
         trans = connection.begin()
         try:

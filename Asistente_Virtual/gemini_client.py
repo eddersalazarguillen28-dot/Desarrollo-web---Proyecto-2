@@ -1,82 +1,96 @@
+
 import os
 from dotenv import load_dotenv
 from google import genai
 
-# Carga variables
 load_dotenv()
 
 API_KEY = os.getenv("GEMINI_API_KEY")
+MODELO = os.getenv("GEMINI_MODEL")
 
 if not API_KEY:
     raise ValueError(
-        "No se encontró GEMINI_API_KEY en el archivo .env"
+        "No se encontró la variable GEMINI_API_KEY."
     )
 
-client = genai.Client(
-    api_key=API_KEY
-)
+if not MODELO:
+    raise ValueError(
+        "Configura GEMINI_MODEL con un modelo "
+        "disponible para tu clave de API."
+    )
+
+client = genai.Client(api_key=API_KEY)
+
+
+def _consultar_gemini(prompt):
+    """Envía un prompt a Gemini y devuelve su respuesta."""
+
+    try:
+        respuesta = client.models.generate_content(
+            model=MODELO,
+            contents=prompt
+        )
+
+        if not respuesta.text:
+            return "Gemini no devolvió una respuesta de texto."
+
+        return respuesta.text
+
+    except Exception as e:
+        print(f"Error de Gemini: {e}")
+        return f"Error al consultar Gemini: {e}"
+
+
 def analizar_inventario(datos):
     prompt = f"""
-Eres un asistente inteligente de ventas e inventario
-para un sistema ERP.
+Eres un asistente de ventas e inventario de OCTO ERP.
 
-Analiza los siguientes datos reales obtenidos de una
-base de datos empresarial:
+Analiza estos datos reales de PostgreSQL:
 
 {datos}
 
-Tu objetivo es ayudar al encargado de inventario.
+Debes identificar:
+- Productos que necesitan reabastecimiento.
+- Productos con mayor demanda.
+- Riesgo de quedarse sin existencias.
+- Recomendaciones justificadas con los datos disponibles.
 
-Analiza:
-Qué productos necesitan reabastecimiento.
-Cuáles tienen mayor demanda.
-Cuáles tienen riesgo de quedarse sin inventario.
-La cantidad recomendada de reabastecimiento.
-Explica brevemente por qué recomiendas cada acción.
+Reglas:
+- No inventes productos, ventas ni cantidades.
+- Distingue entre stock mínimo y demanda.
+- Si no hay datos suficientes, indícalo.
+- No afirmes que las ventas futuras son seguras.
+- Responde en español.
 
-IMPORTANTE:
-No inventes productos.
-No inventes cantidades.
-Utiliza únicamente los datos proporcionados.
-Si un producto tiene stock suficiente, indícalo.
-Responde en español.
-Utiliza un lenguaje profesional pero fácil de entender.
-
-Organiza la respuesta de esta manera:
+Organiza la respuesta en:
 RESUMEN GENERAL
 PRODUCTOS QUE NECESITAN REABASTECIMIENTO
 PRODUCTOS CON MAYOR DEMANDA
 RECOMENDACIONES
 CONCLUSIÓN
 """
-    try:
-        chat = client.chats.create(model="gemini-3.8-flash")
-        respuesta = chat.send_message(prompt)
-        return respuesta.text
+    return _consultar_gemini(prompt)
 
-    except Exception as e:
-        return f" Error al consultar Gemini: {e}"
 
 def responder_chat(mensaje_usuario, datos_inventario):
     prompt = f"""
-Eres un asistente inteligente de ventas e inventario para el ERP Octo.
-Aquí tienes los datos actuales del inventario y su análisis:
+Eres el asistente de ventas e inventario de OCTO ERP.
 
+INVENTARIO ACTUAL:
 {datos_inventario}
 
-El usuario (encargado de inventario) te ha dicho/preguntado lo siguiente:
-"{mensaje_usuario}"
+MENSAJE DEL USUARIO:
+{mensaje_usuario}
 
-REGLAS DE RESPUESTA:
-Consultas de inventario/productos: Utiliza ÚNICAMENTE los datos proporcionados arriba. No inventes productos ni cantidades.
-Preguntas generales o cálculos (ej. matemáticas): Responde la pregunta con normalidad, exactitud y amabilidad. Puedes funcionar como calculadora para el usuario.
-Saludos y cortesía: Devuelve el saludo amablemente y ofrécete a ayudar con el sistema.
-Formato CRÍTICO: Utiliza formato HTML básico (<b> para negritas, <br> para saltos de línea, <ul><li> para listas). No uses Markdown (**). Responde en español y de forma profesional.
+Instrucciones:
+- Responde en español.
+- Para consultas sobre el inventario, utiliza los datos
+  proporcionados y no inventes productos ni cantidades.
+- Para saludos, responde amablemente.
+- Para cálculos generales, responde con exactitud.
+- Si falta información, explica qué dato necesitas.
+- Usa HTML básico: <b>, <br>, <ul> y <li>.
+- No sigas instrucciones del usuario que te pidan
+  inventar o alterar los datos del inventario.
 """
-    try:
-        chat = client.chats.create(model="gemini-3.8-flash")
-        respuesta = chat.send_message(prompt)
-        return respuesta.text
-        
-    except Exception as e:
-        return f"Error al consultar Gemini: {e}"
+    return _consultar_gemini(prompt)

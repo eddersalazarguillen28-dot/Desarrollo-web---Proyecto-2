@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="../Style/global.css">
     <title>Ventas</title>
 </head>
+
 <body id="page-ventas">
     <div id="sidebar-container"></div>
     <div id="header-container"></div>
@@ -44,7 +46,6 @@
                         <input type="text" id="precio" placeholder="₡0" readonly>
                     </div>
                 </div>
-                <button type="button" class="btnFactura" id="btn-factura">Registrar venta</button>
                 <div class="productos-populares">
                     <div class="popular-titulo">
                         Productos más vendidos
@@ -60,7 +61,7 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Precio</th>
+                                <th>Producto</th>
                                 <th>Cantidad</th>
                                 <th>Precio unitario</th>
                                 <th>Subtotal</th>
@@ -85,6 +86,7 @@
                     <span>Total</span>
                     <strong id="total-venta">₡0</strong>
                 </div>
+                <button type="button" class="btnFactura" id="btn-factura">Registrar venta</button>
             </section>
             <div class="mensaje-exitoso" id="contenedor-mensaje" hidden>
                 <span id="mensaje-venta"></span>
@@ -115,7 +117,8 @@
         </div>
     </div>
     <script src="../JavaScript/layout.js"></script>
-    <script src="../JavaScript/chat.js"></script> 
+    <script src="../JavaScript/chat.js"></script>
     <script src="../JavaScript/ventas.js"></script>
 </body>
+
 </html>

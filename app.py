@@ -3,7 +3,8 @@ from decimal import Decimal, InvalidOperation
 
 import cloudinary
 import cloudinary.uploader
-
+import time
+from google.genai import errors
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -44,10 +45,13 @@ CORS(
     app,
     resources={
         r"/*": {
-            "origins": ORIGENES_PERMITIDOS
+            "origins": ORIGENES_PERMITIDOS,
+            "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"],
         }
     }
 )
+
 
 
 # =========================================================
@@ -644,33 +648,51 @@ def crear_venta():
 @app.route("/chat", methods=["POST"])
 def chat():
     try:
+        # 1. Recibir y validar los datos del frontend
         datos = request.get_json(silent=True) or {}
-        pregunta = (datos.get("pregunta") or "").strip()
+
+        # Aceptar ambos nombres para mantener compatibilidad
+        pregunta = (
+            datos.get("mensaje") or datos.get("pregunta") or ""
+        ).strip()
 
         if not pregunta:
             return jsonify({
                 "status": "error",
+                "respuesta": "Escribe una pregunta.",
                 "message": "Escribe una pregunta."
             }), 400
 
-        # Si Gemini no está configurado, responder sin detener el ERP.
+        # 2. Comprobar que Gemini esté configurado
         if not cliente_gemini:
             return jsonify({
-                "status": "ok",
+                "status": "error",
                 "respuesta": (
-                    "El asistente de IA no está configurado todavía. "
-                    "Agrega GEMINI_API_KEY en las variables de Render."
-                )
-            }), 200
+                    "El asistente de IA no está configurado. "
+                    "Verifica GEMINI_API_KEY en las variables "
+                    "de entorno de Render."
+                ),
+                "message": "Gemini no está configurado."
+            }), 503
 
+        # 3. Obtener los productos de la base de datos actual
         productos = db.obtener_productos()
 
+        if productos is None:
+            productos = []
+
+        # 4. Preparar los datos para la IA
         contexto = []
 
         for producto in productos:
             contexto.append({
-                "nombre": producto.get("nombre"),
-                "stock": producto.get("stock"),
+                "id": producto.get(
+                    "id", producto.get("producto_id")
+                ),
+                "nombre": producto.get("nombre", "Sin nombre"),
+                "stock": producto.get(
+                    "stock", producto.get("stock_actual", 0)
+                ),
                 "stock_minimo": producto.get(
                     "stock_minimo",
                     producto.get("stockMinimo", 5)
@@ -679,42 +701,92 @@ def chat():
                 "precio": producto.get("precio")
             })
 
+        # 5. Crear el prompt con los datos reales disponibles
         prompt = f"""
-Eres el asistente de inventario de OCTO ERP.
-Responde en español, de forma clara y práctica.
-Usa los datos reales del inventario cuando sean relevantes.
-No inventes cantidades, ventas ni datos que no aparezcan aquí.
+Eres el asistente inteligente de inventario de OCTO ERP.
 
-Inventario actual:
+INSTRUCCIONES:
+- Responde siempre en español.
+- Sé claro, amable y práctico.
+- Utiliza los datos reales proporcionados.
+- No inventes productos, precios, cantidades ni ventas.
+- Si un dato no está disponible, indícalo claramente.
+- Si te preguntan por el inventario, utiliza el contexto.
+- Si no hay productos registrados, informa que el inventario está vacío.
+- Puedes recomendar revisar o reabastecer productos con poco stock,
+  pero no afirmes que se vendieron unidades si no tienes ese dato.
+
+INVENTARIO ACTUAL:
 {contexto}
 
-Pregunta del usuario:
+PREGUNTA DEL USUARIO:
 {pregunta}
 """
 
-        respuesta = cliente_gemini.models.generate_content(
-            model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
-            contents=prompt
+        # 6. Consultar Gemini con reintentos automáticos
+        modelo = os.getenv("GEMINI_MODEL", "gemini-3.7-flash")
+        app.logger.info(
+            "Modelo de Gemini configurado: %s", modelo
         )
 
+        respuesta = None
+
+        for intento in range(3):
+            try:
+                respuesta = cliente_gemini.models.generate_content(
+                    model=modelo,
+                    contents=prompt
+                )
+                break
+
+            except errors.ServerError as error:
+                # Reintentar únicamente ante el error HTTP 503
+                if "503" not in str(error) or intento == 2:
+                    raise
+
+                espera = 2 ** (intento + 1)
+
+                app.logger.warning(
+                    "Gemini está temporalmente saturado. "
+                    "Intento %s de 3. Nuevo intento en %s segundos.",
+                    intento + 1,
+                    espera
+                )
+
+                time.sleep(espera)
+
+        # 7. Comprobar que Gemini haya generado texto
         texto = getattr(respuesta, "text", None)
 
-        if not texto:
-            texto = "No pude generar una respuesta. Inténtalo nuevamente."
+        if not texto or not texto.strip():
+            texto = (
+                "No pude generar una respuesta en este momento. "
+                "Inténtalo nuevamente."
+            )
 
+        # 8. Enviar una respuesta compatible con el frontend
         return jsonify({
             "status": "ok",
             "respuesta": texto
         }), 200
 
-    except Exception:
-        app.logger.exception("Error en el chat de Gemini.")
+    except Exception as error:
+        app.logger.exception(
+            "Error en la ruta /chat de OCTO ERP. "
+            "Tipo de error: %s",
+            type(error).__name__
+        )
 
         return jsonify({
             "status": "error",
-            "message": "No se pudo procesar la pregunta."
+            "respuesta": (
+                "No se pudo procesar la consulta. "
+                "Inténtalo nuevamente."
+            ),
+            "message": (
+                "Error al consultar el asistente de IA."
+            )
         }), 500
-
 
 # =========================================================
 # MANEJO DE ARCHIVOS DEMASIADO GRANDES
