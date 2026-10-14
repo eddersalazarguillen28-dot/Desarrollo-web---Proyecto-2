@@ -1,19 +1,82 @@
+/* Layout Flexible del M贸dulo */
+.contenido-grid {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    width: 100%;
+}
+
 .seccion-productos {
     background-color: #ffffff;
     border-radius: 12px;
     border: 1px solid #eef0f5;
     padding: 25px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    flex: 1;
+    min-width: 0;
     width: 100%;
     box-sizing: border-box;
 }
 
-/* Cabecera y Botón "Ingresar Stock" */
+/* Panel Desplegable Lateral */
+.form-panel {
+    width: 360px;
+    flex-shrink: 0;
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    border: 1px solid #eef0f5;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 18px;
+}
+
+.panel-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #171d33;
+}
+
+.panel-header p {
+    margin: 4px 0 0 0;
+    color: #4a5568;
+    font-size: 13px;
+}
+
+.btn-x-panel {
+    background: none;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    color: #8793ad;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.btn-x-panel:hover {
+    color: #171d33;
+}
+
+/* Cabecera y Bot贸n "Ingresar Stock" */
 .contenedorTitulo {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+}
+
+.contenedorTitulo h2 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #171d33;
+    margin: 0;
 }
 
 .btnNuevoProducto {
@@ -106,7 +169,6 @@ td strong {
     font-weight: 700;
 }
 
-/* Celda e Imagen del Producto */
 #cuerpo-inventario td:first-child {
     width: 110px;
     text-align: center;
@@ -139,7 +201,7 @@ td strong {
     background-color: #fce8e6;
 }
 
-/* Botones de Acción (Ajustar / Baja) */
+/* Botones de Acci贸n */
 .actions {
     display: flex;
     gap: 6px;
@@ -173,34 +235,17 @@ td strong {
     background: #fdd2d2;
 }
 
-/* Modal de Agregar / Modificar Producto */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(17, 27, 55, 0.55);
-    backdrop-filter: blur(3px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease;
-}
-
-.modal-overlay.activo {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Formulario dentro del Modal */
+/* Formulario Lateral */
 .form-campo {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
+    margin-bottom: 12px;
+}
+
+.campos-dobles {
+    display: flex;
+    gap: 12px;
 }
 
 .form-campo label {
@@ -218,6 +263,7 @@ td strong {
     outline: none;
     font-size: 14px;
     box-sizing: border-box;
+    width: 100%;
 }
 
 .form-campo input:focus,
@@ -226,7 +272,56 @@ td strong {
     border-color: #7367f0;
 }
 
-/* Pie de Tabla / Paginación */
+.input-file {
+    padding: 8px !important;
+    border: 1px dashed #7367f0 !important;
+    background-color: #f0efff;
+    cursor: pointer;
+    color: #4a5568;
+    font-size: 13px !important;
+}
+
+.acciones-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.btn-guardar {
+    background: #7367f0;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+}
+
+.btn-guardar:hover {
+    background: #6355eb;
+}
+
+.btn-cancelar {
+    background: #f4f6fa;
+    color: #171d33;
+    border: 1px solid #dcdfe6;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+}
+
+.form-mensaje {
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #107c41;
+}
+
+/* Pie de Tabla */
 .footer-tabla {
     border-top: 1px solid #eef0f5;
     padding-top: 15px;
@@ -261,4 +356,102 @@ td strong {
     background: #7367f0;
     color: #ffffff;
     border-color: #7367f0;
+}
+
+/* Ventana Modal de Confirmaci贸n para Baja */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(17, 27, 55, 0.5);
+    backdrop-filter: blur(3px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.modal-content-confirm {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    border: 1px solid #eef0f5;
+    animation: modalSlide 0.2s ease-out;
+}
+
+@keyframes modalSlide {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header-confirm {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.modal-header-confirm h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #172650;
+}
+
+.btn-x-modal {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #8793ad;
+    cursor: pointer;
+}
+
+.modal-body-confirm p {
+    margin: 0 0 20px 0;
+    font-size: 15px;
+    color: #43577f;
+    line-height: 1.4;
+}
+
+.modal-footer-confirm {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-modal-cancelar {
+    background: #f4f6fa;
+    border: 1px solid #dfe5f2;
+    color: #52628a;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-modal-eliminar {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-modal-eliminar:hover {
+    background: #c82333;
+}
+
+@media (max-width: 992px) {
+    .contenido-grid {
+        flex-direction: column;
+    }
+    .form-panel {
+        width: 100%;
+    }
 }

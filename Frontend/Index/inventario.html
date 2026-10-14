@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,117 +14,140 @@
     
     <div class="main-wrapper">
         <main class="main">
-            <section class="seccion-productos">
-                <div class="contenedorTitulo">
-                    <h2>Inventario</h2>
-                    <button class="btnNuevoProducto" id="btn-abrir-modal">
-                        <span>+</span> Ingresar producto
-                    </button>
-                </div>
+            <!-- Grid principal que acomoda la tabla y el formulario lateral -->
+            <section class="contenido-grid">
 
-                <!-- Buscador -->
-                <div class="contenedor-buscador">
-                    <input type="text" id="buscador-inventario" placeholder="Buscar por nombre, SKU o categoría...">
-                </div>
-
-                <!-- Tabla de Inventario -->
-                <div class="contenedorTabla">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Imagen</th>
-                                <th>Nombre del Artículo</th>
-                                <th>Categoría</th>
-                                <th>Código (SKU)</th>
-                                <th>Stock Actual</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="cuerpo-inventario">
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Pie de tabla -->
-                <div class="footer-tabla">
-                    <span id="contador-inventario">Cargando inventario...</span>
-                    <div class="btnPaginas">
-                        <button><</button>
-                        <button>1</button>
-                        <button>></button>
+                <!-- Sección de Lista de Productos -->
+                <section class="seccion-productos">
+                    <div class="contenedorTitulo">
+                        <h2>Inventario</h2>
+                        <button class="btnNuevoProducto" id="btn-abrir-modal">
+                            <span>+</span> Ingresar producto
+                        </button>
                     </div>
-                </div>
+
+                    <!-- Buscador -->
+                    <div class="contenedor-buscador">
+                        <input type="text" id="buscador-inventario" placeholder="Buscar por nombre, SKU o categoría...">
+                    </div>
+
+                    <!-- Tabla de Inventario -->
+                    <div class="contenedorTabla">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Imagen</th>
+                                    <th>Nombre del Artículo</th>
+                                    <th>Categoría</th>
+                                    <th>Código (SKU)</th>
+                                    <th>Stock Actual</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpo-inventario"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pie de tabla -->
+                    <div class="footer-tabla">
+                        <span id="contador-inventario">Cargando inventario...</span>
+                        <div class="btnPaginas">
+                            <button>&lt;</button>
+                            <button>1</button>
+                            <button>&gt;</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Panel Formulario Desplegable (Lateral) -->
+                <article class="panel form-panel" id="formularioPanel" style="display: none;">
+                    <div class="panel-header">
+                        <div>
+                            <h2 id="tituloForm">Ingresar Producto</h2>
+                            <p id="subtituloForm">Añade un nuevo producto con imagen y descripción</p>
+                        </div>
+                        <button type="button" id="btn-cerrar-form" class="btn-x-panel">✕</button>
+                    </div>
+
+                    <form id="form-nuevo-producto">
+                        <input type="hidden" id="prodId">
+
+                        <div class="form-campo">
+                            <label for="nombreProd">Nombre del Artículo *</label>
+                            <input type="text" id="nombreProd" placeholder="Nombre del artículo" required>
+                        </div>
+                        
+                        <div class="form-campo">
+                            <label for="descProd">Descripción del Producto</label>
+                            <textarea id="descProd" rows="3" placeholder="Ej: Laptop de alta gama..."></textarea>
+                        </div>
+
+                        <!-- Categoría y SKU -->
+                        <div class="campos-dobles">
+                            <div class="form-campo">
+                                <label for="categoriaProd">Categoría</label>
+                                <select id="categoriaProd" required>
+                                    <option value="Electrónica">Electrónica</option>
+                                    <option value="Accesorios">Accesorios</option>
+                                    <option value="Muebles">Muebles</option>
+                                    <option value="General">General</option>
+                                </select>
+                            </div>
+                            <div class="form-campo">
+                                <label for="skuProd">Código (SKU)</label>
+                                <input type="text" id="skuProd" placeholder="Ej: #ELC-1099">
+                            </div>
+                        </div>
+
+                        <!-- Stock y Precio -->
+                        <div class="campos-dobles">
+                            <div class="form-campo">
+                                <label for="stockProd">Stock Inicial *</label>
+                                <input type="number" id="stockProd" min="0" placeholder="0" required>
+                            </div>
+                            <div class="form-campo">
+                                <label for="precioProd">Precio (₡) *</label>
+                                <input type="number" id="precioProd" min="0" placeholder="25000" required>
+                            </div>
+                        </div>
+
+                        <!-- Imagen -->
+                        <div class="form-campo">
+                            <label for="imagenProd">Subir Imagen (Opcional)</label>
+                            <input type="file" id="imagenProd" accept="image/*" class="input-file">
+                        </div>
+
+                        <div class="acciones-form">
+                            <button type="submit" class="btn-guardar" id="btn-guardar-prod">Guardar Producto</button>
+                            <button type="button" id="btn-cancelar-form" class="btn-cancelar" hidden>Cancelar</button>
+                        </div>
+                        <p class="form-mensaje" id="mensajeFormulario"></p>
+                    </form>
+                </article>
+
             </section>
         </main>
     </div>
 
-    <!-- MODAL PARA INGRESAR NUEVO PRODUCTO / STOCK -->
-    <div id="modal-nuevo-producto" class="modal-overlay">
-        <div class="modal-content panel-full-width" style="max-width: 550px; padding: 30px; box-sizing: border-box;">
-            <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <h2 style="margin: 0; color: #171d33;">Ingresar Nuevo Producto</h2>
-                    <p style="margin: 5px 0 0 0; color: #4a5568; font-size: 14px;">Añade un nuevo producto con imagen y descripción</p>
-                </div>
-                <span class="cerrar-modal" id="btn-cerrar-modal" style="cursor: pointer; font-size: 20px; font-weight: bold; color: #171d33;">✕</span>
+    <!-- Modal Personalizado para Confirmar Eliminación -->
+    <div id="modalConfirmar" class="modal-overlay" style="display: none;">
+        <div class="modal-content-confirm">
+            <div class="modal-header-confirm">
+                <h3>Confirmar Baja</h3>
+                <button type="button" id="btnCerrarModalConfirm" class="btn-x-modal">✕</button>
             </div>
-
-            <form id="form-nuevo-producto" style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
-                
-                <div class="form-campo" style="display: flex; flex-direction: column; gap: 5px;">
-                    <label for="nombreProd" style="font-size: 14px; font-weight: 600;">Nombre del Artículo</label>
-                    <input type="text" id="nombreProd" style="padding: 10px; border: 1px solid #dcdfe6; border-radius: 6px; box-sizing: border-box; width: 100%;" required>
-                </div>
-                
-                <div class="form-campo" style="display: flex; flex-direction: column; gap: 5px;">
-                    <label for="descProd" style="font-size: 14px; font-weight: 600;">Descripción del Producto</label>
-                    <textarea id="descProd" rows="3" placeholder="Ej: Laptop de alta gama con 16GB RAM..." style="padding: 10px; border: 1px solid #dcdfe6; border-radius: 6px; box-sizing: border-box; width: 100%; resize: vertical;" required></textarea>
-                </div>
-
-                <!-- Fila de Categoría y SKU -->
-                <div style="display: flex; gap: 15px; width: 100%;">
-                    <div class="form-campo" style="display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0;">
-                        <label for="categoriaProd" style="font-size: 14px; font-weight: 600;">Categoría</label>
-                        <select id="categoriaProd" style="padding: 10px; border: 1px solid #dcdfe6; border-radius: 6px; box-sizing: border-box; width: 100%;" required>
-                            <option value="Electrónica">Electrónica</option>
-                            <option value="Accesorios">Accesorios</option>
-                            <option value="Muebles">Muebles</option>
-                        </select>
-                    </div>
-                    <div class="form-campo" style="display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0;">
-                        <label for="skuProd" style="font-size: 14px; font-weight: 600;">Código (SKU)</label>
-                        <input type="text" id="skuProd" placeholder="Ej: #ELC-1099" style="padding: 10px; border: 1px solid #dcdfe6; border-radius: 6px; box-sizing: border-box; width: 100%;" required>
-                    </div>
-                </div>
-
-                <!-- Fila de Stock y Precio -->
-                <div style="display: flex; gap: 15px; width: 100%;">
-                    <div class="form-campo" style="display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0;">
-                        <label for="stockProd" style="font-size: 14px; font-weight: 600;">Stock Inicial</label>
-                        <input type="number" id="stockProd" min="1" style="padding: 10px; border: 1px solid #dcdfe6; border-radius: 6px; box-sizing: border-box; width: 100%;" required>
-                    </div>
-                    <div class="form-campo" style="display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0;">
-                        <label for="precioProd" style="font-size: 14px; font-weight: 600;">Precio de Venta (₡)</label>
-                        <input type="number" id="precioProd" min="1" placeholder="Ej: 25000" style="padding: 10px; border: 1px solid #dcdfe6; border-radius: 6px; box-sizing: border-box; width: 100%;" required>
-                    </div>
-                </div>
-
-                <!-- Subir Imagen -->
-                <div class="form-campo" style="display: flex; flex-direction: column; gap: 5px;">
-                    <label for="imagenProd" style="font-size: 14px; font-weight: 600;">Subir Imagen (Opcional)</label>
-                    <input type="file" id="imagenProd" accept="image/*" style="padding: 8px; border: 1px dashed #7367f0; border-radius: 6px; box-sizing: border-box; width: 100%; background-color: #f0efff; cursor: pointer; color: #4a5568; font-size: 13px;">
-                </div>
-
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button type="submit" class="btn-guardar" style="background: #7367f0; color: white; border: none; padding: 12px; border-radius: 8px; flex: 1; cursor: pointer; font-weight: bold;">Guardar Producto</button>
-                    <button type="button" id="btn-cancelar-modal" style="background: #f4f6fa; color: #171d33; border: 1px solid #dcdfe6; padding: 12px; border-radius: 8px; flex: 1; cursor: pointer; font-weight: bold;">Cancelar</button>
-                </div>
-            </form>
+            <div class="modal-body-confirm">
+                <p id="textoModalConfirm">¿Estás seguro de que deseas dar de baja este producto?</p>
+            </div>
+            <div class="modal-footer-confirm">
+                <button type="button" id="btnCancelarConfirm" class="btn-modal-cancelar">Cancelar</button>
+                <button type="button" id="btnAceptarConfirm" class="btn-modal-eliminar">Dar de Baja</button>
+            </div>
         </div>
     </div>
 
     <!-- Botón Flotante del Chat -->
-    <button id="btn-abrir-chat" class="chat-trigger">
+    <button id="btn-abrir-chat" class="chat-trigger" type="button">
         <img src="../Imagenes/octopus1.png" alt="Chat" style="width:30px;">
     </button>
 
@@ -138,7 +161,7 @@
                     <span class="estado">● Conectado</span>
                 </div>
             </div>
-            <button id="btn-cerrar-chat" class="btn-cerrar">✕</button>
+            <button type="button" id="btn-cerrar-chat" class="btn-cerrar">✕</button>
         </div>
         <div class="chat-mensajes" id="chat-mensajes">
             <div class="mensaje bot">
@@ -147,12 +170,12 @@
                 </div>
             </div>
         </div>
-
         <div class="chat-input-container">
             <input type="text" id="chat-input" placeholder="Pregunta sobre tu stock...">
-            <button id="btn-enviar-chat" class="btn-enviar">➤</button>
+            <button type="button" id="btn-enviar-chat" class="btn-enviar">➤</button>
         </div>
     </div>
+
     <script src="../JavaScript/inventario.js"></script>
     <script src="../JavaScript/layout.js"></script>
     <script src="../JavaScript/chat.js"></script>
