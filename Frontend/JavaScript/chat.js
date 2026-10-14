@@ -135,10 +135,24 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('Respuesta del backend:', data);
 
       if (!respuesta.ok) {
+        if (respuesta.status === 503) {
+          throw new Error(
+            'El asistente de IA está temporalmente ocupado. ' +
+            'Espera unos segundos e inténtalo de nuevo.'
+          );
+        }
+
+        if (respuesta.status >= 500) {
+          throw new Error(
+            'El servidor no pudo completar la consulta. ' +
+            'Revisa los registros de Render.'
+          );
+        }
+
         throw new Error(
           data.message ||
           data.respuesta ||
-          `El servidor respondió con HTTP ${respuesta.status}`
+          `El servidor respondió con HTTP ${ respuesta.status }`
         );
       }
 
