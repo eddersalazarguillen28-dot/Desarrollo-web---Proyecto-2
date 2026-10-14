@@ -669,6 +669,9 @@ td{
 }
 
 
-
-
-
+#producto {
+    width: 100%;
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+}
