@@ -33,7 +33,18 @@ body.sidebar-collapsed .contenedor {
 /* =====================================================
    Encabezado del Dashboard
    ===================================================== */
-
+.encabezado {
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr) 180px;
+    align-items: center;
+    gap: 8px 20px;
+    padding: 24px;
+    background-color: linear-gradient(180deg, #160e31 0%, #040b1b 100%);
+    color: white;
+    text-align: center;
+    border: none;
+    box-shadow: none;
+}
 
 .encabezado h1 {
     grid-column: 2;
