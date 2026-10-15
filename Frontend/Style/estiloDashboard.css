@@ -39,7 +39,7 @@ body.sidebar-collapsed .contenedor {
     align-items: center;
     gap: 8px 20px;
     padding: 24px;
-    background-color: #4f5be3;
+    background-color: linear-gradient(180deg, #160e31 0%, #040b1b 100%);
     color: white;
     text-align: center;
     border: none;
