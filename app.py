@@ -175,10 +175,16 @@ def registrar_usuario():
                 VALUES (%s, %s, %s, %s)
                 RETURNING id, nombre, correo, rol
                 """,
-                (nombre, correo, password_hash, "vendedor")
+                (nombre, correo, password_hash, "cliente")
             )
 
             usuario = cursor.fetchone()
+
+            cursor.execute("""
+                INSERT INTO clientes (nombre, correo, estado)
+                VALUES (%s, %s, %s)
+                ON CONFLICT (correo) DO NOTHING
+                """,(nombre, correo, "Activo"))
 
         conexion.commit()
 
