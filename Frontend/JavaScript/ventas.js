@@ -106,4 +106,177 @@ producto.addEventListener("change", function () {
     : "";
 });
 
-//Continuar desde agregar al carrito
+agregar.addEventListener("click", function () {
+    if (guardando) return;
+
+    const seleccionado = productos.find(function (p){
+        return String(p.id) === producto.value;
+    });
+
+    const unidades = Number(cantidad.value);
+
+    if (!seleccionado) {
+        avisar("Introduce una cantidad válida", true);
+    }
+
+    const existente = carrito.find(function (p){
+        return p.id === seleccionado.id;
+    });
+
+    const acumulado = existente ? existente.cantidad : 0;
+
+    if (acumulado + unidades > Number(seleccionado.stock)) { 
+        avisar("No hay suficiente stock", true);
+        return;
+    }
+
+    if (existente) { 
+        existente.cantidad += unidades;
+    } else {
+        carrito.push({
+            id: seleccionado.id,
+            nombre: seleccionado.nombre,
+            precio: Number(seleccionado.precio),
+            cantidad: unidades
+        });
+    }
+    cantidad.value = 1;
+    contenedor.hidden = true;
+    
+    mostrarCarrito();
+});
+
+function mostrarCarrito() {
+    tabla.innerHTML = "";
+
+    carrito.forEach(function (p) {
+        const fila = document.createElement("tr");
+        const nombre = document.createElement("td");
+        nombre.textContent = p.nombre;
+
+        const unidades = document.createElement("td");
+        unidades.textContent = p.cantidad;
+
+        const precioUnidad = document.createElement("td");
+        precioUnidad.textContent = moneda(p.precio);
+
+        const importe = document.createElement("td");
+        importe.textContent = moneda(p.precio + p.cantidad)
+
+        const accion = document.createElement("td");
+        const boton = document.createElement("button");
+
+        boton.textContent = "Eliminar";
+        boton.className = "btn-delete";
+        boton.disabled = guardando;
+
+        boton.addEventListener("click", function (){
+            carrito = carrito.filter(function(item){
+                return item.id !== p.id;
+            });
+            mostrarCarrito();
+        });
+
+        accion.appendChild(boton);
+
+        fila.appendChild(nombre);
+        fila.appendChild(unidades);
+        fila.appendChild(precioUnidad);
+        fila.appendChild(importe);
+        fila.appendChild(accion);
+
+        tabla.appendChild(fila);
+    });
+
+    if (carrito.length === 0) {
+        const fila = document.createElement("tr");
+        const celda = document.createElement("td");
+
+        celda.colSpan = 5;
+        celda.textContent = "No hay productos agregados";
+
+        fila.appendChild(celda);
+        fila.appendChild(fila);
+    }
+
+    const suma = carrito.reduce(function (acumulado, p) {
+        return acumulado + p.precio * p.cantidad;
+    }, 0);
+
+    subtotal.textContent = moneda(suma);
+    impuesto.textContent = "No configurado";
+    total.textContent = moneda(suma);
+
+    registrar.disabled = guardando || carrito.length === 0;
+    agregar.disabled = guardando;
+}
+
+registrar.addEventListener("click", async function () {
+    if (guardando) return;
+
+    if (!cliente.value) {
+        avisar("Selecciona un cliente", true);
+        return;
+    }
+
+    if (carrito.length === 0) {
+        avisar("Agrega productos al carrito", true);
+        return;
+    }
+
+    const venta = {
+        cliente_id: numero(cliente.value),
+        detalles: carrito.map(function (p) {
+            return {
+                producto_id: Number(p.id),
+                cantidad: p.cantidad
+            };
+        })
+    };
+
+    guardando = true;
+    registrar.textContent = "Guardando...";
+    mostrarCarrito();
+
+    try {
+        const datos = await consultar("/api/ventas", {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(venta)
+        });
+
+        carrito = [];
+        mostrarCarrito();
+        
+        avisar("Venta registrada correctamente. Numero: " + (datos.venta_id || "confirmado"));
+        
+        await cargarProdutos();
+    } catch (error) {
+        avisar("Error: " + error.message, true);
+    } finally {
+        guardando = false;
+        registrar.textContent = "Registrar venta";
+        mostrarCarrito();
+    }
+});
+
+async function iniciar() {
+    agregar.disabled = true;
+    registrar.disabled = true;
+
+    try {
+        await Promise.all([
+            cargarCliente(),
+            cargarProdutos()
+        ]);
+        agregar.disabled = false;
+    } catch (error) {
+        avisar("Error al cargar datos: " + error,message, true);
+    }
+    mostrarCarrito();
+}
+
+iniciar();
