@@ -250,39 +250,89 @@ function actualizarAlertas() {
 function actualizarTablaVentas(ventasFiltradas) {
     const tabla = document.getElementById("tabla-ventas");
     if (!tabla) return;
+
     tabla.replaceChildren();
 
-    if (ventasFiltradas.length === 0) {
+    if (ventasFiltradas.length === 0 ) {
         const fila = document.createElement("tr");
         const celda = document.createElement("td");
-        celda.colSpan = 6;
-        celda.className = "sin-alertas";
+
+        celda.colSpan = 7; 
         celda.textContent = "No hay ventas en este periodo";
+
         fila.appendChild(celda);
         tabla.appendChild(fila);
         return;
     }
 
-    ventasFiltradas.forEach((venta, indice) => {
+    ventasFiltradas.forEach(venta => {
         const producto = productos.find(p => p.id === venta.productoId);
 
+        const fila =document.createElement("tr");
+
         const valores = [
-            indice + 1,
+            venta.id,
             venta.fecha,
             producto ? producto.nombre : "Producto no disponible",
             venta.cantidad,
+
             formatearMoneda(venta.precioUnitario),
+
             formatearMoneda(calcularIngreso(venta))
         ];
 
-        const fila = document.createElement("tr");
-        valores.forEach(valor => {
+        valores.forEach(valores => {
             const celda = document.createElement("td");
             celda.textContent = valor;
             fila.appendChild(celda);
         });
+
+        const celdaAccion = document.createElement("td");
+        const botonEliminar = document.createElement("button");
+
+        botonEliminar.type = "button";
+        botonEliminar.textContent = "Eliminar";
+        botonEliminar.className = "btn-eliminar-venta";
+
+        botonEliminar.addEventListener("click", () => {
+            eliminarVenta(venta.id);
+        });
+        celdaAccion.appendChild(botonEliminar);
+        fila.appendChild(celdaAccion);
+
         tabla.appendChild(fila);
     });
+}
+
+async function eliminarVenta() {
+    const confirmar = confirm(
+        "¿Seguro que deseas eliminar la venta #" + id + "?"
+    );
+
+    if (!confirmar) return;
+
+    try {
+        const respuesta = await fetch(
+            "https://octo-erp.onrender.com/api/ventas/" + id,
+            {
+                method: "DELETE"
+            }
+        );
+        
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(
+                datos.message || datos.error || "No se pudo eliminar "
+            );
+        }
+        alert("Venta eliminada correctamente");
+        await cargarDatos();
+
+    } catch (error) {
+        console.error(error);
+        alert("Error al eliminar: " + error.message);
+    }
 }
 
 // Ejecutar todas las actualizaciones del dashboard
