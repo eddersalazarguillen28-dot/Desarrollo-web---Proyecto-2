@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre Nosotros - OctoERP Tech Store</title>
+    <!-- Incluimos el CSS de la barra de navegación grande y el de la página -->
+    <link rel="stylesheet" href="../Style/navbar.css">
+    <link rel="stylesheet" href="../Style/QuienesSomos.css">
+</head>
+
+<body>
+
+    <header class="navbar-octo">
+        <div class="nav-container">
+            <!-- Logo que al darle clic lleva a Inicio -->
+            <a href="inicio.html" class="nav-logo">
+                <img src="../Imagenes/Logo.png" alt="OctoERP Logo">
+                <span>Octo<span>ERP</span></span>
+            </a>
+
+            <!-- Menú de navegación con "Sobre Nosotros" activo -->
+            <nav class="nav-links">
+                <a href="inicio.html" class="nav-item">Inicio</a>
+                <a href="productos.html" class="nav-item">Productos</a>
+                <a href="QuienesSomos.html" class="nav-item active">Sobre Nosotros</a>
+            </nav>
+
+            <div class="nav-actions">
+                <!-- Botón actualizado para abrir el modal del carrito -->
+                <button class="btn-cart" onclick="toggleModalCarrito()" title="Ver Carrito">
+                    🛒 <span class="cart-count" id="cart-count">0</span>
+                </button>
+
+                <div class="auth-buttons" id="auth-guest">
+                    <a href="inicioSesion.html" class="btn-nav btn-login">Iniciar Sesión</a>
+                    <a href="crearCuenta.html" class="btn-nav btn-register">Registrarse</a>
+                </div>
+            </div>
+        </div>
+    </header>
+     
+    <!-- Modal / Desplegable del Carrito -->
+    <div id="modal-carrito" class="carrito-modal-overlay hidden">
+        <div class="carrito-modal-content">
+            <div class="carrito-header">
+                <h2>🛒 Tu Carrito de Compras</h2>
+                <button class="btn-cerrar-carrito" onclick="toggleModalCarrito()">✖️</button>
+            </div>
+
+            <div class="carrito-body" id="carrito-items-lista">
+                <!-- Los productos agregados se insertarán dinámicamente aquí -->
+                <p class="carrito-vacio-msg">Tu carrito está vacío actualmente.</p>
+            </div>
+
+            <div class="carrito-footer">
+                <div class="carrito-total-row">
+                    <span>Total a pagar:</span>
+                    <span id="carrito-monto-total">₡0</span>
+                </div>
+                <button class="btn-procesar-compra" onclick="procesarCompra()">
+                    💳 Finalizar Compra
+                </button>
+            </div>
+        </div>
+    </div>
+                  
+    <!-- Contenido Principal -->
+    <main class="container-about">
+
+        <!-- Encabezado de la Tienda -->
+        <section class="about-hero">
+            <span class="badge-tech">💻 Tu tienda de tecnología y componentes</span>
+            <h1>Pasión por la tecnología, el <span>Hardware</span> y el rendimiento</h1>
+            <p>
+                En <strong>OctoERP Tech Store</strong> nos apasiona el alto rendimiento. Somos tu aliado estratégico
+                para conseguir desde el componente individual de última generación hasta la PC Custom totalmente
+                ensamblada para gaming, producción audiovisual y trabajo profesional.
+            </p>
+        </section>
+
+        <!-- Tarjetas Misión / Visión / Compromiso Tech -->
+        <section class="about-grid">
+
+            <div class="about-card">
+                <div class="card-icon"></div>
+                <h3>Especialistas en Hardware</h3>
+                <p>
+                    Analizamos y probamos detenidamente cada procesador, tarjeta de vídeo, memoria RAM y tarjeta madre
+                    de nuestro catálogo. Nos aseguramos de ofrecerte únicamente componentes con estándares de rendimiento y compatibilidad
+                    garantizada.
+                </p>
+            </div>
+
+            <div class="about-card">
+                <div class="card-icon"></div>
+                <h3>Stock Real en Tiempo Real</h3>
+                <p>
+                    Integrado directamente con nuestro sistema backend en la nube, el catálogo que ves en la tienda
+                    refleja la disponibilidad física en almacén en tiempo real. Sin falsas esperas ni cancelaciones por falta de inventario.
+                </p>
+            </div>
+
+            <div class="about-card">
+                <div class="card-icon"></div>
+                <h3>Garantía y Soporte Especializado</h3>
+                <p>
+                    Sabemos el valor de tu inversión. Por eso, cada producto y equipo ensamblado cuenta con respaldo
+                    técnico directo, pruebas de estrés previas a la entrega y garantía oficial ante cualquier eventualidad.
+                </p>
+            </div>
+
+        </section>
+
+        <!-- Diferenciadores en el Mercado -->
+        <section class="tech-features" style="text-align: left; background: rgba(255, 255, 255, 0.02);">
+            <div style="max-width: 950px; margin: 0 auto;">
+                <h2 style="text-align: center; margin-bottom: 30px; color: #ffffff;">Lo que nos diferencia en el mercado</h2>
+
+                <div class="features-grid">
+                    <div class="feature-box">
+                        <h4> Ensambles a la Medida</h4>
+                        <p>Diseñamos configuraciones equilibradas para evitar cuellos de botella entre procesador y tarjeta gráfica.</p>
+                    </div>
+
+                    <div class="feature-box">
+                        <h4> Envíos Protegidos</h4>
+                        <p>Utilizamos embalaje especial de alto impacto para proteger componentes frágiles y gabinetes de cristal.</p>
+                    </div>
+
+                    <div class="feature-box">
+                        <h4> Transparencia Total</h4>
+                        <p>Precios claros, desglose detallado de impuestos y comprobantes de compra inmediatos.</p>
+                    </div>
+
+                    <div class="feature-box">
+                        <h4> Asesores Gamers & Pros</h4>
+                        <p>Nuestro equipo está compuesto por entusiastas del hardware que entienden exactamente lo que tu setup necesita.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Proceso de Atención y Compra -->
+        <section class="tech-features">
+            <h2>¿Cómo trabajamos en OctoERP?</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 25px;">
+                <div style="background: rgba(13, 23, 48, 0.6); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: center;">
+                    <div style="font-size: 28px; margin-bottom: 10px;"></div>
+                    <h4 style="color: #7168ff; margin-bottom: 8px;">Explora el Catálogo</h4>
+                    <p style="font-size: 14px; color: #a3a9b8;">Filtra componentes o laps con especificaciones detalladas e imágenes reales.</p>
+                </div>
+
+                <div style="background: rgba(13, 23, 48, 0.6); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: center;">
+                    <div style="font-size: 28px; margin-bottom: 10px;"></div>
+                    <h4 style="color: #7168ff; margin-bottom: 8px;">Asesoría u Orden</h4>
+                    <p style="font-size: 14px; color: #a3a9b8;">Agrega al carrito o consulta con nuestro asistente virtual para resolver dudas de compatibilidad.</p>
+                </div>
+
+                <div style="background: rgba(13, 23, 48, 0.6); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: center;">
+                    <div style="font-size: 28px; margin-bottom: 10px;"></div>
+                    <h4 style="color: #7168ff; margin-bottom: 8px;">Pruebas y Despacho</h4>
+                    <p style="font-size: 14px; color: #a3a9b8;">Verificamos el funcionamiento de los productos y procedemos al empaque y envío rápido.</p>
+                </div>
+
+                <div style="background: rgba(13, 23, 48, 0.6); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: center;">
+                    <div style="font-size: 28px; margin-bottom: 10px;"></div>
+                    <h4 style="color: #7168ff; margin-bottom: 8px;">Disfruta tu Setup</h4>
+                    <p style="font-size: 14px; color: #a3a9b8;">Recibe tu pedido listo para conectar, jugar o trabajar con total respaldo.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Canales de Contacto y Atención -->
+        <section class="tech-features" style="background: rgba(98, 90, 255, 0.04); border: 1px solid rgba(98, 90, 255, 0.2);">
+            <h2> Canales de Contacto y Atención</h2>
+            <p style="color: #a3a9b8; margin-bottom: 30px;">¿Tienes dudas sobre un componente o necesitas cotizar una PC a la medida? ¡Contáctanos!</p>
+
+            <div class="features-grid">
+                <div class="feature-box" style="text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 10px;"></div>
+                    <h4>WhatsApp Tech</h4>
+                    <p style="color: #2ecc71; font-weight: bold; margin-top: 5px;">+506 8888-8888</p>
+                    <p style="font-size: 12px; color: #64748b; margin-top: 4px;">Atención rápida y cotizaciones</p>
+                </div>
+
+                <div class="feature-box" style="text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 10px;"></div>
+                    <h4>Correo Electrónico</h4>
+                    <p style="color: #a39bff; font-weight: bold; margin-top: 5px;">soporte@octoerp.com</p>
+                    <p style="font-size: 12px; color: #64748b; margin-top: 4px;">Consultas corporativas y garantía</p>
+                </div>
+
+                <div class="feature-box" style="text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 10px;"></div>
+                    <h4>Horario de Atención</h4>
+                    <p style="color: #ffffff; font-weight: 600; margin-top: 5px;">Lun - Sáb: 8:00 AM - 6:00 PM</p>
+                    <p style="font-size: 12px; color: #64748b; margin-top: 4px;">Envíos a todo el país</p>
+                </div>
+
+                <div class="feature-box" style="text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 10px;"></div>
+                    <h4>Ubicación Central</h4>
+                    <p style="color: #ffffff; font-weight: 600; margin-top: 5px;">San José, Costa Rica</p>
+                    <p style="font-size: 12px; color: #64748b; margin-top: 4px;">Despachos desde bodega central</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="footer-about">
+        <p>&copy; 2026 OctoERP Hardware & Tech Store. Todos los derechos reservados. Proyecto CTP.</p>
+    </footer>
+
+    <!-- Scripts necesarios para autenticación y carrito -->
+    <script src="../JavaScript/auth.js"></script>
+    <script src="../JavaScript/carrito.js"></script>
+</body>
+
+</html>
