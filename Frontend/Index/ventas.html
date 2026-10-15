@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="../Style/estiloVentas.css">
     <link rel="icon" type="img/jpeg" href="../Imagenes/logoVentana.jpeg">
 </head>
+
 <body id="page-ventas">
     <div id="sidebar-container"></div>
     <div id="header-container"></div>
@@ -26,9 +28,9 @@
                     <div class="campo-form">
                         <label for="cliente">Cliente</label>
 
-                        <section id="cliente">
+                        <select id="cliente">
                             <option value="">Cargando clientes...</option>
-                        </section>
+                        </select>
                     </div>
 
                     <div class="campo-form">
@@ -59,7 +61,7 @@
                 </table>
 
                 <div class="total-card">
-                    <p>Subtotal: 
+                    <p>Subtotal:
                         <strong id="subtotal-venta">
                             ₡0
                         </strong>
@@ -70,7 +72,7 @@
                             No configurar
                         </strong>
                     </p>
-                    
+
                     <h2>
                         Total:
                         <strong id="total-venta">
@@ -83,7 +85,7 @@
                     Registrar venta
                 </button>
             </section>
-            
+
             <div id="contenedor-mensaje" class="mensaje-venta" hidden>
                 <span id="mensaje-venta"></span>
                 <button type="button" id="cerrar-mensaje">
@@ -92,7 +94,7 @@
             </div>
         </main>
     </div>
-<!-- Botón Flotante del Chat -->
+    <!-- Botón Flotante del Chat -->
     <button id="btn-abrir-chat" class="chat-trigger" type="button">
         <img src="../Imagenes/octopus1.png" alt="Chat" style="width:30px;">
     </button>
@@ -123,9 +125,10 @@
             <button type="button" id="btn-enviar-chat" class="btn-enviar">➤</button>
         </div>
     </div>
-    
+
     <script src="../JavaScript/layout.js"></script>
     <script src="../JavaScript/chat.js"></script>
     <script src="../JavaScript/ventas.js"></script>
 </body>
+
 </html>
