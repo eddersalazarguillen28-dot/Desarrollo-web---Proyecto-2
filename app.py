@@ -764,6 +764,7 @@ PREGUNTA DEL USUARIO:
                 "Inténtalo nuevamente."
             )
 
+
         # 8. Enviar una respuesta compatible con el frontend
         return jsonify({
             "status": "ok",
