@@ -403,6 +403,12 @@ tbody tr:hover {
     font-size: 14px;
     line-height: 1.5;
     word-break: break-word;
+    white-space: pre-line;
+}
+.burbuja b,
+.burbuja strong{
+    color: #171d33;
+    font-weight: 700;
 }
 
 .mensaje.bot .burbuja {
