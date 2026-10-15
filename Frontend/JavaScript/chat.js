@@ -24,6 +24,24 @@ document.addEventListener('DOMContentLoaded', () => {
     ventanaChat.classList.add('oculta');
   });
 
+  // Convertir Markdown (*, **, \n) a HTML estructurado
+  function markdownAHTML(texto) {
+    if (!texto) return '';
+
+    return String(texto)
+      // Convertir negritas
+      .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+      // Convertir viñetas
+      .replace(/(?:^|\n)\s*[\*\-]\s*(.*)/g, '<br>• $1')
+      // Convertir elementos numerados
+      .replace(/(?:^|\n)\s*(\d+\.)\s*(.*)/g, '<br><b>$1</b> $2')
+      // Convertir saltos de línea
+      .replace(/\n\n/g, '<br><br>')
+      .replace(/\n/g, '<br>')
+      // Limpiar saltos iniciales innecesarios
+      .replace(/^(<br>)+/, '');
+  }
+
   function agregarMensajeUI(texto, emisor) {
     const divMensaje = document.createElement('div');
     divMensaje.classList.add('mensaje', emisor);
@@ -36,9 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
       avatar.className = 'avatar-pequeno';
       avatar.textContent = 'X';
 
+      // Convertir Markdown a HTML antes de parsear
+      const htmlFormateado = markdownAHTML(texto);
+
       // Permitir solo formato básico y evitar insertar HTML peligroso.
       const documento = new DOMParser().parseFromString(
-        String(texto ?? ''),
+        String(htmlFormateado ?? ''),
         'text/html'
       );
 
@@ -103,15 +124,12 @@ document.addEventListener('DOMContentLoaded', () => {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        // Enviar ambos nombres para compatibilidad con versiones
-        // del backend que todavía lean "pregunta".
         body: JSON.stringify({
           mensaje: texto,
           pregunta: texto
         })
       });
 
-      // Leer como texto primero para poder mostrar errores no JSON.
       const cuerpo = await respuesta.text();
 
       let data;
@@ -152,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error(
           data.message ||
           data.respuesta ||
-          `El servidor respondió con HTTP ${ respuesta.status }`
+          `El servidor respondió con HTTP ${respuesta.status}`
         );
       }
 

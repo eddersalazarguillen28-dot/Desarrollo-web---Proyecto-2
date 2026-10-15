@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="../Imagenes/logoVentana.jpeg">
     <link rel="stylesheet" href="../Style/global.css">
     <link rel="stylesheet" href="../Style/estiloReportes.css">
-    <link rel="stylesheet" href="../Style/">
-    <title>Reportes</title>
+    <title>Reportes - Búsqueda de Factura</title>
+    
+    <!-- Librería html2pdf.js desde CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body id="page-reportes">
     <div id="sidebar-container"></div>
@@ -16,45 +18,35 @@
     <div class="main-wrapper">
         <main class="main">
             <section class="contenido-grid">
+                
+                <!-- Panel de Búsqueda por Factura -->
                 <article class="panel form-panel panel-full-width">
                     <div class="panel-header">
                         <div>
-                            <h2>Generador de Reportes</h2>
-                            <p>Filtra y exporta la información de tu negocio</p>
+                            <h2>Búsqueda de Factura</h2>
+                            <p>Ingresa el número o referencia para consultar y generar el comprobante</p>
                         </div>
                     </div>
 
-                    <form id="formFiltrosReporte" class="filtros-reporte">
-                        <div class="form-campo">
-                            <label for="tipoReporte">Tipo de Reporte</label>
-                            <select id="tipoReporte">
-                                <option value="ventas">Historial de Ventas</option>
-                                <option value="inventario">Estado de Inventario</option>
-                                <option value="clientes">Actividad de Clientes</option>
-                            </select>
+                    <form id="formBuscarFactura" class="filtros-reporte" onsubmit="event.preventDefault();">
+                        <div class="form-campo campo-busqueda">
+                            <label for="inputNumFactura">Número o Referencia de Factura</label>
+                            <input type="text" id="inputNumFactura" placeholder="Ejemplo: VNT-001 o 001">
                         </div>
 
-                        <div class="form-campo">
-                            <label for="fechaInicio">Fecha Inicio</label>
-                            <input type="date" id="fechaInicio">
+                        <div class="form-acciones">
+                            <button type="button" class="btn-guardar" id="btnBuscarFactura">Buscar Factura</button>
+                            <button type="button" class="btn-exportar" id="btnLimpiarBusqueda">Mostrar Todas</button>
                         </div>
-
-                        <div class="form-campo">
-                            <label for="fechaFin">Fecha Fin</label>
-                            <input type="date" id="fechaFin">
-                        </div>
-
-                        <button type="button" class="btn-guardar" id="btnGenerarReporte">Generar Reporte</button>
-                        <button type="button" class="btn-exportar" id="btnExportarExcel">Exportar</button>
                     </form>
                 </article>
 
-                <!-- Panel de Resultados (Tabla) -->
+                <!-- Panel de Resultados (Tabla de Facturas) -->
                 <article class="panel clientes-panel-lista panel-full-width">
                     <div class="panel-header">
                         <div>
-                            <h2>Vista Previa del Reporte</h2>
-                            <p>Resultados basados en los filtros seleccionados</p>
+                            <h2>Resultados de Facturación</h2>
+                            <p>Lista de comprobantes registrados en el sistema</p>
                         </div>
                     </div>
 
@@ -67,36 +59,67 @@
                                     <th>Descripción / Cliente</th>
                                     <th>Monto Total</th>
                                     <th>Estado</th>
+                                    <th>Acción</th>
                                 </tr>
                             </thead>
                             <tbody id="cuerpoReporte">
-                                <tr>
+                                <tr data-referencia="VNT-001">
                                     <td>2026-10-12</td>
                                     <td>#VNT-001</td>
                                     <td>Ana Torres - Laptop Dell XPS</td>
-                                    <td>₡999</td>
-                                    <td><span style="color: #28a745; font-weight: 600;">Completado</span></td>
+                                    <td>₡999,000</td>
+                                    <td><span class="estado-completado">Completado</span></td>
+                                    <td>
+                                        <button class="btn-pdf" onclick="generarFacturaPDF({
+                                            numeroFactura: 'VNT-001',
+                                            fecha: '2026-10-12',
+                                            cliente: 'Ana Torres',
+                                            descripcion: 'Laptop Dell XPS',
+                                            montoTotal: 999000,
+                                            estado: 'Completado'
+                                        })">PDF</button>
+                                    </td>
                                 </tr>
-                                <tr>
+                                <tr data-referencia="VNT-002">
                                     <td>2026-10-10</td>
                                     <td>#VNT-002</td>
                                     <td>Cliente Mostrador - Mouse Inalámbrico</td>
-                                    <td>₡25</td>
-                                    <td><span style="color: #28a745; font-weight: 600;">Completado</span></td>
+                                    <td>₡25,000</td>
+                                    <td><span class="estado-completado">Completado</span></td>
+                                    <td>
+                                        <button class="btn-pdf" onclick="generarFacturaPDF({
+                                            numeroFactura: 'VNT-002',
+                                            fecha: '2026-10-10',
+                                            cliente: 'Cliente Mostrador',
+                                            descripcion: 'Mouse Inalámbrico',
+                                            montoTotal: 25000,
+                                            estado: 'Completado'
+                                        })">PDF</button>
+                                    </td>
                                 </tr>
-                                <tr>
+                                <tr data-referencia="VNT-003">
                                     <td>2026-10-08</td>
                                     <td>#VNT-003</td>
                                     <td>Carlos Ruiz - Monitor 24"</td>
-                                    <td>₡199</td>
-                                    <td><span style="color: #ffc107; font-weight: 600;">Pendiente</span></td>
+                                    <td>₡199,000</td>
+                                    <td><span class="estado-pendiente">Pendiente</span></td>
+                                    <td>
+                                        <button class="btn-pdf" onclick="generarFacturaPDF({
+                                            numeroFactura: 'VNT-003',
+                                            fecha: '2026-10-08',
+                                            cliente: 'Carlos Ruiz',
+                                            descripcion: 'Monitor 24',
+                                            montoTotal: 199000,
+                                            estado: 'Pendiente'
+                                        })">PDF</button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
                     <div class="footer-tabla">
-                        <span id="contadorReporte">Mostrando registros totales</span>
+                        <span id="contadorReporte">Mostrando facturas registradas</span>
                         
                         <div class="btnPaginas">
                             <button>&lt;</button>
@@ -110,6 +133,63 @@
         </main>
     </div>
 
+    <!-- PLANTILLA OCULTA FUERA DE PANTALLA PARA PDF -->
+    <div id="factura-container">
+        <div id="factura-pdf" class="factura-documento">
+            
+            <div class="factura-header">
+                <div>
+                    <h1 class="factura-titulo">OctoERP / StepStyle</h1>
+                    <p class="factura-subtitulo">Comprobante de Venta / Reporte Individual</p>
+                </div>
+                <div class="factura-header-derecha">
+                    <h3 id="pdf-num-factura">FACTURA #0000</h3>
+                    <p id="pdf-fecha">Fecha: --/--/----</p>
+                </div>
+            </div>
+
+            <div class="factura-info-grid">
+                <div class="factura-card">
+                    <h4>Información del Cliente</h4>
+                    <p id="pdf-cliente"><strong>Cliente:</strong> ---</p>
+                    <p id="pdf-estado"><strong>Estado:</strong> Completado</p>
+                </div>
+                <div class="factura-card">
+                    <h4>Detalles del Sistema</h4>
+                    <p><strong>Origen:</strong> Módulo de Reportes</p>
+                    <p><strong>Moneda:</strong> Colón Costarricense (₡)</p>
+                </div>
+            </div>
+
+            <table class="factura-tabla">
+                <thead>
+                    <tr>
+                        <th class="text-left">Descripción</th>
+                        <th class="text-center">Cant.</th>
+                        <th class="text-right">Precio Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody id="pdf-detalle-body">
+                    <!-- Se llena dinámicamente -->
+                </tbody>
+            </table>
+
+            <div class="factura-totales-container">
+                <div class="factura-totales-box">
+                    <p><strong>Subtotal (sin IVA):</strong> <span id="pdf-subtotal">₡0</span></p>
+                    <p><strong>IVA (13%):</strong> <span id="pdf-iva">₡0</span></p>
+                    <hr>
+                    <p class="factura-monto-total"><strong>Monto Total:</strong> <span id="pdf-total">₡0</span></p>
+                </div>
+            </div>
+
+            <div class="factura-footer">
+                <p><strong>Documento emitido por OctoERP</strong></p>
+                <p>Comprobante digital para fines de reporte e inventario.</p>
+            </div>
+        </div>
+    </div>
+
     <button id="btn-abrir-chat" class="chat-trigger">
         <img src="../Imagenes/octopus1.png" alt="Chat" style="width:30px;">
     </button>
@@ -121,10 +201,10 @@
                 <div class="avatar"><img src="../Imagenes/octopus.png" alt="Avatar"></div>
                 <div class="info">
                     <h3>Asistente de Inventario <span>x Gemini</span></h3>
-                    <span class="estado">● Conectado</span>
+                    <span class="estado-indicador">Conectado</span>
                 </div>
             </div>
-            <button id="btn-cerrar-chat" class="btn-cerrar">✕</button>
+            <button id="btn-cerrar-chat" class="btn-cerrar">&times;</button>
         </div>
         <div class="chat-mensajes" id="chat-mensajes">
             <div class="mensaje bot">
@@ -136,12 +216,13 @@
 
         <div class="chat-input-container">
             <input type="text" id="chat-input" placeholder="Pregunta sobre tu stock...">
-            <button id="btn-enviar-chat" class="btn-enviar">➤</button>
+            <button id="btn-enviar-chat" class="btn-enviar">Enviar</button>
         </div>
     </div>
 
-    <!-- Vinculación de los scripts -->
+    <!-- Vinculación de scripts -->
     <script src="../JavaScript/layout.js"></script>
     <script src="../JavaScript/chat.js"></script>
+    <script src="../JavaScript/reportes.js"></script>
 </body>
 </html>
