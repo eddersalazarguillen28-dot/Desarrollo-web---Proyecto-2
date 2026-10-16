@@ -281,7 +281,7 @@ function actualizarTablaVentas(ventasFiltradas) {
             formatearMoneda(calcularIngreso(venta))
         ];
 
-        valores.forEach(valores => {
+        valores.forEach(valor => {
             const celda = document.createElement("td");
             celda.textContent = valor;
             fila.appendChild(celda);
