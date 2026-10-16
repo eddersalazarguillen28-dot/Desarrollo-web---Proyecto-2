@@ -6,7 +6,7 @@ let productos = [];
 let carrito = [];
 let guardando = false;
 
-const cliente = document.getElementById("clientes");
+const cliente = document.getElementById("cliente");
 const producto = document.getElementById("producto");
 const cantidad = document.getElementById("cantidad");
 const precio = document.getElementById("precio");
@@ -28,6 +28,12 @@ function avisar(texto, error = false) {
     mensaje.textContent = texto;
     mensaje.style.color = error ? "red" :
     "green" ;
+    
+    if (!mensaje) {
+        alert(texto);
+        return;
+    }
+
     contenedor.hidden = false;
 }
 
@@ -50,7 +56,7 @@ async function consultar(ruta, opciones = {}) {
 async function cargarCliente() {
     const datos = await consultar("/api/clientes");
 
-    const list = Array.isArray(datos) ? datos : datos.clientes;
+    const lista = Array.isArray(datos) ? datos : datos.clientes;
 
     if (!Array.isArray(lista)) {
         throw new Error("No se recibieron clientes");
@@ -93,7 +99,9 @@ async function cargarProdutos() {
         }
         producto.appendChild(opcion);
     });
-    precio.value = "";
+    if (precio){
+        precio.value = "";
+    }
 }
 
 producto.addEventListener("change", function () {
@@ -101,9 +109,11 @@ producto.addEventListener("change", function () {
         return String(p.id) === producto.value;
     });
 
-    precio.value = seleccionado 
-    ? moneda(seleccionado.precio)
-    : "";
+    if (precio){
+        precio.value = seleccionado 
+        ? moneda(seleccionado.precio)
+        : "";
+    }
 });
 
 agregar.addEventListener("click", function () {
@@ -141,8 +151,9 @@ agregar.addEventListener("click", function () {
         });
     }
     cantidad.value = 1;
-    contenedor.hidden = true;
-    
+    if (contenedor) {
+        contenedor.hidden = false;
+    }
     mostrarCarrito();
 });
 
@@ -161,7 +172,7 @@ function mostrarCarrito() {
         precioUnidad.textContent = moneda(p.precio);
 
         const importe = document.createElement("td");
-        importe.textContent = moneda(p.precio + p.cantidad)
+        importe.textContent = moneda(p.precio * p.cantidad)
 
         const accion = document.createElement("td");
         const boton = document.createElement("button");
@@ -196,16 +207,19 @@ function mostrarCarrito() {
         celda.textContent = "No hay productos agregados";
 
         fila.appendChild(celda);
-        fila.appendChild(fila);
+        tabla.appendChild(fila);
     }
 
     const suma = carrito.reduce(function (acumulado, p) {
         return acumulado + p.precio * p.cantidad;
     }, 0);
 
+    const iva = suma * 0.13;
+    const totalConIva = suma + iva;
+
     subtotal.textContent = moneda(suma);
-    impuesto.textContent = "No configurado";
-    total.textContent = moneda(suma);
+    impuesto.textContent = moneda(iva);
+    total.textContent = moneda(totalConIva);
 
     registrar.disabled = guardando || carrito.length === 0;
     agregar.disabled = guardando;
@@ -225,7 +239,7 @@ registrar.addEventListener("click", async function () {
     }
 
     const venta = {
-        cliente_id: numero(cliente.value),
+        cliente_id: Number(cliente.value),
         detalles: carrito.map(function (p) {
             return {
                 producto_id: Number(p.id),
@@ -274,7 +288,8 @@ async function iniciar() {
         ]);
         agregar.disabled = false;
     } catch (error) {
-        avisar("Error al cargar datos: " + error,message, true);
+       console.error("Error al cargar datos:", error);
+       avisar("Error al cargar datos: " + error.message, true)
     }
     mostrarCarrito();
 }

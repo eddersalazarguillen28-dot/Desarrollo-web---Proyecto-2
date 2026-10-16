@@ -331,7 +331,7 @@ async function eliminarVenta(id) {
             {
                 method: "DELETE",
                 headers: {
-                    "Authorization": "Bearer" +  token
+                    "Authorization": "Bearer " + token
                 }
             }
         );
