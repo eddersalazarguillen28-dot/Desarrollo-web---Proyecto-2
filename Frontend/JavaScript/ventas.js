@@ -103,9 +103,11 @@ producto.addEventListener("change", function () {
         return String(p.id) === producto.value;
     });
 
-    precio.value = seleccionado 
-    ? moneda(seleccionado.precio)
-    : "";
+    if (precio){
+        precio.value = seleccionado 
+        ? moneda(seleccionado.precio)
+        : "";
+    }
 });
 
 agregar.addEventListener("click", function () {
