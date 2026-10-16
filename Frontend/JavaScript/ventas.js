@@ -50,9 +50,9 @@ async function consultar(ruta, opciones = {}) {
 async function cargarCliente() {
     const datos = await consultar("/api/clientes");
 
-    const list = Array.isArray(datos) ? datos : datos.clientes;
+    const lista = Array.isArray(datos) ? datos : datos.clientes;
 
-    if (!Array.isArray(list)) {
+    if (!Array.isArray(lista)) {
         throw new Error("No se recibieron clientes");
     }
 
