@@ -28,6 +28,12 @@ function avisar(texto, error = false) {
     mensaje.textContent = texto;
     mensaje.style.color = error ? "red" :
     "green" ;
+    
+    if (!mensaje) {
+        alert(texto);
+        return;
+    }
+
     contenedor.hidden = false;
 }
 
