@@ -134,7 +134,7 @@ def solo_administrador(funcion):
     def protegida(*args, **kwargs):
         autorizacion = request.headers.get("Authorization", "")
 
-        if not autorizacion.startswith("Beare"):
+        if not autorizacion.startswith("Bearer"):
             return jsonify({
                 "status": "error",
                 "message": "Debes iniciar sesión"
@@ -144,11 +144,16 @@ def solo_administrador(funcion):
 
         try:
             datos = firmador.loads(token, max_age=3600)
-        except (BadSignature, SignatureExpired):
+        except SignatureExpired:
             return jsonify({
                 "status": "error",
-                "message": "Sesión invalida o vencida"
+                "message": "Sesion vencida"
             }), 401
+        except BadSignature:
+            return jsonify({
+                "status": "error",
+                "message": "Firma del token invalida"
+            }),401
 
         conexion = None
 
@@ -158,7 +163,7 @@ def solo_administrador(funcion):
             with conexion.cursos() as cursor:
                 cursor.execute("""
                     SELECT rol
-                    FROM usuario
+                    FROM usuarios
                     WHERE id = %s
                     """, (datos["id"],))
 
@@ -171,10 +176,13 @@ def solo_administrador(funcion):
                     }), 403
 
         except Exception:
-            app.logger.exception({
+            app.logger.exception("Error al verificar permisos")
+
+            return jsonify({
                 "status": "error",
                 "message": "No se pudieron verificar los permisos"
-            }), 500
+            })
+               
 
         finally:
             if conexion:
@@ -717,7 +725,7 @@ def borrar_venta(venta_id):
             return jsonify({
                 "status": "error",
                 "message": "La venta no existe"
-            }), 200
+            }), 404
 
     except Exception:
         app.logger.exception("Error al eliminar venta")
@@ -928,15 +936,8 @@ def recuperar_password():
             print(f"Error al enviar correo con Resent:{e}")
     return jsonify({'mensaje':'Si el correo está registrado,recibirás las instrucciones'}),200
 
-        
-
-    
-
-
-# =========================================================
-# INICIAR SERVIDOR
-# Render utiliza el servidor definido en el comando de arranque.
-# =========================================================
+print("RUTAS REGISTRADAS EN FLASK: ")
+print(app.url_map)
 
 if __name__ == "__main__":
     puerto = int(os.environ.get("PORT", 5000))
