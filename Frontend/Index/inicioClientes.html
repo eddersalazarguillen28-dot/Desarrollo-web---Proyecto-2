@@ -90,39 +90,123 @@
     <!-- Contenido Principal -->
     <main class="container-inicio">
 
-        <!-- Banner Hero Principal -->
-        <section class="hero-section">
-            <div class="hero-bg-glow"></div>
+        <!-- BANNER HERO CON TEMÁTICA DE TENTÁCULOS DE PULPO Y TECH -->
+        <section class="hero-section hero-octo-theme">
+            
+            <!-- Tentáculo SVG de Fondo 1 (Izquierda) -->
+            <svg class="tentacle-bg tentacle-left" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path class="tentacle-path-pulse" d="M -50 450 C 80 350, 40 220, 160 180 C 260 140, 200 40, 310 10" stroke="url(#tentacle-grad-1)" stroke-width="14" stroke-linecap="round" />
+                <circle cx="160" cy="180" r="6" class="glow-dot dot-purple" />
+                <circle cx="220" cy="155" r="5" class="glow-dot dot-green" />
+                <circle cx="270" cy="80" r="7" class="glow-dot dot-purple" />
+                <defs>
+                    <linearGradient id="tentacle-grad-1" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#7168ff" stop-opacity="0" />
+                        <stop offset="60%" stop-color="#7168ff" stop-opacity="0.5" />
+                        <stop offset="100%" stop-color="#2ecc71" stop-opacity="0.8" />
+                    </linearGradient>
+                </defs>
+            </svg>
+
+            <!-- Aura y Resplandor Central -->
+            <div class="hero-bg-glow-octo"></div>
+
+            <!-- Contenido del Banner (Izquierda) -->
             <div class="hero-content fade-in-up">
-                <span class="badge-tech-hero">Hardware & Custom Gaming PCs</span>
+                <div class="hero-badge-container">
+                    <span class="badge-tech-hero octo-badge">
+                        <svg class="octo-mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2a5 5 0 0 0-5 5c0 2.5 1.5 4.5 3.5 5.2V14M12 2a5 5 0 0 1 5 5c0 2.5-1.5 4.5-3.5 5.2V14M7 14c-2 0-3.5 1.5-3.5 3.5S5 21 7 21s3.5-1.5 3.5-3.5M17 14c2 0 3.5 1.5 3.5 3.5S19 21 17 21s-3.5-1.5-3.5-3.5"/>
+                        </svg>
+                        OctoERP Hardware Division
+                    </span>
+                </div>
+
                 <h1 class="hero-title">
-                    Rendimiento Extremo para tu <span>Setup</span>
+                    El Poder del <span class="text-glow-purple">Hardware</span> en las Garras de tu Setup
                 </h1>
                 <p class="hero-subtitle">
-                    Descubre componentes de última generación, tarjetas de video, procesadores y PCs ensambladas con disponibilidad física en tiempo real.
+                    Control total y rendimiento de nivel extremo. Consigue tus componentes de última generación y Custom PCs con stock sincronizado en tiempo real.
                 </p>
+
                 <div class="hero-cta-group">
-                    <a href="" class="btn-hero-primary">Explorar Catálogo</a>
-                    <a href="QuienesSomos.html" class="btn-hero-secondary">Conocer Más</a>
+                    <a href="productos.html" class="btn-hero-primary octo-glow-btn">
+                        Explorar Catálogo
+                        <svg class="btn-arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </a>
+                    <a href="QuienesSomos.html" class="btn-hero-secondary">Sobre Nosotros</a>
+                </div>
+
+                <!-- Métricas Destacadas del Hero -->
+                <div class="hero-stats-row">
+                    <div class="hero-stat-item">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Stock Real</span>
+                    </div>
+                    <div class="hero-stat-divider"></div>
+                    <div class="hero-stat-item">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Asesoría Tech</span>
+                    </div>
+                    <div class="hero-stat-divider"></div>
+                    <div class="hero-stat-item">
+                        <span class="stat-number">Garantía</span>
+                        <span class="stat-label">Oficial Directa</span>
+                    </div>
                 </div>
             </div>
 
             <!-- Tarjeta Flotante Destacada -->
             <div class="hero-visual fade-in-right">
-                <div class="hero-card-featured">
-                    <div class="card-glow-border"></div>
-                    <span class="card-status-badge">Destacado</span>
-                    <img src="../Imagenes/Logo.png" alt="OctoERP Tech Hardware" class="hero-card-img">
-                    <div class="hero-card-info">
-                        <h3>Custom PC Octo Pro</h3>
-                        <p>Intel i7 13700K + RTX 4070 + 32GB RAM</p>
-                        <span class="hero-card-price">₡1,250,000</span>
+                <div class="octo-visual-wrapper">
+                    
+                    <!-- Tentáculos Neón Rodeando la Tarjeta -->
+                    <svg class="tentacle-wrap-svg" viewBox="0 0 420 460" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path class="animated-path-1" d="M 20 420 Q 90 220 190 240 T 380 90" stroke="url(#purple-neon)" stroke-width="9" stroke-linecap="round"/>
+                        <path class="animated-path-2" d="M 400 400 C 310 370 290 230 210 130 C 160 70 90 90 50 30" stroke="url(#cyan-neon)" stroke-width="7" stroke-linecap="round"/>
+                        <!-- Puntos Neón / Succionadores -->
+                        <circle cx="190" cy="240" r="5" fill="#7168ff" />
+                        <circle cx="210" cy="130" r="5" fill="#2ecc71" />
+                        <defs>
+                            <linearGradient id="purple-neon" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#7168ff"/>
+                                <stop offset="100%" stop-color="#a39bff"/>
+                            </linearGradient>
+                            <linearGradient id="cyan-neon" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#2ecc71"/>
+                                <stop offset="100%" stop-color="#7168ff"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+
+                    <!-- Tarjeta de Producto Destacado -->
+                    <div class="hero-card-featured octo-card-3d">
+                        <div class="card-glow-border"></div>
+                        <span class="card-status-badge octo-badge-glow">Top Custom PC</span>
+                        
+                        <div class="img-octo-container">
+                            <div class="octo-aura-ring"></div>
+                            <img src="../Imagenes/Logo.png" alt="OctoERP Tech Hardware" class="hero-card-img pulse-img">
+                        </div>
+
+                        <div class="hero-card-info">
+                            <h3>Custom PC Octo Beast</h3>
+                            <p>Intel i9 14900KS + RTX 4090 + 64GB DDR5</p>
+                            <div class="price-container">
+                                <span class="hero-card-price">₡1,850,000</span>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
+
         </section>
 
-        <!-- Sección de Características -->
+        <!-- Sección de Características / Beneficios -->
         <section class="features-section">
             <div class="features-grid">
                 <div class="feature-card reveal-on-scroll">
@@ -241,7 +325,7 @@
             </div>
 
             <div class="view-more-container">
-                <a href="" class="btn-view-all">Ver Todo el Catálogo</a>
+                <a href="productos.html" class="btn-view-all">Ver Todo el Catálogo</a>
             </div>
         </section>
 
@@ -254,5 +338,4 @@
 
     <script src="../JavaScript/inicioClientes.js"></script>
 </body>
-
 </html>
