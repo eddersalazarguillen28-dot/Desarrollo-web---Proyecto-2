@@ -727,6 +727,11 @@ def borrar_venta(venta_id):
                 "message": "La venta no existe"
             }), 404
 
+        return jsonify({
+            "status": "ok",
+            "message": "Venta eliminada correctamente"
+        }), 200
+
     except Exception:
         app.logger.exception("Error al eliminar venta")
 
