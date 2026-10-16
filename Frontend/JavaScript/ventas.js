@@ -6,7 +6,7 @@ let productos = [];
 let carrito = [];
 let guardando = false;
 
-const cliente = document.getElementById("clientes");
+const cliente = document.getElementById("cliente");
 const producto = document.getElementById("producto");
 const cantidad = document.getElementById("cantidad");
 const precio = document.getElementById("precio");
