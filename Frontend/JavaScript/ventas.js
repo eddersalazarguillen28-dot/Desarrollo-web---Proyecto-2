@@ -208,9 +208,12 @@ function mostrarCarrito() {
         return acumulado + p.precio * p.cantidad;
     }, 0);
 
+    const iva = suma * 0.13;
+    const totalConIva = suma + iva;
+
     subtotal.textContent = moneda(suma);
-    impuesto.textContent = "No configurado";
-    total.textContent = moneda(suma);
+    impuesto.textContent = moneda(iva);
+    total.textContent = moneda(totalConIva);
 
     registrar.disabled = guardando || carrito.length === 0;
     agregar.disabled = guardando;
@@ -230,7 +233,7 @@ registrar.addEventListener("click", async function () {
     }
 
     const venta = {
-        cliente_id: numero(cliente.value),
+        cliente_id: Number(cliente.value),
         detalles: carrito.map(function (p) {
             return {
                 producto_id: Number(p.id),
