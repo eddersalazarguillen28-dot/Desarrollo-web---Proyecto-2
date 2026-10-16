@@ -144,11 +144,16 @@ def solo_administrador(funcion):
 
         try:
             datos = firmador.loads(token, max_age=3600)
-        except (BadSignature, SignatureExpired):
+        except SignatureExpired:
             return jsonify({
                 "status": "error",
-                "message": "Sesión invalida o vencida"
+                "message": "Sesion vencida"
             }), 401
+        except BadSignature:
+            return jsonify({
+                "status": "error",
+                "message": "Firma del token invalida"
+            }),401
 
         conexion = None
 
