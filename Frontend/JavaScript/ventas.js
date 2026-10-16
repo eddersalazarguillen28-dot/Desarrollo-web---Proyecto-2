@@ -52,7 +52,7 @@ async function cargarCliente() {
 
     const list = Array.isArray(datos) ? datos : datos.clientes;
 
-    if (!Array.isArray(lista)) {
+    if (!Array.isArray(list)) {
         throw new Error("No se recibieron clientes");
     }
 
