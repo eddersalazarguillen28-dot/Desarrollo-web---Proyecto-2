@@ -93,7 +93,9 @@ async function cargarProdutos() {
         }
         producto.appendChild(opcion);
     });
-    precio.value = "";
+    if (precio){
+        precio.value = "";
+    }
 }
 
 producto.addEventListener("change", function () {
@@ -141,8 +143,9 @@ agregar.addEventListener("click", function () {
         });
     }
     cantidad.value = 1;
-    contenedor.hidden = true;
-    
+    if (contenedor) {
+        contenedor.hidden = false;
+    }
     mostrarCarrito();
 });
 
