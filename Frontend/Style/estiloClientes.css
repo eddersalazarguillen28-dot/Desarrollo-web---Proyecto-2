@@ -489,21 +489,8 @@ footer-tabla{
     display: none !important;
 }
 
-/*Diseño responsive*/
 
-/*
 
-@media (max-widyh:1250px){
-    .estadistica-grid{
-        grid-template-columns: repeat(2,minmax(0,1fr));
-    }
-
-    .contenido-grid{
-        grid-template-columns: 1fr;
-    }
-}
-
-*/
 /* Modal de Confirmación Personalizado */
 .modal-overlay {
     position: fixed;
