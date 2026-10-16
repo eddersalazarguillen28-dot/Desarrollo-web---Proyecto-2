@@ -871,7 +871,7 @@ def eliminar_venta(venta_id):
                 return False
 
             cursor.execute("""
-                SELECT prodcuto_id, 
+                SELECT producto_id, 
                 SUM(cantidad) AS cantidad
                 FROM detalle_ventas 
                 WHERE venta_id = %s
@@ -893,7 +893,7 @@ def eliminar_venta(venta_id):
 
                 cursor.execute("""
                     DELETE FROM ventas
-                    WHERE od = %s;
+                    WHERE id = %s;
                     """, (venta_id,))
 
                 conn.commit()

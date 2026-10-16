@@ -91,6 +91,8 @@ formulario.addEventListener("submit", async function (evento) {
             // Guardar credenciales en el navegador
             localStorage.setItem("usuario", JSON.stringify(datos.usuario));
 
+            localStorage.setItem("token", datos.token)
+
             // Redirigir al Dashboard tras 1 segundo
             setTimeout(() => {
                 window.location.href = "inicio.html";

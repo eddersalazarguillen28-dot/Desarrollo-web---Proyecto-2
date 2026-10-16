@@ -297,14 +297,21 @@ function actualizarTablaVentas(ventasFiltradas) {
         botonEliminar.addEventListener("click", () => {
             eliminarVenta(venta.id);
         });
-        celdaAccion.appendChild(botonEliminar);
-        fila.appendChild(celdaAccion);
 
+        const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
+
+        if (usuario && usuario.rol === "administrador"){
+            celdaAccion.appendChild(botonEliminar);
+        } else {
+            celdaAccion.textContent = "-";
+        }
+
+        fila.appendChild(celdaAccion);
         tabla.appendChild(fila);
     });
 }
 
-async function eliminarVenta() {
+async function eliminarVenta(id) {
     const confirmar = confirm(
         "¿Seguro que deseas eliminar la venta #" + id + "?"
     );
@@ -312,10 +319,20 @@ async function eliminarVenta() {
     if (!confirmar) return;
 
     try {
+        const token = localStorage.getItem("token");
+
+       if (!token) {
+        alert("Debes iniciar sesión como administrador");
+        return;
+       }
+
         const respuesta = await fetch(
             "https://octo-erp.onrender.com/api/ventas/" + id,
             {
-                method: "DELETE"
+                method: "DELETE",
+                headers: {
+                    "Authorization": "Bearer" +  token
+                }
             }
         );
         
