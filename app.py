@@ -708,6 +708,7 @@ def crear_venta():
         }), 500
 
 @app.route("/api/ventas/<int:venta_id>", methods=["DELETE"])
+@solo_administrador
 def borrar_venta(venta_id):
     try:
         eliminado = db.eliminar_venta(venta_id)
