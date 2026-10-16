@@ -1,233 +1,258 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="light">
+<html lang="es" data-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OctoERP - Tienda de Tecnología</title>
-    <link rel="icon" type="image/png" href="../Imagenes/logoVentana.jpeg">
-   
+    <title>OctoERP - Tienda de Tecnología y Componentes</title>
     <link rel="stylesheet" href="../Style/estiloInicioClientes.css">
 </head>
-<body>
 
-    <!-- Navegación Superior Flotante -->
-    <header class="navbar-cliente">
-        <div class="navbar-container">
-            <a href="#" class="logo-brand">
-                <img src="../Imagenes/octopus.png" alt="OctoERP" class="logo-icono">
-                <span class="logo-texto">Octo<span class="logo-highlight">ERP</span></span>
+<body id="page-inicio">
+
+    <!-- Header / Barra de Navegación -->
+    <header class="navbar-octo">
+        <div class="nav-container">
+            <!-- Logo principal -->
+            <a href="inicioClientes.html" class="nav-logo">
+                <img src="../Imagenes/Logo.png" alt="OctoERP Logo">
+                <span>Octo<span>ERP</span></span>
             </a>
 
+            <!-- Menú de navegación -->
             <nav class="nav-links">
-                <a href="#inicio" class="nav-link active">Inicio</a>
-                <a href="#productos" class="nav-link">Productos</a>
-                <a href="#servicios" class="nav-link">Servicios</a>
-                <a href="#contacto" class="nav-link">Contacto</a>
+                <a href="inicioClientes.html" class="nav-item active">Inicio</a>
+                <a href="productos.html" class="nav-item">Productos</a>
+                <a href="QuienesSomos.html" class="nav-item">Sobre Nosotros</a>
             </nav>
 
-            <div class="navbar-acciones">
+            <div class="nav-actions">
                 <!-- Botón Modo Claro / Oscuro -->
-                <button id="btn-toggle-theme" class="btn-icon" aria-label="Cambiar Tema">
-                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                <button id="btn-toggle-theme" class="btn-theme-toggle" title="Cambiar Tema" aria-label="Cambiar Tema">
+                    <svg class="nav-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                     </svg>
                 </button>
 
-                <!-- Carrito de Compras -->
-                <button class="btn-icon btn-carrito" aria-label="Carrito">
-                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <!-- Botón de Carrito -->
+                <button class="btn-cart" onclick="toggleModalCarrito()" title="Ver Carrito">
+                    <svg class="nav-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
-                    <span class="carrito-badge" id="carrito-count">0</span>
+                    <span class="cart-count" id="cart-count">0</span>
                 </button>
+
+                <div class="auth-buttons" id="auth-guest">
+                    <a href="inicioSesion.html" class="btn-nav btn-login">Iniciar Sesión</a>
+                    <a href="crearCuenta.html" class="btn-nav btn-register">Registrarse</a>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Banner Principal con estética OctoERP -->
-    <section id="inicio" class="hero-banner">
-        <div class="hero-content fade-in-up">
-            <span class="hero-tag">OctoERP Hardware Store</span>
-            <h1 class="hero-titulo">Equipos y Tecnología de Alto Nivel</h1>
-            <p class="hero-subtitulo">Explora nuestro catálogo de computadoras, periféricos y accesorios con disponibilidad verificada en tiempo real.</p>
-            <div class="hero-botones">
-                <a href="#productos" class="btn-principal">Ver Productos</a>
-                <a href="#contacto" class="btn-secundario">Contacto Directo</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Servicios y Beneficios -->
-    <section id="servicios" class="seccion-beneficios">
-        <div class="grid-beneficios">
-            <div class="card-beneficio reveal-item">
-                <div class="icono-box">
-                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <!-- Modal Desplegable del Carrito -->
+    <div id="modal-carrito" class="carrito-modal-overlay hidden">
+        <div class="carrito-modal-content">
+            <div class="carrito-header">
+                <h2>
+                    <svg class="modal-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
-                </div>
-                <h3>Garantía Oficial</h3>
-                <p>Todos nuestros productos cuentan con respaldo directo del sistema OctoERP.</p>
+                    Tu Carrito de Compras
+                </h2>
+                <button class="btn-cerrar-carrito" onclick="toggleModalCarrito()" aria-label="Cerrar">&times;</button>
             </div>
-            <div class="card-beneficio reveal-item">
-                <div class="icono-box">
-                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                </div>
-                <h3>Stock en Tiempo Real</h3>
-                <p>Información sincronizada automáticamente con la base de datos central.</p>
+
+            <div class="carrito-body" id="carrito-items-lista">
+                <p class="carrito-vacio-msg">Tu carrito está vacío actualmente.</p>
             </div>
-            <div class="card-beneficio reveal-item">
-                <div class="icono-box">
-                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
+
+            <div class="carrito-footer">
+                <div class="carrito-total-row">
+                    <span>Total a pagar:</span>
+                    <span id="carrito-monto-total">₡0</span>
                 </div>
-                <h3>Soporte Técnico</h3>
-                <p>Asesoramiento personalizado en la elección de tus componentes informáticos.</p>
+                <button class="btn-procesar-compra" onclick="procesarCompra()">
+                    Finalizar Compra
+                </button>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Muestra de Productos (Estilo exacto de la imagen) -->
-    <section id="productos" class="seccion-catalogo">
-        <div class="encabezado-seccion">
-            <h2>Nuestros Productos</h2>
-            <p>Catálogo de equipos destacados</p>
-        </div>
+    <!-- Contenido Principal -->
+    <main class="container-inicio">
 
-        <div class="grid-productos" id="contenedor-productos">
-            
-            <article class="card-producto reveal-item">
-                <div class="card-imagen-box">
-                    <img src="../Imagenes/octopus.png" alt="PC Desktop" class="img-producto-logo">
+        <!-- Banner Hero Principal -->
+        <section class="hero-section">
+            <div class="hero-bg-glow"></div>
+            <div class="hero-content fade-in-up">
+                <span class="badge-tech-hero">Hardware & Custom Gaming PCs</span>
+                <h1 class="hero-title">
+                    Rendimiento Extremo para tu <span>Setup</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Descubre componentes de última generación, tarjetas de video, procesadores y PCs ensambladas con disponibilidad física en tiempo real.
+                </p>
+                <div class="hero-cta-group">
+                    <a href="" class="btn-hero-primary">Explorar Catálogo</a>
+                    <a href="QuienesSomos.html" class="btn-hero-secondary">Conocer Más</a>
                 </div>
-                <div class="card-body">
-                    <h3 class="producto-titulo">PC Desktop Pro</h3>
-                    <p class="producto-categoria">Electrónica</p>
-                    <div class="card-footer-producto">
-                        <span class="producto-precio">₡150,000</span>
-                        <button class="btn-add-cart" onclick="agregarAlCarrito('PC Desktop Pro')">Agregar</button>
-                    </div>
-                </div>
-            </article>
-
-            <article class="card-producto reveal-item">
-                <div class="card-imagen-box">
-                    <img src="../Imagenes/octopus.png" alt="Laptop Dell XPS" class="img-producto-logo">
-                </div>
-                <div class="card-body">
-                    <h3 class="producto-titulo">Laptop Dell XPS 15</h3>
-                    <p class="producto-categoria">Electrónica</p>
-                    <div class="card-footer-producto">
-                        <span class="producto-precio">₡999,000</span>
-                        <button class="btn-add-cart" onclick="agregarAlCarrito('Laptop Dell XPS 15')">Agregar</button>
-                    </div>
-                </div>
-            </article>
-
-            <article class="card-producto reveal-item">
-                <div class="card-imagen-box">
-                    <img src="../Imagenes/octopus.png" alt="Mouse Inalámbrico" class="img-producto-logo">
-                </div>
-                <div class="card-body">
-                    <h3 class="producto-titulo">Mouse Inalámbrico Pro</h3>
-                    <p class="producto-categoria">Electrónica</p>
-                    <div class="card-footer-producto">
-                        <span class="producto-precio">₡25,000</span>
-                        <button class="btn-add-cart" onclick="agregarAlCarrito('Mouse Inalámbrico Pro')">Agregar</button>
-                    </div>
-                </div>
-            </article>
-
-            <article class="card-producto reveal-item">
-                <div class="card-imagen-box">
-                    <img src="../Imagenes/octopus.png" alt="Monitor 24 Inches" class="img-producto-logo">
-                </div>
-                <div class="card-body">
-                    <h3 class="producto-titulo">Monitor LED 24"</h3>
-                    <p class="producto-categoria">Electrónica</p>
-                    <div class="card-footer-producto">
-                        <span class="producto-precio">₡199,000</span>
-                        <button class="btn-add-cart" onclick="agregarAlCarrito('Monitor LED 24')">Agregar</button>
-                    </div>
-                </div>
-            </article>
-
-            <article class="card-producto reveal-item">
-                <div class="card-imagen-box">
-                    <img src="../Imagenes/octopus.png" alt="Teclado Mecánico" class="img-producto-logo">
-                </div>
-                <div class="card-body">
-                    <h3 class="producto-titulo">Teclado Mecánico RGB</h3>
-                    <p class="producto-categoria">Electrónica</p>
-                    <div class="card-footer-producto">
-                        <span class="producto-precio">₡45,000</span>
-                        <button class="btn-add-cart" onclick="agregarAlCarrito('Teclado Mecánico RGB')">Agregar</button>
-                    </div>
-                </div>
-            </article>
-
-            <article class="card-producto reveal-item">
-                <div class="card-imagen-box">
-                    <img src="../Imagenes/octopus.png" alt="Router Dual Band" class="img-producto-logo">
-                </div>
-                <div class="card-body">
-                    <h3 class="producto-titulo">Router Wi-Fi 6</h3>
-                    <p class="producto-categoria">Electrónica</p>
-                    <div class="card-footer-producto">
-                        <span class="producto-precio">₡52,000</span>
-                        <button class="btn-add-cart" onclick="agregarAlCarrito('Router Wi-Fi 6')">Agregar</button>
-                    </div>
-                </div>
-            </article>
-
-        </div>
-    </section>
-
-    <!-- Pie de Página / Contacto -->
-    <footer id="contacto" class="footer-cliente">
-        <div class="footer-container">
-            <div class="footer-col col-brand">
-                <div class="logo-brand">
-                    <img src="../Imagenes/octopus.png" alt="OctoERP" class="logo-icono">
-                    <span class="logo-texto">Octo<span class="logo-highlight">ERP</span></span>
-                </div>
-                <p>Plataforma de catálogo digital y gestión centralizada para hardware y componentes electrónicos.</p>
             </div>
 
-            <div class="footer-col">
-                <h4>Contacto</h4>
-                <ul class="lista-contacto">
-                    <li>
-                        <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                        San José, Costa Rica
-                    </li>
-                    <li>
-                        <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                        +506 8888-0000
-                    </li>
-                    <li>
-                        <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                        soporte@octoerp.com
-                    </li>
-                </ul>
+            <!-- Tarjeta Flotante Destacada -->
+            <div class="hero-visual fade-in-right">
+                <div class="hero-card-featured">
+                    <div class="card-glow-border"></div>
+                    <span class="card-status-badge">Destacado</span>
+                    <img src="../Imagenes/Logo.png" alt="OctoERP Tech Hardware" class="hero-card-img">
+                    <div class="hero-card-info">
+                        <h3>Custom PC Octo Pro</h3>
+                        <p>Intel i7 13700K + RTX 4070 + 32GB RAM</p>
+                        <span class="hero-card-price">₡1,250,000</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de Características -->
+        <section class="features-section">
+            <div class="features-grid">
+                <div class="feature-card reveal-on-scroll">
+                    <div class="feature-icon-wrapper">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <h3>Garantía Oficial</h3>
+                    <p>Respaldo directo de fábrica y soporte técnico especializado en todos los componentes.</p>
+                </div>
+
+                <div class="feature-card reveal-on-scroll">
+                    <div class="feature-icon-wrapper">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                    </div>
+                    <h3>Stock Real En Tiempo Real</h3>
+                    <p>Integrado directamente con el sistema backend en la nube sin sorpresas de inventario.</p>
+                </div>
+
+                <div class="feature-card reveal-on-scroll">
+                    <div class="feature-icon-wrapper">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                    </div>
+                    <h3>Envíos Protegidos</h3>
+                    <p>Embalaje de alto impacto diseñado para proteger hardware delicado a todo el país.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Muestra de Productos Destacados -->
+        <section class="products-preview-section">
+            <div class="section-header">
+                <h2>Componentes Destacados</h2>
+                <p>Equipos e insumos más cotizados por nuestra comunidad gamer y profesional</p>
             </div>
 
-            <div class="footer-col">
-                <h4>Horario</h4>
-                <p class="horario-txt">Lunes a Viernes: 8:00 AM - 6:00 PM</p>
-                <p class="horario-txt">Sábados: 9:00 AM - 1:00 PM</p>
-            </div>
-        </div>
+            <div class="products-grid">
 
-        <div class="footer-bottom">
-            <p>&copy; 2026 OctoERP. Todos los derechos reservados.</p>
-        </div>
+                <article class="product-card reveal-on-scroll">
+                    <div class="product-img-box">
+                        <span class="product-tag">Disponible</span>
+                        <img src="../Imagenes/Logo.png" alt="Laptop Dell XPS 15">
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Cómputo</span>
+                        <h3>Laptop Dell XPS 15</h3>
+                        <p class="product-desc">Procesador Intel i7, 16GB RAM y pantalla táctil 4K.</p>
+                        <div class="product-action-row">
+                            <span class="product-price">₡999,000</span>
+                            <button class="btn-add-product" onclick="agregarAlCarrito('Laptop Dell XPS 15', 999000)">
+                                Agregar
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="product-card reveal-on-scroll">
+                    <div class="product-img-box">
+                        <span class="product-tag">Popular</span>
+                        <img src="../Imagenes/Logo.png" alt="PC Gaming Custom">
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Custom PC</span>
+                        <h3>PC Desktop Pro Gaming</h3>
+                        <p class="product-desc">Ensamble equilibrado para alto rendimiento en 1440p.</p>
+                        <div class="product-action-row">
+                            <span class="product-price">₡150,000</span>
+                            <button class="btn-add-product" onclick="agregarAlCarrito('PC Desktop Pro Gaming', 150000)">
+                                Agregar
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="product-card reveal-on-scroll">
+                    <div class="product-img-box">
+                        <span class="product-tag">Oferta</span>
+                        <img src="../Imagenes/Logo.png" alt="Monitor 24 Full HD">
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Monitores</span>
+                        <h3>Monitor LED 24" Full HD</h3>
+                        <p class="product-desc">Tasa de refresco rápida y tecnología de reducción de fatiga ocular.</p>
+                        <div class="product-action-row">
+                            <span class="product-price">₡199,000</span>
+                            <button class="btn-add-product" onclick="agregarAlCarrito('Monitor LED 24 Full HD', 199000)">
+                                Agregar
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="product-card reveal-on-scroll">
+                    <div class="product-img-box">
+                        <span class="product-tag">Periférico</span>
+                        <img src="../Imagenes/Logo.png" alt="Mouse Inalámbrico Pro">
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Periféricos</span>
+                        <h3>Mouse Inalámbrico Pro</h3>
+                        <p class="product-desc">Sensor óptico de alta precisión con conectividad de baja latencia.</p>
+                        <div class="product-action-row">
+                            <span class="product-price">₡25,000</span>
+                            <button class="btn-add-product" onclick="agregarAlCarrito('Mouse Inalámbrico Pro', 25000)">
+                                Agregar
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+
+            <div class="view-more-container">
+                <a href="" class="btn-view-all">Ver Todo el Catálogo</a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="footer-about">
+        <p>&copy; 2026 OctoERP Hardware & Tech Store. Todos los derechos reservados. Proyecto CTP.</p>
     </footer>
 
-    <!-- Script de Interactividad -->
     <script src="../JavaScript/inicioClientes.js"></script>
 </body>
+
 </html>
