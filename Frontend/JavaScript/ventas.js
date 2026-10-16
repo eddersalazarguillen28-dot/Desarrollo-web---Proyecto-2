@@ -199,7 +199,7 @@ function mostrarCarrito() {
         celda.textContent = "No hay productos agregados";
 
         fila.appendChild(celda);
-        fila.appendChild(fila);
+        tabla.appendChild(fila);
     }
 
     const suma = carrito.reduce(function (acumulado, p) {
