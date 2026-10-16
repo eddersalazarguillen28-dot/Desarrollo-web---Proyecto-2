@@ -166,7 +166,7 @@ function mostrarCarrito() {
         precioUnidad.textContent = moneda(p.precio);
 
         const importe = document.createElement("td");
-        importe.textContent = moneda(p.precio + p.cantidad)
+        importe.textContent = moneda(p.precio * p.cantidad)
 
         const accion = document.createElement("td");
         const boton = document.createElement("button");
