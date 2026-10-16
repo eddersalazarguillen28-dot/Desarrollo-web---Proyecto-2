@@ -852,6 +852,61 @@ def registrar_venta(cliente_id, detalles):
     finally:
         conn.close()
 
+def eliminar_venta(venta_id):
+    _validar_entero_positivo(venta_id, "venta_id")
+
+    conn = obtener_conexion()
+
+    try:
+        with conn.cursor() as cursor:
+
+            cursor.execute("""
+                SELECT id
+                FROM ventas
+                WHERE id = %s
+                FOR UPDATE; 
+                """, (venta_id,))
+
+            if cursor.fetchall() is None:
+                return False
+
+            cursor.execute("""
+                SELECT producto_id, 
+                SUM(cantidad) AS cantidad
+                FROM detalle_ventas 
+                WHERE venta_id = %s
+                GROUP BY producto_id
+                ORDER BY producto_id;
+                """, (venta_id,))
+
+            detalles = cursor.fetchall()
+
+            for detalle in detalles:
+                cursor.execute("""
+                    UPDATE productos
+                    SET stock = stock + %s
+                    WHERE id = %s;
+                    """, (
+                        detalle["cantidad"],
+                        detalle["producto_id"]
+                    ))
+
+                cursor.execute("""
+                    DELETE FROM ventas
+                    WHERE id = %s;
+                    """, (venta_id,))
+
+                conn.commit()
+                return True
+
+    except Exception:
+        conn.rollback()
+        raise
+
+    finally:
+        conn.close()
+
+
 
 # =========================================================
 # DATOS DE VENTAS PARA INVENTARIO E IA

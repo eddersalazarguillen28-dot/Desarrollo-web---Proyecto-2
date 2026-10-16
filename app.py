@@ -10,7 +10,8 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from psycopg2.extras import RealDictCursor
 from google import genai
-
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
+from functools import wraps
 from backend import db_manager as db
 import secrets
 import resend
@@ -29,6 +30,9 @@ cloudinary.config(
 # =========================================================
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = os.environ["SECRET_KEY"]
+
+firmador = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 
 # Límite máximo de cada solicitud, incluidas las imágenes.
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
@@ -125,6 +129,59 @@ def health():
         "servicio": "OCTO ERP API"
     })
 
+def solo_administrador(funcion):
+    @wraps(funcion)
+    def protegida(*args, **kwargs):
+        autorizacion = request.headers.get("Authorization", "")
+
+        if not autorizacion.startswith("Beare"):
+            return jsonify({
+                "status": "error",
+                "message": "Debes iniciar sesión"
+            }), 401
+
+        token = autorizacion[7:]
+
+        try:
+            datos = firmador.loads(token, max_age=3600)
+        except (BadSignature, SignatureExpired):
+            return jsonify({
+                "status": "error",
+                "message": "Sesión invalida o vencida"
+            }), 401
+
+        conexion = None
+
+        try:
+            conexion = db.obtener_conexion()
+
+            with conexion.cursos() as cursor:
+                cursor.execute("""
+                    SELECT rol
+                    FROM usuario
+                    WHERE id = %s
+                    """, (datos["id"],))
+
+                usuario = cursor.fetchone()
+
+                if not usuario or usuario["rol"] != "administrador":
+                    return jsonify({
+                        "status": "error",
+                        "message": "Solo el administrador puede borrar ventas"
+                    }), 403
+
+        except Exception:
+            app.logger.exception({
+                "status": "error",
+                "message": "No se pudieron verificar los permisos"
+            }), 500
+
+        finally:
+            if conexion:
+                conexion.close()
+
+        return funcion(*args, **kwargs)
+    return protegida
 
 # =========================================================
 # REGISTRO DE USUARIOS
@@ -252,9 +309,14 @@ def iniciar_sesion():
                 "message": "Correo o contraseña incorrectos."
             }), 401
 
+        token = firmador.dumps({
+            "id": usuario["id"]
+        })
+
         return jsonify({
             "status": "ok",
             "message": "Inicio de sesión correcto.",
+            "token": token,
             "usuario": {
                 "id": usuario["id"],
                 "nombre": usuario["nombre"],
@@ -587,7 +649,6 @@ def dashboard():
             "message": "No se pudo cargar el dashboard."
         }), 500
 
-
 # =========================================================
 # REGISTRAR VENTAS
 # =========================================================
@@ -646,6 +707,24 @@ def crear_venta():
             )
         }), 500
 
+@app.route("/api/ventas/<int:venta_id>", methods=["DELETE"])
+def borrar_venta(venta_id):
+    try:
+        eliminado = db.eliminar_venta(venta_id)
+
+        if not eliminado:
+            return jsonify({
+                "status": "error",
+                "message": "La venta no existe"
+            }), 200
+
+    except Exception:
+        app.logger.exception("Error al eliminar venta")
+
+        return jsonify({
+            "status": "error",
+            "message": "No se pudo eliminar la venta"
+        }), 500
 
 # =========================================================
 # CHAT CON GEMINI
