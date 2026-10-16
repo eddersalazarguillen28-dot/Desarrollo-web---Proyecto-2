@@ -274,7 +274,8 @@ async function iniciar() {
         ]);
         agregar.disabled = false;
     } catch (error) {
-        avisar("Error al cargar datos: " + error,message, true);
+       console.error("Error al cargar datos:", error);
+       avisar("Error al cargar datos: " + error.message, true)
     }
     mostrarCarrito();
 }
