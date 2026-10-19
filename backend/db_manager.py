@@ -480,17 +480,9 @@ def eliminar_producto(producto_id):
                 return False
 
             cursor.execute("""
-                SELECT 1
-                FROM detalle_ventas
-                WHERE producto_id = %s
-                LIMIT 1;
-            """, (producto_id,))
-
-            if cursor.fetchone():
-                raise ValueError(
-                    "El producto tiene ventas registradas y no puede "
-                    "eliminarse. Puedes dejar su stock en cero."
-                )
+                DELETE FROM detalle_ventas
+                WHERE producto_id = %s;
+                """, (producto_id,))
 
             cursor.execute("""
                 DELETE FROM productos
@@ -852,8 +844,12 @@ def registrar_venta(cliente_id, detalles):
     finally:
         conn.close()
 
+
 def eliminar_venta(venta_id):
-    _validar_entero_positivo(venta_id, "venta_id")
+    venta_id = _validar_entero_positivo(
+        venta_id,
+        "venta_id"
+    )
 
     conn = obtener_conexion()
 
@@ -864,19 +860,16 @@ def eliminar_venta(venta_id):
                 SELECT id
                 FROM ventas
                 WHERE id = %s
-                FOR UPDATE; 
+                FROM UPDATE
                 """, (venta_id,))
 
-            if cursor.fetchall() is None:
-                return False
+            if cursor.fetchone() is None:
+                raise ValueError("La venta indicada no existe")
 
             cursor.execute("""
-                SELECT producto_id, 
-                SUM(cantidad) AS cantidad
-                FROM detalle_ventas 
+                SELECT producto_id, cantidad
+                FROM detalle_ventas
                 WHERE venta_id = %s
-                GROUP BY producto_id
-                ORDER BY producto_id;
                 """, (venta_id,))
 
             detalles = cursor.fetchall()
@@ -886,18 +879,32 @@ def eliminar_venta(venta_id):
                     UPDATE productos
                     SET stock = stock + %s
                     WHERE id = %s;
-                    """, (
+                    """,(
                         detalle["cantidad"],
                         detalle["producto_id"]
                     ))
 
-                cursor.execute("""
-                    DELETE FROM ventas
-                    WHERE id = %s;
-                    """, (venta_id,))
+                if cursor.rowcount != 1:
+                    raise RuntimeError(
+                        "No se pudo actualizar el inventario"
+                    )
 
-                conn.commit()
-                return True
+            cursor.execute("""
+                DELETE FROM detalle_ventas
+                WHERE venta_id = %s;
+                """, (venta_id,))
+
+            cursor.execute("""
+                DELETE FROM ventas
+                WHERE id = %s;
+                """, (venta_id,))
+
+            if cursor.rowcount != 1:
+                raise RuntimeError(
+                    "No se pudo eliminar la venta"
+                )
+        conn.commit()
+        return True
 
     except Exception:
         conn.rollback()
@@ -906,8 +913,7 @@ def eliminar_venta(venta_id):
     finally:
         conn.close()
 
-
-
+            
 # =========================================================
 # DATOS DE VENTAS PARA INVENTARIO E IA
 # =========================================================

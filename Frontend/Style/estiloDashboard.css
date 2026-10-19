@@ -304,16 +304,30 @@ tbody tr:hover {
 }
 
 .btn-eliminar-venta {
-    background: #dc2626;
-    color: white;
+    background-color: #dc2626;
+    color: #ffffff;
     border: none;
-    padding: 8px 12px;
     border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
     cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
 }
 
 .btn-eliminar-venta:hover {
-    background: #b91c1c;
+    background-color: #b91c1c;
+    transform: translateY(-1px);
+}
+
+.btn-eliminar-venta:active {
+    transform: translateY(0);
+}
+
+.btn-eliminar-venta:focus-visible {
+    outline: 2px solid #f87171;
+    outline-offset: 2px;
 }
 
 footer {

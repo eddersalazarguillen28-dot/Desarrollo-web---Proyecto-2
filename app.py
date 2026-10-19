@@ -53,7 +53,8 @@ CORS(
             "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"],
         }
-    }
+    },
+    supports_credentials=True
 )
 
 
@@ -160,7 +161,7 @@ def solo_administrador(funcion):
         try:
             conexion = db.obtener_conexion()
 
-            with conexion.cursos() as cursor:
+            with conexion.cursor() as cursor:
                 cursor.execute("""
                     SELECT rol
                     FROM usuarios
@@ -715,25 +716,25 @@ def crear_venta():
             )
         }), 500
 
-@app.route("/api/ventas/<int:venta_id>", methods=["DELETE"])
+@app.route("api/ventas/<int:venta_id>", methods=["DELETE"])
 @solo_administrador
 def borrar_venta(venta_id):
     try:
-        eliminado = db.eliminar_venta(venta_id)
-
-        if not eliminado:
-            return jsonify({
-                "status": "error",
-                "message": "La venta no existe"
-            }), 404
+        db.eliminar_venta(venta_id)
 
         return jsonify({
             "status": "ok",
             "message": "Venta eliminada correctamente"
         }), 200
 
+    except ValueError as error:
+        return jsonify({
+            "status": "error",
+            "message": str(error)
+        }), 400 
+
     except Exception:
-        app.logger.exception("Error al eliminar venta")
+        app.logger.exception("Error al eliminar la venta %s", venta_id)
 
         return jsonify({
             "status": "error",

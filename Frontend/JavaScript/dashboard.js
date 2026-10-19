@@ -86,7 +86,7 @@ function actualizarGraficoVentas(ventasFiltradas) {
     const mesSeleccionado = selectorMes.value;
     const mesesVisibles = mesSeleccionado === "todos" ? nombreMeses.map((_, indice) => indice + 1) : [Number(mesSeleccionado)];
 
-    const ingresos = mesesVisibles.map(mes => 
+    const ingresos = mesesVisibles.map(mes =>
         ventasFiltradas
             .filter(venta => obtenerMes(venta.fecha) === mes)
             .reduce((total, venta) => total + calcularIngreso(venta), 0)
@@ -253,11 +253,11 @@ function actualizarTablaVentas(ventasFiltradas) {
 
     tabla.replaceChildren();
 
-    if (ventasFiltradas.length === 0 ) {
+    if (ventasFiltradas.length === 0) {
         const fila = document.createElement("tr");
         const celda = document.createElement("td");
 
-        celda.colSpan = 7; 
+        celda.colSpan = 7;
         celda.textContent = "No hay ventas en este periodo";
 
         fila.appendChild(celda);
@@ -268,7 +268,7 @@ function actualizarTablaVentas(ventasFiltradas) {
     ventasFiltradas.forEach(venta => {
         const producto = productos.find(p => p.id === venta.productoId);
 
-        const fila =document.createElement("tr");
+        const fila = document.createElement("tr");
 
         const valores = [
             venta.id,
@@ -289,67 +289,57 @@ function actualizarTablaVentas(ventasFiltradas) {
 
         const celdaAccion = document.createElement("td");
         const botonEliminar = document.createElement("button");
-
         botonEliminar.type = "button";
         botonEliminar.textContent = "Eliminar";
         botonEliminar.className = "btn-eliminar-venta";
-
         botonEliminar.addEventListener("click", () => {
             eliminarVenta(venta.id);
         });
 
-        const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
-
-        if (usuario && usuario.rol === "administrador"){
-            celdaAccion.appendChild(botonEliminar);
-        } else {
-            celdaAccion.textContent = "-";
-        }
-
+        celdaAccion.appendChild(botonEliminar);
         fila.appendChild(celdaAccion);
         tabla.appendChild(fila);
     });
 }
 
-async function eliminarVenta(id) {
+async function eliminarVenta(ventaId) {
     const confirmar = confirm(
-        "¿Seguro que deseas eliminar la venta #" + id + "?"
-    );
+        `¿Estás seguro de que deseas eliminar la venta numero ${ventaId}? Esta acción no se puede deshacer`);
 
-    if (!confirmar) return;
+        if (!confirmar) return;
 
-    try {
         const token = localStorage.getItem("token");
 
-       if (!token) {
-        alert("Debes iniciar sesión como administrador");
-        return;
-       }
-
-        const respuesta = await fetch(
-            "https://octo-erp.onrender.com/api/ventas/" + id,
-            {
-                method: "DELETE",
-                headers: {
-                    "Authorization": "Bearer " + token
-                }
-            }
-        );
-        
-        const datos = await respuesta.json();
-
-        if (!respuesta.ok) {
-            throw new Error(
-                datos.message || datos.error || "No se pudo eliminar "
-            );
+        if (!token) {
+            alert("Tu sesión no tiene un token válido. Inicia sesión nuevamente")
+            return;
         }
-        alert("Venta eliminada correctamente");
-        await cargarDatos();
 
-    } catch (error) {
-        console.error(error);
-        alert("Error al eliminar: " + error.message);
-    }
+        try {
+            const respuesta = await fetch(
+                `https://octo-erp.onrender.com/api/ventas/${ventaId}`,{
+                    method: "DELETE",
+                    headers:{
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+            const datos = await respuesta.json();
+
+            console.log("Estado HTTPS:", respuesta.status);
+            console.log("Respuesta del servidor", datos);
+
+            if (!respuesta.ok || datos.status === "error"){
+                throw new Error(
+                    datos.message || "No se pudo eliminar la venta"
+                );
+            }
+            alert("Venta eliminada correctamente");
+            await actualizarDashboard();
+        } catch (error) {
+            console.error("Error al eliminar la venta", error);
+            alert(error.message || "Ocurrió un erro al eliminar la venta");
+        }
 }
 
 // Ejecutar todas las actualizaciones del dashboard
@@ -359,7 +349,7 @@ function actualizarDashboard() {
     const elAviso = document.getElementById("aviso-sin-ventas");
     if (elAviso) elAviso.hidden = ventasFiltradas.length > 0;
 
-    const periodo = selectorMes.value === "todos" 
+    const periodo = selectorMes.value === "todos"
         ? "Todos los meses"
         : nombreMeses[Number(selectorMes.value) - 1];
 
@@ -389,71 +379,70 @@ function actualizarDashboard() {
 let cargandoDatos = false;
 
 async function cargarDatos() {
-if (cargandoDatos) return;
-cargandoDatos = true;
-
-if (mensajeActualizacion) {
-    mensajeActualizacion.textContent = "Consultando datos...";
-}
-
-try {
-    const respuesta = await fetch(API_URL);
-
-    if (!respuesta.ok) {
-        throw new Error("Error HTTP " + respuesta.status);
-    }
-
-    const datos = await respuesta.json();
-
-    // Validar que el backend haya respondido correctamente.
-    if (!Array.isArray(datos.productos)) {
-        throw new Error("La respuesta no contiene el arreglo 'productos'");
-    }
-
-    // Aceptar cualquiera de los dos nombres que podría devolver el backend.
-    const datosVentas = Array.isArray(datos.ventas)
-        ? datos.ventas
-        : Array.isArray(datos.detalles)
-            ? datos.detalles
-            : [];
-
-    productos = datos.productos.map(producto => ({
-        ...producto,
-        id: Number(producto.id),
-        precio: Number(producto.precio) || 0,
-        stock: Number(producto.stock) || 0,
-        stockMinimo: Number(
-            producto.stockMinimo ?? producto.stock_minimo ?? 5
-        )
-    }));
-
-    // Adaptar los nombres de los campos para el dashboard.
-    ventas = datosVentas.map(venta => ({
-        ...venta,
-        id: Number(venta.id),
-        productoId: Number(
-            venta.productoId ?? venta.producto_id
-        ),
-        cantidad: Number(venta.cantidad) || 0,
-        precioUnitario: Number(
-            venta.precioUnitario ?? venta.precio_unitario
-        ) || 0,
-        fecha: venta.fecha ?? ""
-    }));
-
-    actualizarDashboard();
-
-} catch (error) {
-    console.error("Error al cargar datos:", error);
+    if (cargandoDatos) return;
+    cargandoDatos = true;
 
     if (mensajeActualizacion) {
-        mensajeActualizacion.textContent =
-            "No se pudieron actualizar los datos. Revisa la conexión.";
+        mensajeActualizacion.textContent = "Consultando datos...";
     }
-} finally {
-    cargandoDatos = false;
-}
 
+    try {
+        const respuesta = await fetch(API_URL);
+
+        if (!respuesta.ok) {
+            throw new Error("Error HTTP " + respuesta.status);
+        }
+
+        const datos = await respuesta.json();
+
+        // Validar que el backend haya respondido correctamente.
+        if (!Array.isArray(datos.productos)) {
+            throw new Error("La respuesta no contiene el arreglo 'productos'");
+        }
+
+        // Aceptar cualquiera de los dos nombres que podría devolver el backend.
+        const datosVentas = Array.isArray(datos.ventas)
+            ? datos.ventas
+            : Array.isArray(datos.detalles)
+                ? datos.detalles
+                : [];
+
+        productos = datos.productos.map(producto => ({
+            ...producto,
+            id: Number(producto.id),
+            precio: Number(producto.precio) || 0,
+            stock: Number(producto.stock) || 0,
+            stockMinimo: Number(
+                producto.stockMinimo ?? producto.stock_minimo ?? 5
+            )
+        }));
+
+        // Adaptar los nombres de los campos para el dashboard.
+        ventas = datosVentas.map(venta => ({
+            ...venta,
+            id: Number(venta.id),
+            productoId: Number(
+                venta.productoId ?? venta.producto_id
+            ),
+            cantidad: Number(venta.cantidad) || 0,
+            precioUnitario: Number(
+                venta.precioUnitario ?? venta.precio_unitario
+            ) || 0,
+            fecha: venta.fecha ?? ""
+        }));
+
+        actualizarDashboard();
+
+    } catch (error) {
+        console.error("Error al cargar datos:", error);
+
+        if (mensajeActualizacion) {
+            mensajeActualizacion.textContent =
+                "No se pudieron actualizar los datos. Revisa la conexión.";
+        }
+    } finally {
+        cargandoDatos = false;
+    }
 }
 
 // Event Listeners

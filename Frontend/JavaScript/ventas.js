@@ -1,6 +1,6 @@
 "use strict";
 
-const API = "https://octo-erp.onrender.com"
+const API = "https://octo-erp.onrender.com";
 
 let productos = [];
 let carrito = [];
@@ -25,16 +25,18 @@ function moneda(numero) {
 }
 
 function avisar(texto, error = false) {
-    mensaje.textContent = texto;
-    mensaje.style.color = error ? "red" :
-    "green" ;
-    
     if (!mensaje) {
         alert(texto);
         return;
     }
 
-    contenedor.hidden = false;
+    mensaje.textContent = texto;
+    mensaje.style.color = error ? "red" :
+    "green";
+
+    if (contenedor) {
+        contenedor.hidden = false;
+    }
 }
 
 cerrar.addEventListener("click", function () {
