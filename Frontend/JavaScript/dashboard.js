@@ -310,7 +310,7 @@ async function eliminarVenta(ventaId) {
 
         try {
             const respuesta = await fetch(
-                'https://octo-erp.onrender.com/api/ventas/${ventaId}',{
+                `https://octo-erp.onrender.com/api/ventas/${ventaId}`,{
                     method: "DELETE"
                 }
             );
