@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soporte Técnico - OctoERP Tech Store</title>
+
+    <!-- Estilos de Navegación y Soporte -->
+    <link rel="stylesheet" href="../Style/navbar.css">
+    <link rel="stylesheet" href="../Style/soporte.css">
+</head>
+
+<body>
+
+    <!-- Barra de Navegación Única -->
+    <header class="navbar-octo">
+        <div class="nav-container">
+            <a href="inicio.html" class="nav-logo">
+                <img src="../Imagenes/Logo.png" alt="OctoERP Logo" onerror="this.style.display='none'">
+                <span>Octo<span>ERP</span></span>
+            </a>
+
+            <nav class="nav-links">
+                <a href="inicioClientes.html" class="nav-item active">Inicio</a>
+                <a href="productos.html" class="nav-item">Productos</a>
+                <a href="QuienesSomos.html" class="nav-item">Sobre Nosotros</a>
+                <a href="soporte.html" class="nav-item active">Soporte</a>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="btn-cart" onclick="toggleModalCarrito()" title="Ver Carrito">
+                    🛒 <span class="cart-count" id="cart-count">0</span>
+                </button>
+
+                <div class="auth-buttons" id="auth-guest">
+                    <a href="inicioSesion.html" class="btn-nav btn-login">Iniciar Sesión</a>
+                    <a href="crearCuenta.html" class="btn-nav btn-register">Registrarse</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Modal / Desplegable del Carrito -->
+    <div id="modal-carrito" class="carrito-modal-overlay hidden">
+        <div class="carrito-modal-content">
+            <div class="carrito-header">
+                <h2>🛒 Tu Carrito de Compras</h2>
+                <button class="btn-cerrar-carrito" onclick="toggleModalCarrito()">✖️</button>
+            </div>
+
+            <div class="carrito-body" id="carrito-items-lista">
+                <p class="carrito-vacio-msg">Tu carrito está vacío actualmente.</p>
+            </div>
+
+            <div class="carrito-footer">
+                <div class="carrito-total-row">
+                    <span>Total a pagar:</span>
+                    <span id="carrito-monto-total">₡0</span>
+                </div>
+                <button class="btn-procesar-compra" onclick="procesarCompra()">
+                    💳 Finalizar Compra
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido Principal de Soporte -->
+    <main class="soporte-container">
+
+        <!-- Banner Principal de Ayuda -->
+        <section class="soporte-hero">
+            <span class="badge-tech">Centro de Asistencia & RMA</span>
+            <h1>¿En qué podemos <span>ayudarte hoy?</span></h1>
+            <p>Resuelve dudas de compatibilidad, gestiona garantías de tus componentes y consulta guías técnicas especializadas.</p>
+        </section>
+
+        <!-- Accesos Rápidos / Tarjetas de Categoría -->
+        <section class="soporte-grid-quick">
+            <div class="card-quick" onclick="scrollearA('seccion-compatibilidad')">
+                <div class="icon-quick"></div>
+                <h3>Verificador de Compatibilidad</h3>
+                <p>Comprueba si tus componentes (Socket CPU, RAM, Fuente) son compatibles entre sí.</p>
+            </div>
+
+            <div class="card-quick" onclick="scrollearA('seccion-rma')">
+                <div class="icon-quick"></div>
+                <h3>Garantías y Devoluciones</h3>
+                <p>Inicia una solicitud de garantía (RMA) o consulta políticas de devolución.</p>
+            </div>
+
+            <div class="card-quick" onclick="scrollearA('seccion-drivers')">
+                <div class="icon-quick"></div>
+                <h3>Drivers & Controladores</h3>
+                <p>Enlaces directos para actualizar controladores de GPU, Chipset y BIOS.</p>
+            </div>
+
+            <div class="card-quick" onclick="scrollearA('seccion-faq')">
+                <div class="icon-quick"></div>
+                <h3>Preguntas Frecuentes</h3>
+                <p>Respuestas inmediatas sobre envíos, métodos de pago y facturación.</p>
+            </div>
+        </section>
+
+        <!-- HERRAMIENTA INTERACTIVA: Verificador de Compatibilidad de Hardware -->
+        <section class="soporte-section" id="seccion-compatibilidad">
+            <div class="section-title-wrap">
+                <h2>Verificador Rápido de Compatibilidad Hardware</h2>
+                <p>Selecciona una consulta común para obtener un diagnóstico inmediato sobre compatibilidad de componentes.</p>
+            </div>
+
+            <div class="compatibilidad-card">
+                <div class="form-group-compatibilidad">
+                    <label for="select-consulta">Selecciona tu duda de hardware:</label>
+                    <select id="select-consulta" class="select-tech" onchange="verificarCompatibilidad()">
+                        <option value="">-- Elige una consulta para analizar --</option>
+                        <option value="ryzen-am5">¿Un procesador Ryzen Serie 7000/9000 funciona en una Tarjeta Madre AM4?</option>
+                        <option value="ram-ddr4-ddr5">¿Puedo colocar memorias RAM DDR4 en una tarjeta madre compatible solo con DDR5?</option>
+                        <option value="gpu-fuente">¿Qué fuente de poder (PSU) necesito para una tarjeta de video RTX 4070 Ti Super?</option>
+                        <option value="ssd-m2">¿Un SSD M.2 NVMe PCIe 4.0 funciona en una ranura PCIe 3.0?</option>
+                    </select>
+                </div>
+
+                <div id="resultado-compatibilidad" class="resultado-box hidden">
+                    <!-- Aquí se renderiza la respuesta por JS -->
+                </div>
+            </div>
+        </section>
+
+       <!-- SECCIÓN: Enlaces de Drivers y Utilidades -->
+        <section class="soporte-section" id="seccion-drivers">
+            <div class="section-title-wrap">
+                <h2> Utilidades y Controladores Oficiales</h2>
+                <p>Acceso directo a los portales de descargas de firmware, controladores gráficos y suites de optimización.</p>
+            </div>
+
+            <div class="drivers-grid">
+                <!-- Tarjeta NVIDIA -->
+                <a href="https://www.nvidia.com/Download/index.aspx" target="_blank" class="driver-card card-nvidia">
+                    <div class="driver-header">
+                        <div class="driver-brand-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.28 4.22a8.88 8.88 0 00-4.16 1.48A10.87 10.87 0 00.32 9.68a.82.82 0 00.37.93c1.3.82 2.68 1.5 4.14 2a8.82 8.82 0 011.83-3.8 8.12 8.12 0 013.82-2.48c-.7-.7-1.46-1.4-2.2-2.11zM12 2a10 10 0 00-10 10 10 10 0 0010 10 10 10 0 0010-10A10 10 0 0012 2zm-.2 15.6a5.8 5.8 0 01-3.6-1.3 5.4 5.4 0 01-1.9-3.2 6.5 6.5 0 012.3-5.5 6.6 6.6 0 015.4-1.6 6.8 6.8 0 014.8 2.8 6.3 6.3 0 01.8 5c-.4 1.8-1.5 3.3-3.1 4.2a6.7 6.7 0 01-4.7-.4z"/></svg>
+                        </div>
+                        <span class="badge-driver">GeForce Game Ready</span>
+                    </div>
+                    <h3>Controladores NVIDIA</h3>
+                    <p>Drivers oficiales para GeForce RTX/GTX, GeForce Experience y parches de rendimiento para juegos.</p>
+                    <div class="driver-footer">
+                        <span>Ir a descargas</span>
+                        <span class="arrow-icon">➔</span>
+                    </div>
+                </a>
+
+                <!-- Tarjeta AMD -->
+                <a href="https://www.amd.com/en/support" target="_blank" class="driver-card card-amd">
+                    <div class="driver-header">
+                        <div class="driver-brand-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.8l7.2 3.6v7.2L12 19.2 4.8 15.6V8.4L12 4.8z"/></svg>
+                        </div>
+                        <span class="badge-driver">Software Adrenalin</span>
+                    </div>
+                    <h3>Soporte & Drivers AMD</h3>
+                    <p>Descarga AMD Software: Adrenalin Edition, controladores de Chipset Ryzen (AM4/AM5) y Radeon Software.</p>
+                    <div class="driver-footer">
+                        <span>Ir a descargas</span>
+                        <span class="arrow-icon">➔</span>
+                    </div>
+                </a>
+
+                <!-- Tarjeta INTEL -->
+                <a href="https://www.intel.com/content/www/us/en/download-center/home.html" target="_blank" class="driver-card card-intel">
+                    <div class="driver-header">
+                        <div class="driver-brand-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm0-8h-2V7h2v2zm4 8h-2v-3c0-.55-.45-1-1-1s-1 .45-1 1v3h-2v-6h2v1.1c.45-.65 1.2-1.1 2-1.1 1.65 0 3 1.35 3 3v3z"/></svg>
+                        </div>
+                        <span class="badge-driver">Driver & Support Assistant</span>
+                    </div>
+                    <h3>Centro de Software Intel</h3>
+                    <p>Actualizaciones para adaptadores Wi-Fi/Bluetooth, Ethernet, gráficos Intel Arc e Intel Driver Assistant.</p>
+                    <div class="driver-footer">
+                        <span>Ir a descargas</span>
+                        <span class="arrow-icon">➔</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- SECCIÓN: Preguntas Frecuentes (FAQ Accordion) -->
+        <section class="soporte-section" id="seccion-faq">
+            <div class="section-title-wrap">
+                <h2> Preguntas Frecuentes</h2>
+                <p>Respuestas técnicas e informativas sobre compras, compatibilidad, ensambles y garantías.</p>
+            </div>
+
+            <div class="faq-accordion">
+                <details class="faq-item">
+                    <summary class="faq-header">
+                        <span>¿Los equipos ensamblados por OctoERP incluyen sistema operativo y pruebas?</span>
+                        <span class="faq-icon">➕</span>
+                    </summary>
+                    <div class="faq-content">
+                        <p>Sí. Todas nuestras computadoras armadas incluyen la instalación optimizada de Windows (modo evaluación), actualización de BIOS a la versión más estable, controladores de tarjeta gráfica actualizados y pruebas de estrés térmico durante 2 horas antes de la entrega.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-header">
+                        <span>¿Cómo funcionan las garantías de los componentes individuales?</span>
+                        <span class="faq-icon">➕</span>
+                    </summary>
+                    <div class="faq-content">
+                        <p>Cada componente cuenta con una garantía directa de 12 meses contra defectos de fábrica. Para tramitarla, basta con presentar tu factura electrónica o el número de orden que se genera automáticamente en tu cuenta tras realizar la compra.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-header">
+                        <span>¿Cómo saber si una fuente de poder (PSU) es suficiente para mi tarjeta de video?</span>
+                        <span class="faq-icon">➕</span>
+                    </summary>
+                    <div class="faq-content">
+                        <p>Debes revisar el consumo TDP de la GPU y los requerimientos del procesador. Como regla general: para una RTX 4060 / RX 7600 se recomiendan 550W–650W; para una RTX 4070 / RX 7800 XT se recomiendan 750W; y para gamas altas como la RTX 4080/4090 se aconsejan 850W–1000W con certificación 80 Plus Gold o superior.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-header">
+                        <span>¿Qué diferencia hay entre memoria RAM DDR4 y DDR5?</span>
+                        <span class="faq-icon">➕</span>
+                    </summary>
+                    <div class="faq-content">
+                        <p>DDR5 ofrece mayor ancho de banda y eficiencia energética superior respecto a DDR4. Ten en cuenta que no son compatibles entre sí físicamente: la tarjeta madre debe estar diseñada específicamente para zócalo DDR4 o DDR5.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-header">
+                        <span>¿Realizan envíos a todo Costa Rica y cuánto tardan?</span>
+                        <span class="faq-icon">➕</span>
+                    </summary>
+                    <div class="faq-content">
+                        <p>Sí, despachamos a todo el país mediante Correos de Costa Rica o mensajería privada express dentro del Gran Área Metropolitana (GAM). El tiempo estimado de entrega oscila entre 24 y 48 horas hábiles tras la confirmación de la compra.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-header">
+                        <span>¿Qué métodos de pago aceptan en la tienda?</span>
+                        <span class="faq-icon">➕</span>
+                    </summary>
+                    <div class="faq-content">
+                        <p>Aceptamos tarjetas de crédito y débito (Visa / Mastercard), transferencias bancarias en colones y dólares, y Sinpe Móvil.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-header">
+                        <span>¿Puedo cotizar una PC a la medida que no esté armada en el catálogo?</span>
+                        <span class="faq-icon">➕</span>
+                    </summary>
+                    <div class="faq-content">
+                        <p>¡Por supuesto! Puedes escribir directamente a nuestro canal de WhatsApp de Soporte con tu presupuesto orientativo y el uso que le darás al equipo para prepararte una cotización personalizada.</p>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <!-- SECCIÓN: Canales de Atención Directa y Tramitación RMA -->
+        <section class="soporte-section" id="seccion-rma">
+            <div class="contact-rma-container">
+                
+                <!-- Encabezado del Centro de Servicio -->
+                <div class="rma-header-wrap">
+                    <div class="rma-title-info">
+                        <span class="badge-tech"> Centro de Servicio & RMA</span>
+                        <h2>¿Necesitas atención personalizada o tramitar una garantía?</h2>
+                        <p>Nuestro equipo de soporte técnico certificado te asiste en tiempo real para resolver problemas de hardware, ensambles o gestionar el RMA de tus componentes.</p>
+                    </div>
+
+                    <div class="rma-status-card">
+                        <div class="status-indicator live">
+                            <span class="pulse-dot"></span>
+                            <span class="status-text">Atención en Vivo</span>
+                        </div>
+                        <p class="schedule-text"><strong>Lunes a Sábado:</strong> 8:00 AM - 6:00 PM</p>
+                        <p class="response-time">⏱ Tiempo promedio de respuesta: <strong> 15 min</strong></p>
+                    </div>
+                </div>
+
+              <!-- Tarjetas de Canales de Contacto Directo con Íconos SVG -->
+<div class="contact-grid-channels">
+    
+    <!-- Canal WhatsApp -->
+    <div class="channel-card card-whatsapp">
+        <div class="channel-icon-wrap icon-wa-bg">
+            <!-- Ícono Oficial WhatsApp -->
+            <svg class="svg-channel-icon svg-wa" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+            </svg>
+        </div>
+        <div class="channel-details">
+            <h3>Soporte Inmediato por WhatsApp</h3>
+            <p>Escríbenos directamente para diagnósticos rápidos, fotos de compatibilidad o consultas sobre tus pedidos.</p>
+            <span class="contact-value">+506 6133-6757</span>
+        </div>
+        <a href="https://wa.me/50661336757?text=Hola%20OctoERP,%20necesito%20soporte%20t%C3%A9cnico%20o%20tramitar%20una%20garant%C3%ADa" target="_blank" class="btn-channel btn-wa-action">
+            <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654z"/></svg>
+            Abrir WhatsApp
+        </a>
+    </div>
+
+    <!-- Canal Correo / Caso Formal -->
+    <div class="channel-card card-email">
+        <div class="channel-icon-wrap icon-email-bg">
+            <!-- Ícono Oficial Correo -->
+            <svg class="svg-channel-icon svg-email" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+            </svg>
+        </div>
+        <div class="channel-details">
+            <h3>Solicitud Formal de Garantía (RMA)</h3>
+            <p>Envíanos los detalles de tu caso, adjuntando la factura de compra y fotografías/videos de la falla detectada.</p>
+            <span class="contact-value">soporte@octoerp.com</span>
+        </div>
+        <a href="mailto:soporte@octoerp.com?subject=Solicitud%20de%20Garant%C3%ADa%20RMA%20-%20OctoERP" class="btn-channel btn-email-action">
+            <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            Enviar Correo
+        </a>
+    </div>
+
+</div>
+
+                <!-- Pasos del Proceso de Garantía -->
+                <div class="rma-steps-banner">
+                    <h4> Pasos para tramitar tu garantía rápidamente:</h4>
+                    <div class="steps-grid">
+                        <div class="step-item">
+                            <span class="step-num">1</span>
+                            <p>Ten a mano el <strong>número de orden</strong> o factura digital.</p>
+                        </div>
+                        <div class="step-item">
+                            <span class="step-num">2</span>
+                            <p>Escríbenos describiendo la falla o comportamiento del componente.</p>
+                        </div>
+                        <div class="step-item">
+                            <span class="step-num">3</span>
+                            <p>Nuestro equipo coordinará el diagnóstico físico o reemplazo directo.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="footer-about">
+        <p>&copy; 2026 OctoERP Hardware & Tech Store. Todos los derechos reservados. Proyecto CTP.</p>
+    </footer>
+
+    <!-- Scripts de Funcionalidad -->
+    <script src="../JavaScript/auth.js"></script>
+    <script src="../JavaScript/carrito.js"></script>
+
+    <script>
+        // Función interactiva para verificar compatibilidad de hardware
+        function verificarCompatibilidad() {
+            const select = document.getElementById('select-consulta');
+            const resBox = document.getElementById('resultado-compatibilidad');
+            const valor = select.value;
+
+            if (!valor) {
+                resBox.classList.add('hidden');
+                return;
+            }
+
+            resBox.classList.remove('hidden');
+
+            if (valor === 'ryzen-am5') {
+                resBox.className = 'resultado-box res-incompatible';
+                resBox.innerHTML = `
+                    <h4>❌ Incompatible</h4>
+                    <p>Los procesadores AMD Ryzen Serie 7000/9000 utilizan la plataforma de socket <strong>AM5 (LGA 1718)</strong> y requieren únicamente tarjetas madre de la serie 600/800 (B650, X670, B850) con memorias DDR5. No encajan físicamente en tarjetas madres AM4.</p>
+                `;
+            } else if (valor === 'ram-ddr4-ddr5') {
+                resBox.className = 'resultado-box res-incompatible';
+                resBox.innerHTML = `
+                    <h4>❌ Incompatible</h4>
+                    <p>Las memorias RAM DDR4 y DDR5 poseen muescas de posición (notches) y voltajes diferentes. Una tarjeta madre es diseñada para DDR4 o para DDR5, pero no se pueden mezclar ni insertar en el zócalo contrario.</p>
+                `;
+            } else if (valor === 'gpu-fuente') {
+                resBox.className = 'resultado-box res-compatible';
+                resBox.innerHTML = `
+                    <h4>⚡ Recomendación de Alimentación (PSU)</h4>
+                    <p>Para una <strong>RTX 4070 Ti Super</strong> se recomienda una fuente de poder certificada 80 Plus Gold de al menos <strong>750W o 850W</strong>, preferiblemente con cable conector nativo PCIe 5.0 12VHPWR (12+4 pines).</p>
+                `;
+            } else if (valor === 'ssd-m2') {
+                resBox.className = 'resultado-box res-compatible';
+                resBox.innerHTML = `
+                    <h4>✅ Compatible (Retrocompatibilidad)</h4>
+                    <p>Sí, los SSD M.2 NVMe son retrocompatibles. Un SSD PCIe 4.0 funcionará perfectamente en un puerto PCIe 3.0, aunque su velocidad máxima quedará limitada a las tasas máximas permitidas por PCIe 3.0 (aprox. 3500 MB/s).</p>
+                `;
+            }
+        }
+
+        // Función suave para desplazarse entre secciones
+        function scrollearA(idSeccion) {
+            const el = document.getElementById(idSeccion);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    </script>
+</body>
+
+</html>
