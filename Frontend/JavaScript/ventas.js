@@ -1,6 +1,6 @@
 "use strict";
 
-const API = "https://octo-erp.onrender.com"
+const API = "https://octo-erp.onrender.com";
 
 let productos = [];
 let carrito = [];
