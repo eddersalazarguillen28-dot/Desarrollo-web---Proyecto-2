@@ -303,19 +303,6 @@ tbody tr:hover {
     margin-bottom: 20px;
 }
 
-.btn-eliminar-venta {
-    background: #dc2626;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.btn-eliminar-venta:hover {
-    background: #b91c1c;
-}
-
 footer {
     padding: 20px;
     text-align: center;
