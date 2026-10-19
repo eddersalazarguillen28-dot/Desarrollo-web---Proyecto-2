@@ -11,6 +11,7 @@
     --price-green-hover: #047857;
     --shadow-card: 0 4px 15px rgba(17, 16, 41, 0.05);
     --navbar-bg: rgba(255, 255, 255, 0.92);
+    --cards-bg:linear-gradient(135deg,var(--bg-surface) 0%, #d2d0ff 100%);
 }
 
 
@@ -26,6 +27,7 @@
     --price-green-hover: #059669;
     --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
     --navbar-bg: rgba(21, 20, 40, 0.92);
+    --cards-bg:linear-gradient(135deg,var(--bg-dark-navy) 0%, #1c1a40 100%);
 }
 
 /*RESET*/
@@ -182,12 +184,26 @@ body{
 
 /*Hero*/
 .hero{
+    position: relative;
+    overflow: hidden;
     padding: 160px 24px 70px;
     background: linear-gradient(135deg,var(--bg-dark-navy) 0%, #1c1a40 100%);
     color: #ffffff;
 }
 
+#tentacles-canvas{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
 .hero-contenido{
+    position: relative;
+    z-index: 1;
     max-width: 750px;
     margin-left: 120px;
 }
@@ -244,10 +260,17 @@ body{
     background: var(--primary-purple);
 }
 
+/********************************************************************/
+
+
+
+
 /*Categorias*/
 .seccion-categorias{
     padding-top: 52px;
     padding-bottom: 58px;
+    margin: 2px 40px;
+    
 }
 
 .categoria-grid{
@@ -261,9 +284,10 @@ body{
     overflow: hidden;
     border: 1px solid var(--border-color);
     border-radius: 18px;
-    background: #ffff;
+    background: var(--cards-bg);
     box-shadow: var(--shadow-card);
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    text-decoration: none;
 }
 
 .categoria-card:hover{
@@ -273,7 +297,31 @@ body{
 }
 
 /*IMAGENES*/
+.imagen-categoria{
+    position:relative;
+    overflow: hidden;
+    height: 165px;
+    background: #e8edf5;
+}
 
+.imagen-categoria::after{
+    position:absolute;
+    inset:45% 0 0;
+    background: linear-gradient(transparent,#6c5ce733);
+    content:"";
+    pointer-events: none;
+}
+
+.imagen-categoria img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.45s ease;
+}
+
+.categoria-card:hover .imagen-categoria img{
+    transform: scale(1.06);
+}
 
 /********************************************************/
 
@@ -288,7 +336,7 @@ body{
 
 .categoria-info h3{
     margin:0 0 7px;
-    color:var(--bg-dark-navy);
+    color:var(--text-primary);
     font-size: 17px;
     font-weight: 750;
     letter-spacing: -0.25px;
@@ -300,3 +348,4 @@ body{
     font-size: 15px;
     line-height: 1.5;
 }
+

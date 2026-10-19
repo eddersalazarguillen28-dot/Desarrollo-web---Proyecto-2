@@ -287,8 +287,59 @@ function actualizarTablaVentas(ventasFiltradas) {
             fila.appendChild(celda);
         });
 
+        const celdaAccion = document.createElement("td");
+        const botonEliminar = document.createElement("button");
+        botonEliminar.type = "button";
+        botonEliminar.textContent = "Eliminar";
+        botonEliminar.className = "btn-eliminar-venta";
+        botonEliminar.addEventListener("click", () => {
+            eliminarVenta(venta.id);
+        });
+
+        celdaAccion.appendChild(botonEliminar);
+        fila.appendChild(celdaAccion);
         tabla.appendChild(fila);
     });
+}
+
+async function eliminarVenta(ventaId) {
+    const confirmar = confirm(
+        `¿Estás seguro de que deseas eliminar la venta numero ${ventaId}? Esta acción no se puede deshacer`);
+
+        if (!confirmar) return;
+
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            alert("Tu sesión no tiene un token válido. Inicia sesión nuevamente")
+            return;
+        }
+
+        try {
+            const respuesta = await fetch(
+                `https://octo-erp.onrender.com/api/ventas/${ventaId}`,{
+                    method: "DELETE",
+                    headers:{
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+            const datos = await respuesta.json();
+
+            console.log("Estado HTTPS:", respuesta.status);
+            console.log("Respuesta del servidor", datos);
+
+            if (!respuesta.ok || datos.status === "error"){
+                throw new Error(
+                    datos.message || "No se pudo eliminar la venta"
+                );
+            }
+            alert("Venta eliminada correctamente");
+            await actualizarDashboard();
+        } catch (error) {
+            console.error("Error al eliminar la venta", error);
+            alert(error.message || "Ocurrió un erro al eliminar la venta");
+        }
 }
 
 // Ejecutar todas las actualizaciones del dashboard

@@ -303,6 +303,33 @@ tbody tr:hover {
     margin-bottom: 20px;
 }
 
+.btn-eliminar-venta {
+    background-color: #dc2626;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-eliminar-venta:hover {
+    background-color: #b91c1c;
+    transform: translateY(-1px);
+}
+
+.btn-eliminar-venta:active {
+    transform: translateY(0);
+}
+
+.btn-eliminar-venta:focus-visible {
+    outline: 2px solid #f87171;
+    outline-offset: 2px;
+}
+
 footer {
     padding: 20px;
     text-align: center;
