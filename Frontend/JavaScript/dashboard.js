@@ -287,69 +287,8 @@ function actualizarTablaVentas(ventasFiltradas) {
             fila.appendChild(celda);
         });
 
-        const celdaAccion = document.createElement("td");
-        const botonEliminar = document.createElement("button");
-
-        botonEliminar.type = "button";
-        botonEliminar.textContent = "Eliminar";
-        botonEliminar.className = "btn-eliminar-venta";
-
-        botonEliminar.addEventListener("click", () => {
-            eliminarVenta(venta.id);
-        });
-
-        const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
-
-        if (usuario && usuario.rol === "administrador") {
-            celdaAccion.appendChild(botonEliminar);
-        } else {
-            celdaAccion.textContent = "-";
-        }
-
-        fila.appendChild(celdaAccion);
         tabla.appendChild(fila);
     });
-}
-
-async function eliminarVenta(id) {
-    const confirmar = confirm(
-        "¿Seguro que deseas eliminar la venta #" + id + "?"
-    );
-
-    if (!confirmar) return;
-
-    try {
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-            alert("Debes iniciar sesión como administrador");
-            return;
-        }
-
-        const respuesta = await fetch(
-            "https://octo-erp.onrender.com/api/ventas/" + id,
-            {
-                method: "DELETE",
-                headers: {
-                    "Authorization": "Bearer " + token
-                }
-            }
-        );
-
-        const datos = await respuesta.json();
-
-        if (!respuesta.ok) {
-            throw new Error(
-                datos.message || datos.error || "No se pudo eliminar "
-            );
-        }
-        alert("Venta eliminada correctamente");
-        await cargarDatos();
-
-    } catch (error) {
-        console.error(error);
-        alert("Error al eliminar: " + error.message);
-    }
 }
 
 // Ejecutar todas las actualizaciones del dashboard
