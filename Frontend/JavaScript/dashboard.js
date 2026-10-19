@@ -304,7 +304,7 @@ function actualizarTablaVentas(ventasFiltradas) {
 
 async function eliminarVenta(ventaId) {
     const confirmar = confirm(
-        '¿Estás seguro de que deseas eliminar la venta numero ${ventaId}? Esta acción no se puede deshacer');
+        `¿Estás seguro de que deseas eliminar la venta numero ${ventaId}? Esta acción no se puede deshacer`);
 
         if (!confirmar) return;
 
