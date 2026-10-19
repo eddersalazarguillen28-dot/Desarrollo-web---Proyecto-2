@@ -480,17 +480,9 @@ def eliminar_producto(producto_id):
                 return False
 
             cursor.execute("""
-                SELECT 1
-                FROM detalle_ventas
-                WHERE producto_id = %s
-                LIMIT 1;
-            """, (producto_id,))
-
-            if cursor.fetchone():
-                raise ValueError(
-                    "El producto tiene ventas registradas y no puede "
-                    "eliminarse. Puedes dejar su stock en cero."
-                )
+                DELETE FROM detalle_ventas
+                WHERE producto_id = %s;
+                """, (producto_id,))
 
             cursor.execute("""
                 DELETE FROM productos

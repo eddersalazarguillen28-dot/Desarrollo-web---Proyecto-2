@@ -721,6 +721,12 @@ def borrar_venta(venta_id):
     try:
         eliminado = db.eliminar_venta(venta_id)
 
+        app.logger.info(
+            "Resultado de eliminar venta %s: %s",
+            venta_id,
+            eliminado
+        )
+
         if not eliminado:
             return jsonify({
                 "status": "error",
