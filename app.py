@@ -161,7 +161,7 @@ def solo_administrador(funcion):
         try:
             conexion = db.obtener_conexion()
 
-            with conexion.cursos() as cursor:
+            with conexion.cursor() as cursor:
                 cursor.execute("""
                     SELECT rol
                     FROM usuarios
