@@ -1,0 +1,611 @@
+/* ==========================================================
+   OCTO ERP / TECH STORE - DESCUENTOS Y OFERTAS (STYLE)
+   Edición Especial Halloween & Cyber Tech - Versión Final
+   ========================================================== */
+
+/* 1. CONFIGURACIÓN GENERAL DEL BODY */
+body, body#page-inicio {
+    background-color: var(--bg-page) !important;
+    color: var(--text-primary) !important;
+}
+
+/* 2. TEMÁTICA HALLOWEEN / SPOOKY TECH */
+.hero-glow-halloween {
+    background: radial-gradient(circle, rgba(249, 115, 22, 0.22) 0%, rgba(126, 34, 206, 0.15) 50%, transparent 70%) !important;
+}
+
+.text-glow-halloween {
+    background: linear-gradient(135deg, #f97316 0%, #fb923c 50%, #c084fc 100%);
+    background-clip: border-box;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 18px rgba(249, 115, 22, 0.35));
+}
+
+.badge-halloween {
+    background: rgba(249, 115, 22, 0.15) !important;
+    border-color: rgba(249, 115, 22, 0.4) !important;
+    color: #fb923c !important;
+    box-shadow: 0 0 15px rgba(249, 115, 22, 0.2) !important;
+}
+
+/* 3. BOTÓN "VER TODAS LAS OFERTAS" (ELEGANTE & HALLOWEEN) */
+.hero-cta-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 22px;
+}
+
+.btn-ofertas-elegante {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 13px 30px;
+    background: rgba(249, 115, 22, 0.16);
+    color: #fdba74 !important;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none !important;
+    border-radius: 10px;
+    border: 1px solid rgba(249, 115, 22, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] .btn-ofertas-elegante {
+    background: rgba(249, 115, 22, 0.08);
+    border-color: rgba(249, 115, 22, 0.3);
+    color: #ea580c !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.btn-ofertas-elegante:hover {
+    background: rgba(249, 115, 22, 0.32);
+    border-color: rgba(249, 115, 22, 0.7);
+    color: #ffffff !important;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(249, 115, 22, 0.3);
+}
+
+[data-theme="light"] .btn-ofertas-elegante:hover {
+    background: #ea580c;
+    color: #ffffff !important;
+}
+
+.btn-arrow-icon {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    transition: transform 0.3s ease;
+}
+
+.btn-ofertas-elegante:hover .btn-arrow-icon {
+    transform: translateX(5px);
+}
+
+/* 4. CUENTA REGRESIVA DE OFERTAS */
+.countdown-container {
+    display: flex;
+    gap: 16px;
+    margin: 24px 0 30px 0;
+}
+
+.countdown-box {
+    background: var(--bg-card);
+    border: 1px solid rgba(249, 115, 22, 0.35);
+    border-radius: 14px;
+    padding: 12px 20px;
+    text-align: center;
+    min-width: 80px;
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(10px);
+}
+
+.countdown-number {
+    font-size: 28px;
+    font-weight: 800;
+    color: #f97316;
+    display: block;
+    line-height: 1;
+}
+
+.countdown-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-top: 5px;
+    display: block;
+}
+
+/* 5. BANNER EN MOVIMIENTO (MARQUEE SLIDER CON IMÁGENES AMPLIADAS) */
+.marquee-container {
+    width: 100%;
+    overflow: hidden;
+    background: rgba(249, 115, 22, 0.05);
+    border-top: 1px solid rgba(249, 115, 22, 0.2);
+    border-bottom: 1px solid rgba(249, 115, 22, 0.2);
+    padding: 16px 0;
+    margin: 30px 0 50px 0;
+    white-space: nowrap;
+    position: relative;
+    backdrop-filter: blur(6px);
+}
+
+[data-theme="light"] .marquee-container {
+    background: rgba(249, 115, 22, 0.03);
+    border-color: rgba(249, 115, 22, 0.15);
+}
+
+.marquee-track {
+    display: flex;
+    gap: 30px;
+    width: max-content;
+    animation: marqueeSlide 32s linear infinite;
+}
+
+.marquee-track:hover {
+    animation-play-state: paused;
+}
+
+.marquee-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 40px;
+    padding: 10px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    box-shadow: var(--shadow-soft);
+    transition: border-color 0.2s ease;
+}
+
+.marquee-item:hover {
+    border-color: rgba(249, 115, 22, 0.4);
+}
+
+/* Imágenes del carrusel mejoradas y de mayor tamaño */
+.marquee-item img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+}
+
+.marquee-item:hover img {
+    transform: scale(1.15);
+}
+
+.marquee-badge {
+    background: #f97316;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 12px;
+}
+
+.marquee-price {
+    color: var(--emerald-green);
+    font-weight: 800;
+}
+
+@keyframes marqueeSlide {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+/* 6. PRODUCTOS, TARJETAS Y BARRAS DE STOCK */
+.relative-card {
+    position: relative !important;
+}
+
+.badge-discount {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: #f97316;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+    z-index: 2;
+}
+
+.card-halloween {
+    border-color: rgba(249, 115, 22, 0.3) !important;
+}
+
+.card-halloween:hover {
+    border-color: rgba(249, 115, 22, 0.6) !important;
+    box-shadow: 0 15px 35px rgba(249, 115, 22, 0.22) !important;
+}
+
+.badge-halloween-tag {
+    background: #f97316 !important;
+}
+
+.price-halloween {
+    color: #f97316 !important;
+}
+
+.btn-add-halloween {
+    background: #f97316 !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    margin-top: 14px !important;
+    padding: 11px 18px !important;
+    border-radius: 8px;
+    font-weight: 700;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-add-halloween:hover {
+    background: #ea580c !important;
+    box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4) !important;
+}
+
+/* Precios de Oferta Generales */
+.price-old {
+    text-decoration: line-through;
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-right: 8px;
+}
+
+.price-sale {
+    color: var(--emerald-green);
+    font-size: 20px;
+    font-weight: 800;
+}
+
+/* Barras de Stock de Oferta Limitada */
+.stock-bar-wrap {
+    margin-top: 14px;
+}
+
+.stock-bar-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.stock-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+[data-theme="light"] .stock-bar {
+    background: #e2e8f0;
+}
+
+.stock-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f97316, #ea580c);
+    border-radius: 10px;
+}
+
+/* Clases de utilidad para anchos de stock */
+.w-15 { width: 15%; }
+.w-25 { width: 25%; }
+.w-35 { width: 35%; }
+.w-40 { width: 40%; }
+.w-50 { width: 50%; }
+.w-55 { width: 55%; }
+.w-60 { width: 60%; }
+.w-80 { width: 80%; }
+
+.margin-top-15 {
+    margin-top: 15px !important;
+}
+
+
+/* ==========================================================
+   AJUSTE DE IMÁGENES GRANDES Y CLARAS
+   ========================================================== */
+
+/* Contenedor principal de la imagen en la tarjeta destacada (Hero) */
+.hero-visual .img-octo-container {
+    width: 100% !important;
+    height: 210px !important;              /* Mayor altura para que luzca grande */
+    background: rgba(13, 23, 48, 0.5);     /* Fondo sutil y limpio */
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    margin: 15px 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+/* Imagen principal grande del Hero */
+.hero-card-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;       /* Mantiene toda la proporción sin recortar */
+    mix-blend-mode: normal !important;    /* Mantiene los colores originales nítidos */
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+    transition: transform 0.3s ease;
+}
+
+.hero-card-img:hover {
+    transform: scale(1.04);
+}
+
+/* Contenedor y tamaño de las imágenes en las tarjetas del catálogo */
+.product-img-box {
+    width: 100%;
+    height: 200px !important;              /* Espacio vertical amplio para productos detallados */
+    background: rgba(255, 255, 255, 0.02);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    overflow: hidden;
+}
+
+.product-img-box img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;       /* Mantiene la foto completa, grande y entendible */
+    mix-blend-mode: normal !important;    /* Colores originales sin alteraciones */
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-img-box img {
+    transform: scale(1.05);
+}
+
+
+/* ==========================================================
+   BANNER EN MOVIMIENTO (MARQUEE SLIDER) - TARJETAS VERTICALES
+   ========================================================== */
+.marquee-container {
+    width: 100%;
+    overflow: hidden;
+    background: rgba(249, 115, 22, 0.05);
+    border-top: 1px solid rgba(249, 115, 22, 0.2);
+    border-bottom: 1px solid rgba(249, 115, 22, 0.2);
+    padding: 25px 0;
+    margin: 30px 0 50px 0;
+    position: relative;
+    backdrop-filter: blur(6px);
+}
+
+[data-theme="light"] .marquee-container {
+    background: rgba(249, 115, 22, 0.03);
+    border-color: rgba(249, 115, 22, 0.15);
+}
+
+.marquee-track {
+    display: flex;
+    gap: 25px;
+    width: max-content;
+    animation: marqueeSlide 35s linear infinite;
+}
+
+.marquee-track:hover {
+    animation-play-state: paused;
+}
+
+/* Tarjeta individual del carrusel en formato vertical */
+.marquee-item {
+    position: relative;
+    display: flex;
+    flex-direction: column; /* Alineación vertical: imagen arriba, texto abajo */
+    width: 240px;            /* Ancho fijo de tarjeta tipo catálogo */
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    white-space: normal;     /* Permite que el texto baje de línea si es largo */
+}
+
+.marquee-item:hover {
+    transform: translateY(-5px);
+    border-color: rgba(249, 115, 22, 0.6);
+    box-shadow: 0 12px 30px rgba(249, 115, 22, 0.2);
+}
+
+/* Insignia de descuento flotante en la esquina superior */
+.marquee-item .marquee-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: #f97316;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 20px;
+    z-index: 2;
+    box-shadow: 0 4px 10px rgba(249, 115, 22, 0.4);
+}
+
+/* Cuadro grande superior para la imagen */
+.marquee-img-box {
+    width: 100%;
+    height: 140px;           /* Cuadro alto y visible arriba */
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+/* Imagen grande que llena el cuadro sin deformarse */
+.marquee-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;     /* Muestra la foto completa y clara */
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    transition: transform 0.3s ease;
+}
+
+.marquee-item:hover .marquee-img-box img {
+    transform: scale(1.08);  /* Zoom suave al pasar el cursor */
+}
+
+/* Contenedor de información inferior (Nombre y Precio) */
+.marquee-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+}
+
+.marquee-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.3;
+}
+
+.marquee-price {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--emerald-green);
+}
+
+@keyframes marqueeSlide {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+/* ==========================================================
+   ESTILOS OPTIMIZADOS PARA EL CATÁLOGO DE PRODUCTOS
+   ========================================================== */
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 25px;
+}
+
+.product-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.product-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(249, 115, 22, 0.6);
+    box-shadow: 0 15px 35px rgba(249, 115, 22, 0.2);
+}
+
+/* Cuadro grande superior para la imagen del producto en el catálogo */
+.product-img-box {
+    position: relative;
+    width: 100%;
+    height: 180px;            /* Altura amplia y cómoda para ver el producto */
+    background: rgba(255, 255, 255, 0.02);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Imagen del catálogo nítida, completa y sin recortes raros */
+.product-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;      /* Mantiene toda la proporción del producto */
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-img-box img {
+    transform: scale(1.08);   /* Zoom suave al pasar el cursor */
+}
+
+.product-info {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.product-category {
+    font-size: 11px;
+    color: #f97316;           /* Tono naranja Halloween coordinado */
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.product-info h3 {
+    font-size: 16px;
+    margin: 6px 0 8px;
+    color: var(--text-primary);
+    line-height: 1.3;
+}
+
+.product-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 15px;
+    flex-grow: 1;
+    line-height: 1.4;
+}
+
+.product-action-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 14px;
+    margin-top: auto;
+}
+
+.product-price {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--emerald-green);
+}
+
+.btn-add-product {
+    background: var(--purple-primary);
+    color: #ffffff;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-add-product:hover {
+    background: var(--purple-hover);
+    transform: translateY(-1px);
+}
