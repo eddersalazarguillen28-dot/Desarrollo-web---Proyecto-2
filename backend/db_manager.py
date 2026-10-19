@@ -845,6 +845,75 @@ def registrar_venta(cliente_id, detalles):
         conn.close()
 
 
+def eliminar_venta(venta_id):
+    venta_id = _validar_entero_positivo(
+        venta_id,
+        "venta_id"
+    )
+
+    conn = obtener_conexion()
+
+    try:
+        with conn.cursor() as cursor:
+
+            cursor.execute("""
+                SELECT id
+                FROM ventas
+                WHERE id = %s
+                FROM UPDATE
+                """, (venta_id,))
+
+            if cursor.fetchone() is None:
+                raise ValueError("La venta indicada no existe")
+
+            cursor.execute("""
+                SELECT producto_id, cantidad
+                FROM detalle_ventas
+                WHERE venta_id = %s
+                """, (venta_id,))
+
+            detalles = cursor.fetchall()
+
+            for detalle in detalles:
+                cursor.execute("""
+                    UPDATE productos
+                    SET stock = stock + %s
+                    WHERE id = %s;
+                    """,(
+                        detalle["cantidad"],
+                        detalle["producto_id"]
+                    ))
+
+                if cursor.rowcount != 1:
+                    raise RuntimeError(
+                        "No se pudo actualizar el inventario"
+                    )
+
+            cursor.execute("""
+                DELETE FROM detalle_ventas
+                WHERE venta_id = %s;
+                """, (venta_id,))
+
+            cursor.execute("""
+                DELETE FROM ventas
+                WHERE id = %s;
+                """, (venta_id,))
+
+            if cursor.rowcount != 1:
+                raise RuntimeError(
+                    "No se pudo eliminar la venta"
+                )
+        conn.commit()
+        return True
+
+    except Exception:
+        conn.rollback()
+        raise
+
+    finally:
+        conn.close()
+
+            
 # =========================================================
 # DATOS DE VENTAS PARA INVENTARIO E IA
 # =========================================================
