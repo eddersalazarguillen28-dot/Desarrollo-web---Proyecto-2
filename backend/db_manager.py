@@ -853,22 +853,24 @@ def eliminar_venta(venta_id):
         with conn.cursor() as cursor:
 
             cursor.execute("""
-                SELECT id
-                FROM ventas
+                SELECT id 
+                FROM ventas 
                 WHERE id = %s
-                FOR UPDATE; 
+                FROM UPDATE;
                 """, (venta_id,))
 
-            if cursor.fetchall() is None:
+            venta = cursor.fetchone()
+
+            if venta is None:
+                conn.rollback()
                 return False
 
             cursor.execute("""
                 SELECT producto_id, 
                 SUM(cantidad) AS cantidad
-                FROM detalle_ventas 
+                FROM detalle_ventas
                 WHERE venta_id = %s
-                GROUP BY producto_id
-                ORDER BY producto_id;
+                GROUP BY producto_id;
                 """, (venta_id,))
 
             detalles = cursor.fetchall()
@@ -879,25 +881,27 @@ def eliminar_venta(venta_id):
                     SET stock = stock + %s
                     WHERE id = %s;
                     """, (
-                        detalle["cantidad"],
-                        detalle["producto_id"]
-                    ))
+                    detalle["cantidad"],
+                    detalle["producto_id"]
+                ))
 
-                cursor.execute("""
-                    DELETE FROM ventas
-                    WHERE id = %s;
-                    """, (venta_id,))
+            cursor.execute("""
+                DELETE FROM detalle_ventas
+                WHERE venta_id = %s;
+                """, (venta_id,))
 
-                conn.commit()
-                return True
+            cursor.execute("""
+                DELETE FROM ventas
+                WHERE id = %s;
+                """, (venta_id,))
 
+            conn.commit()
+            return True
     except Exception:
         conn.rollback()
         raise
-
     finally:
         conn.close()
-
 
 
 # =========================================================
