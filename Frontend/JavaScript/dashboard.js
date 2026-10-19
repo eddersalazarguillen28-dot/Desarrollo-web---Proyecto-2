@@ -308,11 +308,20 @@ async function eliminarVenta(ventaId) {
 
         if (!confirmar) return;
 
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            alert("Tu sesión no tiene un token válido. Inicia sesión nuevamente")
+            return;
+        }
+
         try {
             const respuesta = await fetch(
                 `https://octo-erp.onrender.com/api/ventas/${ventaId}`,{
                     method: "DELETE",
-                    credentials: "include"
+                    headers:{
+                        "Authorization": `Beaber ${token}`
+                    }
                 }
             );
             const datos = await respuesta.json();
