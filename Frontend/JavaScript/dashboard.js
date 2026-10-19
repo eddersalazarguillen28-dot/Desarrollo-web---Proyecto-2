@@ -311,7 +311,8 @@ async function eliminarVenta(ventaId) {
         try {
             const respuesta = await fetch(
                 `https://octo-erp.onrender.com/api/ventas/${ventaId}`,{
-                    method: "DELETE"
+                    method: "DELETE",
+                    credentials: "include"
                 }
             );
             const datos = await respuesta.json();
