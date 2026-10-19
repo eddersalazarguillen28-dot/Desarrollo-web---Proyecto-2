@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sobre Nosotros - OctoERP Tech Store</title>
-    <!-- Incluimos el CSS de la barra de navegación grande y el de la página -->
+    <!-- Incluimos los estilos de navegación, soporte y cliente -->
     <link rel="stylesheet" href="../Style/navbar.css">
     <link rel="stylesheet" href="../Style/QuienesSomos.css">
+    <link rel="stylesheet" href="../Style/estiloInicioClientes.css">
 </head>
 
 <body>
@@ -15,23 +16,42 @@
     <header class="navbar-octo">
         <div class="nav-container">
             <!-- Logo que al darle clic lleva a Inicio -->
-            <a href="inicio.html" class="nav-logo">
-                <img src="../Imagenes/Logo.png" alt="OctoERP Logo">
+            <a href="inicioClientes.html" class="nav-logo">
+                <img src="../Imagenes/Logo.png" alt="OctoERP Logo" onerror="this.style.display='none'">
                 <span>Octo<span>ERP</span></span>
             </a>
 
             <!-- Menú de navegación con "Sobre Nosotros" activo -->
-            <nav class="nav-links">
+           <nav class="nav-links">
                 <a href="inicioClientes.html" class="nav-item">Inicio</a>
                 <a href="productos.html" class="nav-item">Productos</a>
-                <a href="QuienesSomos.html" class="nav-item active">Sobre Nosotros</a>
-                <a href="soporte.html" class="nav-item active">Soporte</a>
+                <a href="descuentos.html" class="nav-item active">Descuentos</a>
+                <a href="QuienesSomos.html" class="nav-item">Sobre Nosotros</a>
+                <a href="soporte.html" class="nav-item">Soporte</a>
             </nav>
 
             <div class="nav-actions">
-                <!-- Botón actualizado para abrir el modal del carrito -->
+                <!-- Botón Modo Claro / Oscuro -->
+                <button id="btn-toggle-theme" class="btn-theme-toggle" title="Cambiar Tema" aria-label="Cambiar Tema">
+                    <svg class="nav-svg-icon" style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+
+                <!-- Botón de Carrito (Con SVG Arreglado) -->
                 <button class="btn-cart" onclick="toggleModalCarrito()" title="Ver Carrito">
-                    🛒 <span class="cart-count" id="cart-count">0</span>
+                    <svg class="nav-svg-icon" style="width: 22px; height: 22px; min-width: 22px; display: inline-block;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span class="cart-count" id="cart-count">0</span>
                 </button>
 
                 <div class="auth-buttons" id="auth-guest">
@@ -46,12 +66,16 @@
     <div id="modal-carrito" class="carrito-modal-overlay hidden">
         <div class="carrito-modal-content">
             <div class="carrito-header">
-                <h2>🛒 Tu Carrito de Compras</h2>
-                <button class="btn-cerrar-carrito" onclick="toggleModalCarrito()">✖️</button>
+                <h2>
+                    <svg class="modal-title-icon" style="width: 22px; height: 22px; vertical-align: middle;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    Tu Carrito de Compras
+                </h2>
+                <button class="btn-cerrar-carrito" onclick="toggleModalCarrito()" aria-label="Cerrar">&times;</button>
             </div>
 
             <div class="carrito-body" id="carrito-items-lista">
-                <!-- Los productos agregados se insertarán dinámicamente aquí -->
                 <p class="carrito-vacio-msg">Tu carrito está vacío actualmente.</p>
             </div>
 
@@ -61,7 +85,7 @@
                     <span id="carrito-monto-total">₡0</span>
                 </div>
                 <button class="btn-procesar-compra" onclick="procesarCompra()">
-                    💳 Finalizar Compra
+                    Finalizar Compra
                 </button>
             </div>
         </div>
@@ -69,7 +93,7 @@
                   
     <!-- Contenido Principal -->
     <main class="container-about">
-
+           <br>
         <!-- Encabezado de la Tienda -->
         <section class="about-hero">
             <span class="badge-tech">Tu tienda de tecnología y componentes</span>
@@ -150,7 +174,7 @@
                 <div style="background: rgba(13, 23, 48, 0.6); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: center;">
                     <div style="font-size: 28px; margin-bottom: 10px;"></div>
                     <h4 style="color: #7168ff; margin-bottom: 8px;">Explora el Catálogo</h4>
-                    <p style="font-size: 14px; color: #a3a9b8;">Filtra componentes o laps con especificaciones detalladas e imágenes reales.</p>
+                    <p style="font-size: 14px; color: #a3a9b8;">Filtra componentes con especificaciones detalladas e imágenes reales.</p>
                 </div>
 
                 <div style="background: rgba(13, 23, 48, 0.6); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: center;">
@@ -175,14 +199,14 @@
 
         <!-- Canales de Contacto y Atención -->
         <section class="tech-features" style="background: rgba(98, 90, 255, 0.04); border: 1px solid rgba(98, 90, 255, 0.2);">
-            <h2> Canales de Contacto y Atención</h2>
+            <h2>💬 Canales de Contacto y Atención</h2>
             <p style="color: #a3a9b8; margin-bottom: 30px;">¿Tienes dudas sobre un componente o necesitas cotizar una PC a la medida? ¡Contáctanos!</p>
 
             <div class="features-grid">
                 <div class="feature-box" style="text-align: center;">
                     <div style="font-size: 32px; margin-bottom: 10px;"></div>
                     <h4>WhatsApp Tech</h4>
-                    <p style="color: #2ecc71; font-weight: bold; margin-top: 5px;">+506 8888-8888</p>
+                    <p style="color: #2ecc71; font-weight: bold; margin-top: 5px;">+506 6133-6757</p>
                     <p style="font-size: 12px; color: #64748b; margin-top: 4px;">Atención rápida y cotizaciones</p>
                 </div>
 
@@ -216,9 +240,10 @@
         <p>&copy; 2026 OctoERP Hardware & Tech Store. Todos los derechos reservados. Proyecto CTP.</p>
     </footer>
 
-    <!-- Scripts necesarios para autenticación y carrito -->
+    <!-- Scripts necesarios para autenticación, carrito y tema -->
     <script src="../JavaScript/auth.js"></script>
     <script src="../JavaScript/carrito.js"></script>
+    <script src="../JavaScript/inicioClientes.js"></script>
 </body>
 
 </html>
