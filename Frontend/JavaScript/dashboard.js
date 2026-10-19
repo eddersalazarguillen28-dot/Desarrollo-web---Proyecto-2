@@ -320,7 +320,7 @@ async function eliminarVenta(ventaId) {
                 `https://octo-erp.onrender.com/api/ventas/${ventaId}`,{
                     method: "DELETE",
                     headers:{
-                        "Authorization": `Beaber ${token}`
+                        "Authorization": `Bearer ${token}`
                     }
                 }
             );
