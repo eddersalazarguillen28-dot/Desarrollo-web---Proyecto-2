@@ -326,6 +326,9 @@ async function eliminarVenta(ventaId) {
             );
             const datos = await respuesta.json();
 
+            console.log("Estado HTTPS:", respuesta.status);
+            console.log("Respuesta del servidor", datos);
+
             if (!respuesta.ok || datos.status === "error"){
                 throw new Error(
                     datos.message || "No se pudo eliminar la venta"
