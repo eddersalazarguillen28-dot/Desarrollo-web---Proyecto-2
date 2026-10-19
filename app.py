@@ -715,37 +715,6 @@ def crear_venta():
             )
         }), 500
 
-@app.route("/api/ventas/<int:venta_id>", methods=["DELETE"])
-@solo_administrador
-def borrar_venta(venta_id):
-    try:
-        eliminado = db.eliminar_venta(venta_id)
-
-        app.logger.info(
-            "Resultado de eliminar venta %s: %s",
-            venta_id,
-            eliminado
-        )
-
-        if not eliminado:
-            return jsonify({
-                "status": "error",
-                "message": "La venta no existe"
-            }), 404
-
-        return jsonify({
-            "status": "ok",
-            "message": "Venta eliminada correctamente"
-        }), 200
-
-    except Exception:
-        app.logger.exception("Error al eliminar venta")
-
-        return jsonify({
-            "status": "error",
-            "message": "No se pudo eliminar la venta"
-        }), 500
-
 # =========================================================
 # CHAT CON GEMINI
 # =========================================================
