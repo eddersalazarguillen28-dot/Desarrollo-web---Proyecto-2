@@ -11,7 +11,7 @@
     --price-green-hover: #047857;
     --shadow-card: 0 4px 15px rgba(17, 16, 41, 0.05);
     --navbar-bg: rgba(255, 255, 255, 0.92);
-    --cards-bg:linear-gradient(135deg,var(--bg-surface) 0%, #d2d0ff 100%);
+    --cards-bg:linear-gradient(135deg,var(--bg-surface) 0%, #e4e3fa 100%);
 }
 
 
@@ -28,6 +28,10 @@
     --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
     --navbar-bg: rgba(21, 20, 40, 0.92);
     --cards-bg:linear-gradient(135deg,var(--bg-dark-navy) 0%, #1c1a40 100%);
+}
+
+html{
+    scroll-behavior: smooth;
 }
 
 /*RESET*/
@@ -173,7 +177,6 @@ body{
     background-color: var(--price-green);
     color: #ffffff;
     font-size: 10px;
-    font-weight: 700;
     width: 18px;
     height: 18px;
     border-radius: 50%;
