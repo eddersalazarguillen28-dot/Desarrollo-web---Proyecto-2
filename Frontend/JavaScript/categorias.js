@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded',() =>{
     cambiarTema();
+    cargarCategoriasDesdeAPI();
 
 })
 
@@ -20,6 +21,96 @@ function cambiarTema(){
     }
 
 }
+
+//Cargar productos dede el render
+
+async function cargarCategoriasDesdeAPI() {
+    const API_BASE = "https://octo-erp.onrender.com";
+    const gridContainer = document.getElementById("grid-categorias-dinamico");
+    const contadorCategorias = document.getElementById("contador-categorias");
+
+    if(!gridContainer){
+        console.error("No se encontro grid categorias dianmico");
+        return;
+    } 
+
+    if(contadorCategorias){
+        contadorCategorias.textContent = "Cargando categorias..."
+    }
+
+    try{
+        const respuesta = await fetch(`${API_BASE}/api/productos`);
+        const texto = await respuesta.text();
+        let datos = texto ? JSON.parse(texto) : [];
+        const productos = Array.isArray(datos) ? datos : (datos.productos || []);
+
+        console.log("Productos de la API:", productos);
+
+        //Productos agrupados por categoria
+
+        const categoriasMap = {};
+
+        productos.forEach(prod => {
+            let catNombre = prod.categoria ? prod.categoria.trim() : "General";
+
+            if (!categoriasMap[catNombre]){
+                categoriasMap[catNombre] ={
+                    nombre:catNombre,
+                    imagenPortada:prod.imagen_url || "../Imagenes/Logo.png",
+                    productos:[]
+                };
+            }
+            categoriasMap[catNombre].productos.push(prod);
+        });
+
+        const nombresCategorias = Object.keys(categoriasMap);
+        if (contadorCategorias){
+            contadorCategorias.textContent =  "";
+        }
+
+        gridContainer.innerHTML = "";
+
+        if(nombresCategorias.length === 0){
+            gridContainer.innerHTML = `
+            <div style="grid-column:1/-1; text-align;center;padding:40px;color:var(--text-muted);">
+                <p>No hay categorías registradas todavía</p>
+            </div>`;
+            return;
+        }
+
+        //tarjetas de las categorias
+        nombresCategorias.forEach((nombreCat,index) => {
+            const catData = categoriasMap[nombreCat];
+            const cantidadItems = catData.productos.length;
+            const imagenUrl = catData.imagenPortada;
+
+            const cardHTML = `
+                <a class="categoria-card ${index === 0 ? 'categoria-card-featured': ''}" href="productos-por-categoria.html?cat=${encodeURIComponent(nombreCat)}">
+                    <div class="imagen-categoria">
+                        <img src ="${imagenUrl}" alt="${nombreCat}" loading="lazy">
+                        <span></span>
+                    </div>
+                    <div class="categoria-info">
+                        <div>
+                            <h3>${nombreCat}</h3>
+                            <p>${cantidadItems} ${cantidadItems===1 ? 'producto' : 'productos'} disponibles</p>
+                        </div>
+                    </div>
+                </a>`;
+                gridContainer.innerHTML += cardHTML;
+        });
+
+    }catch (error){
+        console.error("Error al cargar categorías desde la API:",error);
+
+        if (contadorCategorias){
+            contadorCategorias.textContent = "Error al cargar categorias desde el servidor";
+        }
+
+    }
+    
+}
+
 
 //TENTACULOS PULPO
 
@@ -143,7 +234,7 @@ document.addEventListener("DOMContentLoaded",() => {
             tentacle.update(time);
             tentacle.draw(time);
         });
-        
+
         requestAnimationFrame(animate);
     }
     requestAnimationFrame(animate);
