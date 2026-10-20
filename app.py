@@ -182,7 +182,7 @@ def solo_administrador(funcion):
             return jsonify({
                 "status": "error",
                 "message": "No se pudieron verificar los permisos"
-            })
+            }), 500
                
 
         finally:
