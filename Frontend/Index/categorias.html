@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" data-theme="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,14 +8,22 @@
 
     <title>Categorias</title>
 </head>
+
 <body>
+
+    <!-- ============================================================
+         Barra de navegación
+         ============================================================ -->
     <header class="navbar-cliente">
         <div class="navbar-container">
+
+            <!-- Logo -->
             <a href="#" class="logo-brand">
                 <img src="../Imagenes/octopus.png" alt="OctoERP" class="logo-icono">
                 <span class="logo-texto">Octo<span class="logo-highlight">ERP</span></span>
             </a>
 
+            <!-- Enlaces de navegación -->
             <nav class="nav-links">
                 <a href="#inicio" class="nav-link active">Inicio</a>
                 <a href="#productos" class="nav-link">Productos</a>
@@ -23,146 +32,175 @@
                 <a href="#contacto" class="nav-link">Contacto</a>
             </nav>
 
+            <!-- Acciones a la derecha -->
             <div class="navbar-acciones">
-                <!-- Botón Modo Claro / Oscuro -->
+
+                <!-- Botón para cambiar entre modo claro y oscuro -->
                 <button id="btn-toggle-theme" class="btn-icon" aria-label="Cambiar Tema">
                     <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
                 </button>
 
-                <!-- Carrito de Compras -->
+                <!-- Carrito de compras -->
                 <button class="btn-icon btn-carrito" aria-label="Carrito">
                     <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
                     <span class="carrito-badge" id="carrito-count">0</span>
                 </button>
+
             </div>
         </div>
     </header>
 
-    <!--Hero-->
-    <section class="hero">
-        <canvas id="tentacles-canvas"></canvas>
-        <div class="contenedor hero-contenido">
-            <p class="eyebrow"><span></span>Tecnología para vos</p>
-            <h1 class="hero-titulo">Explorá nuestras <span>categorías</span></h1>
-            <p class="hero-subtitulo">Encontrá los coponentes y equipos ideales organizados por categoría en tiempo real</p>
-            <div class="hero-botones">
-                <a class="hero-btn"href="#categorias">Ver categorías ↓</a>
-            </div>
-            
-        </div>
 
+    <!-- ============================================================
+         Hero
+         ============================================================ -->
+    <section class="hero">
+
+        <!-- Fondo animado de tentáculos -->
+        <canvas id="tentacles-canvas"></canvas>
+
+        <div class="contenedor hero-contenido">
+
+            <p class="eyebrow"><span></span>Tecnología para vos</p>
+
+            <h1 class="hero-titulo">Explorá nuestras <span>categorías</span></h1>
+
+            <p class="hero-subtitulo">
+                Encontrá los coponentes y equipos ideales organizados por categoría en tiempo real
+            </p>
+
+            <div class="hero-botones">
+                <a class="hero-btn" href="#categorias">Ver categorías ↓</a>
+            </div>
+
+        </div>
     </section>
 
+
+    <!-- ============================================================
+         Sección de categorías
+         ============================================================ -->
     <section class="seccion-categorias contenedor" id="categorias">
 
         <div class="categoria-grid">
-            <a class="categoria-card categoria-card-featured"  href="#compu">
+
+            <!-- Laptops y computación (destacada) -->
+            <a class="categoria-card categoria-card-featured" href="#compu">
                 <div class="imagen-categoria">
                     <img src="../Imagenes/computacion.jpg" alt="">
                     <span></span>
-
                 </div>
                 <div class="categoria-info">
-                    <div><h3>Laptops y computación</h3><p>Portátiles, monitores y accesorios</p></div>
-
+                    <div>
+                        <h3>Laptops y computación</h3>
+                        <p>Portátiles, monitores y accesorios</p>
+                    </div>
                 </div>
             </a>
 
+            <!-- Componentes -->
             <a class="categoria-card" href="#componentes">
                 <div class="imagen-categoria">
                     <img src="../Imagenes/componentes.jpg" alt="">
                 </div>
                 <div class="categoria-info">
-                    <div><h3>Componentes</h3><p>Procesador,RAM y más</p></div>
-
+                    <div>
+                        <h3>Componentes</h3>
+                        <p>Procesador,RAM y más</p>
+                    </div>
                 </div>
-
             </a>
 
-            <a class="categoria-card"  href="#gaming">
+            <!-- Gaming -->
+            <a class="categoria-card" href="#gaming">
                 <div class="imagen-categoria">
                     <img src="../Imagenes/gaming.jpg" alt="">
-
                 </div>
                 <div class="categoria-info">
-                    <div><h3>Gaming</h3><p>Equipos y accesorios gamer</p></div>
-
+                    <div>
+                        <h3>Gaming</h3>
+                        <p>Equipos y accesorios gamer</p>
+                    </div>
                 </div>
-
             </a>
 
+            <!-- Periféricos -->
             <a class="categoria-card" href="#perifericos">
                 <div class="imagen-categoria">
                     <img src="../Imagenes/perifericos.jpg" alt="">
-
                 </div>
                 <div class="categoria-info">
-                    <div><h3>Periféricos</h3><p>Teclados,mouse y más</p></div>
-
+                    <div>
+                        <h3>Periféricos</h3>
+                        <p>Teclados,mouse y más</p>
+                    </div>
                 </div>
-
             </a>
 
-            <a  class="categoria-card" href="#celulares">
+            <!-- Celulares -->
+            <a class="categoria-card" href="#celulares">
                 <div class="imagen-categoria">
                     <img src="../Imagenes/celulares.png" alt="">
-
                 </div>
                 <div class="categoria-info">
-                    <div><h3>Celulares</h3><p>Dispositivos y complementos</p></div>
-
+                    <div>
+                        <h3>Celulares</h3>
+                        <p>Dispositivos y complementos</p>
+                    </div>
                 </div>
-
             </a>
 
+            <!-- Audio y video -->
             <a class="categoria-card" href="#audio">
                 <div class="imagen-categoria">
                     <img src="../Imagenes/audioVideo.png" alt="">
-
                 </div>
                 <div class="categoria-info">
-                    <div><h3>Audio y video</h3><p>Audifonos,parlantes y pantallas</p></div>
-
+                    <div>
+                        <h3>Audio y video</h3>
+                        <p>Audifonos,parlantes y pantallas</p>
+                    </div>
                 </div>
-
             </a>
 
+            <!-- Conectividad y redes -->
             <a class="categoria-card" href="#redes">
                 <div class="imagen-categoria">
                     <img src="../Imagenes/redes.jpg" alt="">
-
                 </div>
-
                 <div class="categoria-info">
-                    <div><h3>Conectividad y redes</h3><p>Routers,adaptadores y cables</p></div>
-
+                    <div>
+                        <h3>Conectividad y redes</h3>
+                        <p>Routers,adaptadores y cables</p>
+                    </div>
                 </div>
-
             </a>
 
+            <!-- Accesorios -->
             <a class="categoria-card" href="#accesorios">
                 <div class="imagen-categoria">
                     <img src="../Imagenes/accesorios.png" alt="">
-
                 </div>
                 <div class="categoria-info">
-                    <div><h3>Accesorios</h3><p>Cargadores,bases y adaptadores</p></div>
-
+                    <div>
+                        <h3>Accesorios</h3>
+                        <p>Cargadores,bases y adaptadores</p>
+                    </div>
                 </div>
-
             </a>
-        </div>
 
+        </div>
     </section>
 
-    
 
-
-    
+    <!-- ============================================================
+         Scripts
+         ============================================================ -->
     <script src="../JavaScript/categorias.js"></script>
+
 </body>
 </html>

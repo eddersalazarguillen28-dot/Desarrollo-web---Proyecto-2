@@ -14,28 +14,37 @@
 
 <body id="page-inicio">
 
-    <!-- Barra de navegación -->
+    <!-- ============================================================
+         1. BARRA DE NAVEGACIÓN
+         ============================================================ -->
     <header class="navbar-octo">
         <div class="nav-container">
+
+            <!-- Logo -->
             <a href="inicioClientes.html" class="nav-logo">
                 <img src="../Imagenes/Logo.png" alt="OctoERP Logo">
                 <span>Octo<span>ERP</span></span>
             </a>
 
+            <!-- Enlaces de navegación -->
             <nav class="nav-links" id="nav-links">
                 <a href="inicioClientes.html" class="nav-item active">Inicio</a>
                 <a href="productos.html" class="nav-item">Productos</a>
-                <a href="descuentos.html" class="nav-item active">Descuentos</a>
+                <a href="descuentos.html" class="nav-item">Descuentos</a>
                 <a href="QuienesSomos.html" class="nav-item">Sobre Nosotros</a>
                 <a href="soporte.html" class="nav-item">Soporte</a>
 
+                <!-- Botones de autenticación (versión móvil) -->
                 <div class="auth-buttons-mobile">
                     <a href="inicioSesion.html" class="btn-nav btn-login">Iniciar Sesión</a>
                     <a href="crearCuenta.html" class="btn-nav btn-register">Registrarse</a>
                 </div>
             </nav>
 
+            <!-- Acciones del navbar -->
             <div class="nav-actions">
+
+                <!-- Botón: cambiar tema -->
                 <button id="btn-toggle-theme" class="btn-theme-toggle" title="Cambiar tema" aria-label="Cambiar tema">
                     <svg class="nav-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -50,6 +59,7 @@
                     </svg>
                 </button>
 
+                <!-- Botón: carrito -->
                 <button class="btn-cart" id="btn-cart" title="Ver carrito" aria-label="Ver carrito">
                     <svg class="nav-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -57,11 +67,13 @@
                     <span class="cart-count" id="cart-count">0</span>
                 </button>
 
+                <!-- Botones de autenticación (versión escritorio) -->
                 <div class="auth-buttons" id="auth-guest">
                     <a href="inicioSesion.html" class="btn-nav btn-login">Iniciar Sesión</a>
                     <a href="crearCuenta.html" class="btn-nav btn-register">Registrarse</a>
                 </div>
 
+                <!-- Botón: menú móvil -->
                 <button class="btn-mobile-menu" id="btn-mobile-menu" aria-label="Abrir menú">
                     <svg class="nav-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -69,13 +81,18 @@
                         <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
                 </button>
+
             </div>
         </div>
     </header>
 
-    <!-- Modal del carrito -->
+    <!-- ============================================================
+         2. MODAL DEL CARRITO
+         ============================================================ -->
     <div id="modal-carrito" class="carrito-modal-overlay hidden">
         <div class="carrito-modal-content">
+
+            <!-- Cabecera del modal -->
             <div class="carrito-header">
                 <h2>
                     <svg class="modal-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -86,10 +103,12 @@
                 <button class="btn-cerrar-carrito" id="btn-cerrar-carrito" aria-label="Cerrar">&times;</button>
             </div>
 
+            <!-- Lista de items -->
             <div class="carrito-body" id="carrito-items-lista">
                 <p class="carrito-vacio-msg">Tu carrito está vacío actualmente.</p>
             </div>
 
+            <!-- Pie del modal: total y botón de compra -->
             <div class="carrito-footer">
                 <div class="carrito-total-row">
                     <span>Total a pagar:</span>
@@ -97,18 +116,25 @@
                 </div>
                 <button class="btn-procesar-compra" id="btn-finalizar-compra">Finalizar Compra</button>
             </div>
+
         </div>
     </div>
 
+    <!-- ============================================================
+         3. CONTENIDO PRINCIPAL
+         ============================================================ -->
     <main class="container-inicio">
 
-        <!-- HERO: TENTÁCULOS DE FONDO -->
+        <!-- --------------------------------------------------------
+             3.1 HERO: TENTÁCULOS DE FONDO
+             -------------------------------------------------------- -->
         <section class="hero-section hero-tentacles">
 
-            <!-- Fondo: grid + glow + tentáculos SVG -->
+            <!-- Fondo: grid + glow -->
             <div class="cyber-grid-overlay"></div>
             <div class="hero-bg-glow-octo"></div>
 
+            <!-- Fondo: tentáculos SVG y burbujas -->
             <div class="hero-tentacles-bg" aria-hidden="true">
                 <svg viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
                     <defs>
@@ -148,19 +174,21 @@
                 <div class="burbujas" id="burbujas"></div>
             </div>
 
-            <!-- Contenido central -->
+            <!-- Contenido central del hero -->
             <div class="hero-content hero-content--centered">
 
-
+                <!-- Título principal -->
                 <h1 class="hero-title">
                     El poder del hardware en las
                     <span class="text-glow-gradient">garras de tu setup</span>
                 </h1>
 
+                <!-- Subtítulo -->
                 <p class="hero-subtitle">
                     Componentes, GPUs y Custom PCs con precios y existencias que se actualizan en vivo desde nuestra base de datos.
                 </p>
 
+                <!-- Botón principal -->
                 <div class="hero-cta-group hero-cta-group--center">
                     <a href="productos.html" class="octo-glow-btn">
                         <span>Explorar Catálogo</span>
@@ -171,33 +199,42 @@
                     </a>
                 </div>
 
+                <!-- Estadísticas -->
                 <div class="hero-stats-row hero-stats-row--center">
+
                     <div class="hero-stat-item">
                         <span class="stat-number" id="stat-total-productos">--</span>
                         <span class="stat-label">Equipos en BD</span>
                     </div>
+
                     <div class="hero-stat-divider"></div>
+
                     <div class="hero-stat-item">
-                         <div class="db-status-badge connecting" id="db-status-indicator" title="Conexión con el servidor">
-                    <span class="db-dot"></span>
-                    <span class="db-text" id="db-text">Conectando</span>
-                </div>
+                        <div class="db-status-badge connecting" id="db-status-indicator" title="Conexión con el servidor">
+                            <span class="db-dot"></span>
+                            <span class="db-text" id="db-text">Conectando</span>
+                        </div>
                     </div>
+
                     <div class="hero-stat-divider"></div>
+
                     <div class="hero-stat-item">
                         <span class="stat-number">Garantía</span>
                         <span class="stat-label">Oficial directa</span>
                     </div>
+
                 </div>
             </div>
 
             <!-- Tarjeta de producto destacado flotante -->
             <div class="pulpo-card pulpo-card--floating" id="hero-featured-card">
                 <span class="octo-badge-glow">Destacado</span>
+
                 <div class="img-octo-container">
                     <div class="octo-aura-ring"></div>
                     <img src="../Imagenes/Logo.png" alt="Producto destacado" id="hero-featured-img" class="hero-card-img">
                 </div>
+
                 <div class="hero-card-info">
                     <h3 id="hero-featured-title">Cargando producto…</h3>
                     <p id="hero-featured-desc">Conectando con OctoERP</p>
@@ -208,9 +245,13 @@
 
         </section>
 
-        <!-- Beneficios -->
+        <!-- --------------------------------------------------------
+             3.2 SECCIÓN DE BENEFICIOS
+             -------------------------------------------------------- -->
         <section class="features-section">
             <div class="features-grid">
+
+                <!-- Beneficio: Garantía -->
                 <div class="feature-card reveal-on-scroll">
                     <div class="feature-icon-wrapper">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -222,6 +263,7 @@
                     <p>Respaldo directo de fábrica registrado en nuestro sistema central.</p>
                 </div>
 
+                <!-- Beneficio: Stock -->
                 <div class="feature-card reveal-on-scroll">
                     <div class="feature-icon-wrapper">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -232,6 +274,7 @@
                     <p>Existencias y precios consultados directamente a la base de datos.</p>
                 </div>
 
+                <!-- Beneficio: Envíos -->
                 <div class="feature-card reveal-on-scroll">
                     <div class="feature-icon-wrapper">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -241,30 +284,41 @@
                     <h3>Envíos protegidos</h3>
                     <p>Embalaje de alto impacto para proteger hardware delicado a todo el país.</p>
                 </div>
+
             </div>
         </section>
 
-        <!-- Productos desde la BD -->
+        <!-- --------------------------------------------------------
+             3.3 PRODUCTOS DESDE LA BASE DE DATOS
+             -------------------------------------------------------- -->
         <section class="products-preview-section">
+
             <div class="section-header reveal-on-scroll">
                 <h2>Componentes disponibles</h2>
                 <p>Catálogo actualizado en vivo desde el servidor de OctoERP</p>
             </div>
 
-            <p class="carga-nota hidden" id="carga-nota">El servidor se está despertando, puede tardar unos segundos…</p>
+            <p class="carga-nota hidden" id="carga-nota">
+                El servidor se está despertando, puede tardar unos segundos…
+            </p>
 
             <div class="products-grid" id="contenedor-productos-bd"></div>
 
             <div class="view-more-container">
                 <a href="productos.html" class="btn-view-all">Ver todo el catálogo</a>
             </div>
+
         </section>
 
     </main>
-    
+
+    <!-- ============================================================
+         4. PIE DE PÁGINA
+         ============================================================ -->
     <footer class="footer-about">
         <p>&copy; 2026 OctoERP Hardware &amp; Tech Store. Todos los derechos reservados. Proyecto CTP.</p>
     </footer>
+
     <script src="../JavaScript/inicioClientes.js"></script>
 </body>
 </html>
