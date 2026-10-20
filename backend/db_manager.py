@@ -860,7 +860,7 @@ def eliminar_venta(venta_id):
                 SELECT id
                 FROM ventas
                 WHERE id = %s
-                FROM UPDATE
+                FOR UPDATE
                 """, (venta_id,))
 
             if cursor.fetchone() is None:
