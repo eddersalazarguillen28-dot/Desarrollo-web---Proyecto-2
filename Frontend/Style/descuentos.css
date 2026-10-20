@@ -1,3 +1,29 @@
+
+/* ==========================================================
+   VARIABLES DE TEMA OSCURO / LIGHT (OCTO ERP)
+   ========================================================== */
+:root {
+    --bg-page: #0b0f19;
+    --bg-card: #111827;
+    --text-primary: #f9fafb;
+    --text-muted: #9ca3af;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    --emerald-green: #10b981;
+    --purple-primary: #8b5cf6;
+    --purple-hover: #7c3aed;
+}
+
+[data-theme="light"] {
+    --bg-page: #f8fafc;
+    --bg-card: #ffffff;
+    --text-primary: #0f172a;
+    --text-muted: #64748b;
+    --border-subtle: rgba(0, 0, 0, 0.08);
+    --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+
 /* ==========================================================
    OCTO ERP / TECH STORE - DESCUENTOS Y OFERTAS (STYLE)
    Edición Especial Halloween & Cyber Tech - Versión Final
