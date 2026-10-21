@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/jpeg" href="../Imagenes/logoVentana.jpeg">
     <link rel="stylesheet" href="../Style/global.css">
     <link rel="stylesheet" href="../Style/estiloInventario.css">
-    <title>Inventario</title>
+    <title>Inventario - OctoERP Tech Store</title>
 </head>
 <body id="page-inventario">
     <div id="sidebar-container"></div>
@@ -28,7 +28,7 @@
 
                     <!-- Buscador -->
                     <div class="contenedor-buscador">
-                        <input type="text" id="buscador-inventario" placeholder="Buscar por nombre, SKU o categoría...">
+                        <input type="text" id="buscador-inventario" placeholder="Buscar por nombre, SKU, categoría o ubicación...">
                     </div>
 
                     <!-- Tabla de Inventario -->
@@ -38,9 +38,11 @@
                                 <tr>
                                     <th>Imagen</th>
                                     <th>Nombre del Artículo</th>
+                                    <th>Ubicación</th>
                                     <th>Categoría</th>
                                     <th>Código (SKU)</th>
                                     <th>Stock Actual</th>
+                                    <th>Precio Base</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -64,7 +66,7 @@
                     <div class="panel-header">
                         <div>
                             <h2 id="tituloForm">Ingresar Producto</h2>
-                            <p id="subtituloForm">Añade un nuevo producto con imagen y descripción</p>
+                            <p id="subtituloForm">Añade un nuevo producto con imagen y destino en la tienda</p>
                         </div>
                         <button type="button" id="btn-cerrar-form" class="btn-x-panel">✕</button>
                     </div>
@@ -74,44 +76,68 @@
 
                         <div class="form-campo">
                             <label for="nombreProd">Nombre del Artículo *</label>
-                            <input type="text" id="nombreProd" placeholder="Nombre del artículo" required>
+                            <input type="text" id="nombreProd" placeholder="Ej: NVIDIA RTX 4070 Ti Super" required>
                         </div>
                         
                         <div class="form-campo">
                             <label for="descProd">Descripción del Producto</label>
-                            <textarea id="descProd" rows="3" placeholder="Ej: Laptop de alta gama..."></textarea>
+                            <textarea id="descProd" rows="3" placeholder="Ej: 16GB GDDR6X, DLSS 3.5..."></textarea>
                         </div>
 
-                        <!-- Categoría y SKU -->
+                        <!-- Ubicación en la tienda y Categoría -->
                         <div class="campos-dobles">
                             <div class="form-campo">
-                                <label for="categoriaProd">Categoría</label>
+                                <label for="ubicacionProd">Ubicación en la Tienda *</label>
+                                <select id="ubicacionProd" required>
+                                    <option value="productos">Catálogo General (Productos)</option>
+                                    <option value="descuentos">Sección de Descuentos 🎃</option>
+                                    <option value="inicio">Página de Inicio (Destacados)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-campo">
+                                <label for="categoriaProd">Categoría *</label>
                                 <select id="categoriaProd" required>
+                                    <option value="Componentes">Componentes</option>
+                                    <option value="Tarjetas de Video">Tarjetas de Video</option>
+                                    <option value="Monitores">Monitores</option>
+                                    <option value="Memorias RAM">Memorias RAM</option>
+                                    <option value="Almacenamiento">Almacenamiento</option>
+                                    <option value="Periféricos">Periféricos</option>
+                                    <option value="Muebles y Sillas">Muebles y Sillas</option>
                                     <option value="Electrónica">Electrónica</option>
-                                    <option value="Accesorios">Accesorios</option>
-                                    <option value="Muebles">Muebles</option>
                                     <option value="General">General</option>
                                 </select>
                             </div>
-                            <div class="form-campo">
-                                <label for="skuProd">Código (SKU)</label>
-                                <input type="text" id="skuProd" placeholder="Ej: #ELC-1099">
-                            </div>
                         </div>
 
-                        <!-- Stock y Precio -->
+                        <!-- Código SKU y Stock -->
                         <div class="campos-dobles">
                             <div class="form-campo">
-                                <label for="stockProd">Stock Inicial *</label>
-                                <input type="number" id="stockProd" min="0" placeholder="0" required>
+                                <label for="skuProd">Código (SKU)</label>
+                                <input type="text" id="skuProd" placeholder="Ej: #GPU-4070">
                             </div>
+
                             <div class="form-campo">
-                                <label for="precioProd">Precio (₡) *</label>
-                                <input type="number" id="precioProd" min="0" placeholder="25000" required>
+                                <label for="stockProd">Stock Inicial *</label>
+                                <input type="number" id="stockProd" min="0" placeholder="10" required>
                             </div>
                         </div>
 
-                        <!-- Imagen -->
+                        <!-- Precios (Base y Oferta) -->
+                        <div class="campos-dobles">
+                            <div class="form-campo">
+                                <label for="precioProd">Precio Base (₡) *</label>
+                                <input type="number" id="precioProd" min="0" placeholder="250000" required>
+                            </div>
+
+                            <div class="form-campo" id="grupo-precio-oferta" style="display: none;">
+                                <label for="precioOfertaProd" style="color: #ff7700;">Precio con Descuento (₡)</label>
+                                <input type="number" id="precioOfertaProd" min="0" placeholder="200000">
+                            </div>
+                        </div>
+
+                        <!-- Subir Imagen -->
                         <div class="form-campo">
                             <label for="imagenProd">Subir Imagen (Opcional)</label>
                             <input type="file" id="imagenProd" accept="image/*" class="input-file">
@@ -179,5 +205,25 @@
     <script src="../JavaScript/inventario.js"></script>
     <script src="../JavaScript/layout.js"></script>
     <script src="../JavaScript/chat.js"></script>
+
+    <!-- Script Inline de Apoyo para Mostrar/Ocultar Precio de Oferta dinámicamente -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const selectUbicacion = document.getElementById("ubicacionProd");
+            const grupoOferta = document.getElementById("grupo-precio-oferta");
+
+            if (selectUbicacion && grupoOferta) {
+                selectUbicacion.addEventListener("change", () => {
+                    if (selectUbicacion.value === "descuentos") {
+                        grupoOferta.style.display = "block";
+                    } else {
+                        grupoOferta.style.display = "none";
+                        const inputOferta = document.getElementById("precioOfertaProd");
+                        if (inputOferta) inputOferta.value = "";
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

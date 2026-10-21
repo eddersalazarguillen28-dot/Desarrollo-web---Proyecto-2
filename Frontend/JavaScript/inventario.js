@@ -311,6 +311,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("stockProd").value = prod.stock ?? 0;
         document.getElementById("precioProd").value = prod.precio ?? 0;
 
+
         if (tituloForm) tituloForm.textContent = "Ajustar Producto";
         if (subtituloForm) subtituloForm.textContent = "Modifica existencias o datos del producto";
         if (guardarBtn) guardarBtn.textContent = "Actualizar Producto";
@@ -358,6 +359,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const sku = document.getElementById("skuProd")?.value.trim() || "";
         const stock = Number(document.getElementById("stockProd")?.value || 0);
         const precio = Number(document.getElementById("precioProd")?.value || 0);
+        const ubicacion = document.getElementById("ubicacionProd")?.value.trim() || "productos";
+        const precioOferta = document.getElementById("precioOfertaProd")?.value.trim() || "";
         const archivo = document.getElementById("imagenProd")?.files?.[0] || null;
 
         if (!nombre) {
@@ -383,6 +386,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 cuerpo.append("sku", sku);
                 cuerpo.append("precio", String(precio));
                 cuerpo.append("stock", String(stock));
+                cuerpo.append("ubicacion", ubicacion); // 👈 Añadir esto
+                if (precioOferta) {
+                    cuerpo.append("precio_oferta", precioOferta); // 👈 Añadir esto
+                }
                 cuerpo.append("imagen", archivo);
             } else {
                 cuerpo = JSON.stringify({
@@ -391,7 +398,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     categoria,
                     sku,
                     precio,
-                    stock
+                    stock,
+                    ubicacion, // 👈 Añadir esto
+                    precio_oferta: precioOferta ? Number(precioOferta) : null // 👈 Añadir esto
                 });
             }
 
@@ -415,6 +424,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (mensajeForm) mensajeForm.textContent = error.message;
         }
     });
+
 
     // =====================================================
     // EVENTOS Y CONTROLES

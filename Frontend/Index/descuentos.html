@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Descuentos & Ofertas - OctoERP Tech Store</title>
     <!-- Estilos generales e inicio con rutas corregidas -->
-   
     <link rel="stylesheet" href="../Style/estiloInicioClientes.css">
     <link rel="stylesheet" href="../Style/descuentos.css">
 </head>
@@ -173,408 +172,23 @@
 
         </section>
 
-        <!-- BANNER CONTINUO EN MOVIMIENTO (MARQUEE SLIDER VERTICAL) -->
+        <!-- BANNER CONTINUO EN MOVIMIENTO (MARQUEE SLIDER) -->
         <div class="marquee-container">
-            <div class="marquee-track">
-                
-                <!-- Producto 1 -->
-                <div class="marquee-item">
-                    <span class="marquee-badge">-25% OFF</span>
-                    <div class="marquee-img-box">
-                        <img src="../Imagenes/71iuYk2VRnL.jpg" alt="NVIDIA RTX 4070 Ti">
-                    </div>
-                    <div class="marquee-info">
-                        <span class="marquee-title">NVIDIA RTX 4070 Ti Super</span>
-                        <strong class="marquee-price">₡487,500</strong>
-                    </div>
-                </div>
-
-                <!-- Producto 2 -->
-                <div class="marquee-item">
-                    <span class="marquee-badge">-30% OFF</span>
-                    <div class="marquee-img-box">
-                        <img src="../Imagenes/71iuYk2VRnL.jpg" alt="Monitor OLED 27">
-                    </div>
-                    <div class="marquee-info">
-                        <span class="marquee-title">Monitor OLED 27" 240Hz</span>
-                        <strong class="marquee-price">₡364,000</strong>
-                    </div>
-                </div>
-
-                <!-- Producto 3 -->
-                <div class="marquee-item">
-                    <span class="marquee-badge">-20% OFF</span>
-                    <div class="marquee-img-box">
-                        <img src="../Imagenes/71iuYk2VRnL.jpg" alt="SSD M.2 NVMe 2TB">
-                    </div>
-                    <div class="marquee-info">
-                        <span class="marquee-title">SSD M.2 NVMe 2TB</span>
-                        <strong class="marquee-price">₡104,000</strong>
-                    </div>
-                </div>
-
-                <!-- Producto 4 -->
-                <div class="marquee-item">
-                    <span class="marquee-badge">-35% OFF</span>
-                    <div class="marquee-img-box">
-                        <img src="../Imagenes/71iuYk2VRnL.jpg" alt="Fuente 850W Gold">
-                    </div>
-                    <div class="marquee-info">
-                        <span class="marquee-title">Fuente 850W 80+ Gold</span>
-                        <strong class="marquee-price">₡71,500</strong>
-                    </div>
-                </div>
-
-                <!-- Producto 5 -->
-                <div class="marquee-item">
-                    <span class="marquee-badge">-18% OFF</span>
-                    <div class="marquee-img-box">
-                        <img src="../Imagenes/71iuYk2VRnL.jpg" alt="Enfriamiento Líquido 360mm">
-                    </div>
-                    <div class="marquee-info">
-                        <span class="marquee-title">Enfriamiento Líquido 360mm</span>
-                        <strong class="marquee-price">₡86,100</strong>
-                    </div>
-                </div>
-
-                <!-- DUPLICADO EXACTO PARA EL EFECTO INFINITO CONTINUO -->
-                <div class="marquee-item">
-                    <span class="marquee-badge">-25% OFF</span>
-                    <div class="marquee-img-box">
-                        <img src="../Imagenes/71iuYk2VRnL.jpg" alt="NVIDIA RTX 4070 Ti">
-                    </div>
-                    <div class="marquee-info">
-                        <span class="marquee-title">NVIDIA RTX 4070 Ti Super</span>
-                        <strong class="marquee-price">₡487,500</strong>
-                    </div>
-                </div>
-
-                <div class="marquee-item">
-                    <span class="marquee-badge">-30% OFF</span>
-                    <div class="marquee-img-box">
-                        <img src="../Imagenes/71iuYk2VRnL.jpg" alt="Monitor OLED 27">
-                    </div>
-                    <div class="marquee-info">
-                        <span class="marquee-title">Monitor OLED 27" 240Hz</span>
-                        <strong class="marquee-price">₡364,000</strong>
-                    </div>
-                </div>
-
-                <div class="marquee-item">
-                    <span class="marquee-badge">-20% OFF</span>
-                    <div class="marquee-img-box">
-                        <img src="../Imagenes/71iuYk2VRnL.jpg" alt="SSD M.2 NVMe 2TB">
-                    </div>
-                    <div class="marquee-info">
-                        <span class="marquee-title">SSD M.2 NVMe 2TB</span>
-                        <strong class="marquee-price">₡104,000</strong>
-                    </div>
-                </div>
-
-                <div class="marquee-item">
-                    <span class="marquee-badge">-35% OFF</span>
-                    <div class="marquee-img-box">
-                        <img src="../Imagenes/71iuYk2VRnL.jpg" alt="Fuente 850W Gold">
-                    </div>
-                    <div class="marquee-info">
-                        <span class="marquee-title">Fuente 850W 80+ Gold</span>
-                        <strong class="marquee-price">₡71,500</strong>
-                    </div>
-                </div>
-
-                <div class="marquee-item">
-                    <span class="marquee-badge">-18% OFF</span>
-                    <div class="marquee-img-box">
-                        <img src="../Imagenes/71iuYk2VRnL.jpg" alt="Enfriamiento Líquido 360mm">
-                    </div>
-                    <div class="marquee-info">
-                        <span class="marquee-title">Enfriamiento Líquido 360mm</span>
-                        <strong class="marquee-price">₡86,100</strong>
-                    </div>
-                </div>
-
+            <div class="marquee-track" id="marquee-track-container">
+                <!-- El carrusel se llenará dinámicamente con los descuentos -->
             </div>
         </div>
 
-        <!-- Catálogo de Productos en Descuento -->
+        <!-- Catálogo de Productos en Descuento (Cargado Dinámicamente desde la BD) -->
         <section class="products-preview-section" id="catalogo-ofertas">
             <div class="section-header">
                 <h2>🔥 Catálogo de Productos Rebajados</h2>
-                <p>Precios especiales con stock sincronizado en tiempo real</p>
+                <p>Precios especiales con stock sincronizado en tiempo real desde la base de datos</p>
             </div>
 
-            <div class="products-grid">
-
-                <!-- Producto 1 -->
-                <article class="product-card reveal-on-scroll relative-card">
-                    <span class="badge-discount">-25%</span>
-                    <div class="product-img-box">
-                        <img src="../Imagenes/71iuYk2VRnL.jpg" alt="Tarjetas de Video RTX 4070 Ti">
-                    </div>
-                    <div class="product-info">
-                        <span class="product-category">Tarjetas de Video</span>
-                        <h3>NVIDIA GeForce RTX 4070 Ti Super</h3>
-                        <p class="product-desc">16GB GDDR6X, DLSS 3.5 y Ray Tracing de última generación.</p>
-
-                        <div class="stock-bar-wrap">
-                            <div class="stock-bar-text">
-                                <span>Disponibles: <strong>3 unidades</strong></span>
-                                <span>¡Casi agotado!</span>
-                            </div>
-                            <div class="stock-bar">
-                                <div class="stock-fill w-25"></div>
-                            </div>
-                        </div>
-
-                        <div class="product-action-row margin-top-15">
-                            <div>
-                                <span class="price-old">₡650,000</span>
-                                <span class="price-sale">₡487,500</span>
-                            </div>
-                            <button class="btn-add-product"
-                                onclick="agregarAlCarrito('RTX 4070 Ti Super 16GB', 487500)">
-                                Agregar
-                            </button>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Producto 2 -->
-                <article class="product-card reveal-on-scroll relative-card">
-                    <span class="badge-discount">-30%</span>
-                    <div class="product-img-box">
-                        <img src="../Imagenes/71iuYk2VRnL.jpg" alt="Monitor OLED Gaming 27">
-                    </div>
-                    <div class="product-info">
-                        <span class="product-category">Monitores</span>
-                        <h3>Monitor Gaming OLED 27" 240Hz</h3>
-                        <p class="product-desc">Resolución QHD, tiempo de respuesta 0.03ms y HDR True Black.</p>
-
-                        <div class="stock-bar-wrap">
-                            <div class="stock-bar-text">
-                                <span>Disponibles: <strong>6 unidades</strong></span>
-                                <span>Popular</span>
-                            </div>
-                            <div class="stock-bar">
-                                <div class="stock-fill w-50"></div>
-                            </div>
-                        </div>
-
-                        <div class="product-action-row margin-top-15">
-                            <div>
-                                <span class="price-old">₡520,000</span>
-                                <span class="price-sale">₡364,000</span>
-                            </div>
-                            <button class="btn-add-product" onclick="agregarAlCarrito('Monitor OLED 27 240Hz', 364000)">
-                                Agregar
-                            </button>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Producto 3 -->
-                <article class="product-card reveal-on-scroll relative-card">
-                    <span class="badge-discount">-15%</span>
-                    <div class="product-img-box">
-                        <img src="../Imagenes/71iuYk2VRnL.jpg" alt="Memoria RAM DDR5 32GB">
-                    </div>
-                    <div class="product-info">
-                        <span class="product-category">Memorias RAM</span>
-                        <h3>Kit RAM DDR5 32GB (2x16GB) 6000MHz</h3>
-                        <p class="product-desc">RGB Neón, latencia baja CL30 e iluminación customizable.</p>
-
-                        <div class="stock-bar-wrap">
-                            <div class="stock-bar-text">
-                                <span>Disponibles: <strong>12 unidades</strong></span>
-                                <span>Stock Regular</span>
-                            </div>
-                            <div class="stock-bar">
-                                <div class="stock-fill w-80"></div>
-                            </div>
-                        </div>
-
-                        <div class="product-action-row margin-top-15">
-                            <div>
-                                <span class="price-old">₡115,000</span>
-                                <span class="price-sale">₡97,750</span>
-                            </div>
-                            <button class="btn-add-product"
-                                onclick="agregarAlCarrito('Kit RAM DDR5 32GB 6000MHz', 97750)">
-                                Agregar
-                            </button>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Producto 4 -->
-                <article class="product-card reveal-on-scroll relative-card">
-                    <span class="badge-discount">-20%</span>
-                    <div class="product-img-box">
-                        <img src="../Imagenes/71iuYk2VRnL.jpg" alt="SSD NVMe M.2 2TB">
-                    </div>
-                    <div class="product-info">
-                        <span class="product-category">Almacenamiento</span>
-                        <h3>SSD M.2 NVMe PCIe 4.0 2TB</h3>
-                        <p class="product-desc">Velocidades ultrasónicas de lectura hasta 7400 MB/s con disipador.</p>
-
-                        <div class="stock-bar-wrap">
-                            <div class="stock-bar-text">
-                                <span>Disponibles: <strong>4 unidades</strong></span>
-                                <span>¡Últimas piezas!</span>
-                            </div>
-                            <div class="stock-bar">
-                                <div class="stock-fill w-35"></div>
-                            </div>
-                        </div>
-
-                        <div class="product-action-row margin-top-15">
-                            <div>
-                                <span class="price-old">₡130,000</span>
-                                <span class="price-sale">₡104,000</span>
-                            </div>
-                            <button class="btn-add-product" onclick="agregarAlCarrito('SSD NVMe M.2 2TB', 104000)">
-                                Agregar
-                            </button>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Producto 5 -->
-                <article class="product-card reveal-on-scroll relative-card">
-                    <span class="badge-discount">-35%</span>
-                    <div class="product-img-box">
-                        <img src="../Imagenes/71iuYk2VRnL.jpg" alt="Fuente 850W Gold">
-                    </div>
-                    <div class="product-info">
-                        <span class="product-category">Componentes</span>
-                        <h3>Fuente de Poder 850W 80+ Gold Mod</h3>
-                        <p class="product-desc">Certificación Gold, cables modulares y soporte PCIe 5.0.</p>
-
-                        <div class="stock-bar-wrap">
-                            <div class="stock-bar-text">
-                                <span>Disponibles: <strong>5 unidades</strong></span>
-                                <span>Agotándose</span>
-                            </div>
-                            <div class="stock-bar">
-                                <div class="stock-fill w-40"></div>
-                            </div>
-                        </div>
-
-                        <div class="product-action-row margin-top-15">
-                            <div>
-                                <span class="price-old">₡110,000</span>
-                                <span class="price-sale">₡71,500</span>
-                            </div>
-                            <button class="btn-add-product"
-                                onclick="agregarAlCarrito('Fuente de Poder 850W Gold Mod', 71500)">
-                                Agregar
-                            </button>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Producto 6 -->
-                <article class="product-card reveal-on-scroll relative-card">
-                    <span class="badge-discount">-18%</span>
-                    <div class="product-img-box">
-                        <img src="../Imagenes/71iuYk2VRnL.jpg" alt="Enfriamiento Liquido 360mm">
-                    </div>
-                    <div class="product-info">
-                        <span class="product-category">Refrigeración</span>
-                        <h3>Enfriamiento Líquido ARGB 360mm</h3>
-                        <p class="product-desc">Pantalla LCD personalizable y 3 ventiladores silenciosos.</p>
-
-                        <div class="stock-bar-wrap">
-                            <div class="stock-bar-text">
-                                <span>Disponibles: <strong>8 unidades</strong></span>
-                                <span>Stock Medio</span>
-                            </div>
-                            <div class="stock-bar">
-                                <div class="stock-fill w-60"></div>
-                            </div>
-                        </div>
-
-                        <div class="product-action-row margin-top-15">
-                            <div>
-                                <span class="price-old">₡105,000</span>
-                                <span class="price-sale">₡86,100</span>
-                            </div>
-                            <button class="btn-add-product"
-                                onclick="agregarAlCarrito('Enfriamiento Liquido ARGB 360mm', 86100)">
-                                Agregar
-                            </button>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Producto 7 -->
-                <article class="product-card reveal-on-scroll relative-card">
-                    <span class="badge-discount">-22%</span>
-                    <div class="product-img-box">
-                        <img src="../Imagenes/71iuYk2VRnL.jpg" alt="Gabinete Cristal Templado">
-                    </div>
-                    <div class="product-info">
-                        <span class="product-category">Gabinetes</span>
-                        <h3>Gabinete Mid-Tower Cristal Panorámico</h3>
-                        <p class="product-desc">Diseño tipo pecera con flujo de aire optimizado y 4 fans ARGB.</p>
-
-                        <div class="stock-bar-wrap">
-                            <div class="stock-bar-text">
-                                <span>Disponibles: <strong>7 unidades</strong></span>
-                                <span>Popular</span>
-                            </div>
-                            <div class="stock-bar">
-                                <div class="stock-fill w-55"></div>
-                            </div>
-                        </div>
-
-                        <div class="product-action-row margin-top-15">
-                            <div>
-                                <span class="price-old">₡95,000</span>
-                                <span class="price-sale">₡74,100</span>
-                            </div>
-                            <button class="btn-add-product"
-                                onclick="agregarAlCarrito('Gabinete Mid-Tower Cristal Panoramico', 74100)">
-                                Agregar
-                            </button>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Producto 8 -->
-                <article class="product-card reveal-on-scroll relative-card">
-                    <span class="badge-discount">-28%</span>
-                    <div class="product-img-box">
-                        <img src="../Imagenes/71iuYk2VRnL.jpg" alt="Teclado Mecanico Custom">
-                    </div>
-                    <div class="product-info">
-                        <span class="product-category">Periféricos</span>
-                        <h3>Teclado Mecánico Inalámbrico 75%</h3>
-                        <p class="product-desc">Switches Hot-Swap, estructura Gasket Mount y perilla de volumen.</p>
-
-                        <div class="stock-bar-wrap">
-                            <div class="stock-bar-text">
-                                <span>Disponibles: <strong>2 unidades</strong></span>
-                                <span>¡Casi agotado!</span>
-                            </div>
-                            <div class="stock-bar">
-                                <div class="stock-fill w-15"></div>
-                            </div>
-                        </div>
-
-                        <div class="product-action-row margin-top-15">
-                            <div>
-                                <span class="price-old">₡68,000</span>
-                                <span class="price-sale">₡48,960</span>
-                            </div>
-                            <button class="btn-add-product"
-                                onclick="agregarAlCarrito('Teclado Mecanico Inalambrico 75%', 48960)">
-                                Agregar
-                            </button>
-                        </div>
-                    </div>
-                </article>
-
+            <!-- Contenedor donde JavaScript inyectará los productos -->
+            <div class="products-grid" id="productos-descuentos-grid">
+                <p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1;">Cargando ofertas desde la base de datos...</p>
             </div>
 
             <div class="view-more-container">
@@ -589,8 +203,7 @@
         <p>&copy; 2026 OctoERP Hardware & Tech Store. Todos los derechos reservados. Proyecto CTP.</p>
     </footer>
 
-    <!-- Scripts de Funcionalidad corregidos -->
-    
+    <!-- Scripts de Funcionalidad -->
     <script src="../JavaScript/carrito.js"></script>
 
     <!-- Script para la Cuenta Regresiva -->
@@ -621,6 +234,117 @@
         }
 
         document.addEventListener('DOMContentLoaded', iniciarCuentaRegresiva);
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const gridContainer = document.getElementById("productos-descuentos-grid");
+            const marqueeContainer = document.getElementById("marquee-track-container");
+
+            try {
+                const respuesta = await fetch("https://octo-erp.onrender.com/api/productos");
+                const datos = await respuesta.json();
+
+                // 🎯 Compatibilidad total: extrae los productos sin importar cómo los devuelva Flask
+                const listaProductos = Array.isArray(datos) ? datos : (datos.productos || []);
+
+                if (listaProductos.length > 0) {
+                    
+                    // 🎯 Filtro flexible para capturar las ofertas
+                    const productosDescuento = listaProductos.filter(prod => {
+                        const ubicacion = (prod.ubicacion || "").toLowerCase().trim();
+                        const precioOferta = prod.precio_oferta;
+                        
+                        // Coincide si la ubicación es descuentos O si tiene un precio de oferta válido
+                        return ubicacion === "descuentos" || (precioOferta !== null && precioOferta !== undefined && precioOferta !== "" && Number(precioOferta) > 0);
+                    });
+
+                    if (productosDescuento.length > 0) {
+                        gridContainer.innerHTML = ""; 
+                        if (marqueeContainer) marqueeContainer.innerHTML = "";
+
+                        // 1. Llenar el catálogo con los descuentos filtrados
+                        productosDescuento.forEach(prod => {
+                            const card = document.createElement("article");
+                            card.className = "product-card relative-card";
+                            card.style.cssText = "opacity: 1 !important; visibility: visible !important; transform: none !important;";
+
+                            const imagen = prod.imagen_url ? prod.imagen_url : "../Imagenes/71iuYk2VRnL.jpg";
+                            const precioBase = Number(prod.precio).toLocaleString();
+                            const precioFinal = prod.precio_oferta ? Number(prod.precio_oferta).toLocaleString() : precioBase;
+                            const stockDisponible = prod.stock !== undefined ? prod.stock : (prod.stock_actual !== undefined ? prod.stock_actual : 10);
+
+                            card.innerHTML = `
+                                <span class="badge-discount">-20%</span>
+                                <div class="product-img-box">
+                                    <img src="${imagen}" alt="${prod.nombre}">
+                                </div>
+                                <div class="product-info">
+                                    <span class="product-category">${prod.categoria || 'Componentes'}</span>
+                                    <h3>${prod.nombre}</h3>
+                                    <p class="product-desc">Stock sincronizado en tiempo real desde la BD.</p>
+
+                                    <div class="stock-bar-wrap">
+                                        <div class="stock-bar-text">
+                                            <span>Disponibles: <strong>${stockDisponible} unidades</strong></span>
+                                            <span>¡Disponible!</span>
+                                        </div>
+                                        <div class="stock-bar">
+                                            <div class="stock-fill" style="width: ${Math.min(stockDisponible * 10, 100)}%;"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="product-action-row margin-top-15">
+                                        <div>
+                                            <span class="price-sale">₡${precioFinal}</span>
+                                        </div>
+                                        <button class="btn-add-product" onclick="agregarAlCarrito('${prod.nombre.replace(/'/g, "\\'")}', ${prod.precio_oferta || prod.precio})">
+                                            Agregar
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                            gridContainer.appendChild(card);
+                        });
+
+                        // 2. Llenar el carrusel superior (marquee)
+                        if (marqueeContainer) {
+                            for (let i = 0; i < 2; i++) {
+                                productosDescuento.forEach(prod => {
+                                    const marqueeItem = document.createElement("div");
+                                    marqueeItem.className = "marquee-item";
+
+                                    const imagen = prod.imagen_url ? prod.imagen_url : "../Imagenes/71iuYk2VRnL.jpg";
+                                    const precioFinal = prod.precio_oferta ? Number(prod.precio_oferta).toLocaleString() : Number(prod.precio).toLocaleString();
+
+                                    marqueeItem.innerHTML = `
+                                        <span class="badge-discount">-20%</span>
+                                        <div class="marquee-img-box">
+                                            <img src="${imagen}" alt="${prod.nombre}">
+                                        </div>
+                                        <div class="marquee-info">
+                                            <span class="marquee-title">${prod.nombre}</span>
+                                            <strong class="marquee-price">₡${precioFinal}</strong>
+                                        </div>
+                                    `;
+                                    marqueeContainer.appendChild(marqueeItem);
+                                });
+                            }
+                        }
+
+                    } else {
+                        gridContainer.innerHTML = '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1;">No hay productos asignados a la sección de descuentos todavía.</p>';
+                        if (marqueeContainer) marqueeContainer.innerHTML = '<p style="color: var(--text-muted); padding: 10px; text-align:center;">No hay ofertas disponibles para el carrusel.</p>';
+                    }
+
+                } else {
+                    gridContainer.innerHTML = '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1;">No hay productos registrados en la base de datos todavía.</p>';
+                }
+            } catch (error) {
+                console.error("Error al cargar los productos:", error);
+                gridContainer.innerHTML = '<p style="color: #ef4444; text-align: center; grid-column: 1 / -1;">Error al conectar con el servidor de Render.</p>';
+            }
+        });
     </script>
 </body>
 
