@@ -393,6 +393,8 @@ def crear_producto():
             )
 
             categoria = datos.get("categoria", "General")
+            ubicacion = datos.get("ubicacion", "productos")
+            precio_oferta = datos.get("precio_oferta")
 
             # Compatibilidad con clientes que ya envíen una URL.
             imagen_url = datos.get("imagen_url")
@@ -411,6 +413,10 @@ def crear_producto():
             )
 
             categoria = datos.get("categoria", "General")
+            
+            # 🎯 ASEGÚRATE DE EXTRAER ESTOS DOS CAMPOS AQUÍ TAMBIÉN:
+            ubicacion = datos.get("ubicacion", "productos")
+            precio_oferta = datos.get("precio_oferta")
 
             archivo = request.files.get("imagen")
 
@@ -459,6 +465,7 @@ def crear_producto():
 
         nombre = (nombre or "").strip()
         categoria = (categoria or "General").strip()
+        ubicacion = (ubicacion or "productos").strip()
 
         if not nombre:
             return jsonify({
@@ -473,12 +480,18 @@ def crear_producto():
             precio = Decimal(str(precio))
             stock = int(stock)
             stock_minimo = int(stock_minimo)
+            
+            if precio_oferta is not None and str(precio_oferta).strip() != "":
+                precio_oferta = Decimal(str(precio_oferta))
+            else:
+                precio_oferta = None
+
         except (InvalidOperation, ValueError, TypeError):
             return jsonify({
                 "status": "error",
                 "message": (
-                    "El precio, el stock y el stock mínimo "
-                    "deben tener valores válidos."
+                    "El precio, el stock, el stock mínimo "
+                    "o el precio de oferta deben tener valores válidos."
                 )
             }), 400
 
@@ -502,7 +515,9 @@ def crear_producto():
             stock=stock,
             stock_minimo=stock_minimo,
             categoria=categoria,
-            imagen_url=imagen_url
+            imagen_url=imagen_url,
+            ubicacion=ubicacion,
+            precio_oferta=precio_oferta
         )
 
         return jsonify({
@@ -798,7 +813,8 @@ def chat():
                     producto.get("stockMinimo", 5)
                 ),
                 "categoria": producto.get("categoria", "General"),
-                "precio": producto.get("precio")
+                "precio": producto.get("precio"),
+                "ubicacion": producto.get("ubicacion", "productos")
             })
 
         # 5. Crear el prompt con los datos reales disponibles
@@ -875,7 +891,7 @@ PREGUNTA DEL USUARIO:
         app.logger.exception(
             "Error en la ruta /chat de OCTO ERP. "
             "Tipo de error: %s",
-            type(error).__name__
+            type(error)._name_
         )
 
         return jsonify({
