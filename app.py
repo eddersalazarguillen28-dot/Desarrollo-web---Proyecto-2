@@ -393,6 +393,8 @@ def crear_producto():
             )
 
             categoria = datos.get("categoria", "General")
+            ubicacion = datos.get("ubicacion", "productos")
+            precio_oferta = datos.get("precio_oferta")
 
             # Compatibilidad con clientes que ya envíen una URL.
             imagen_url = datos.get("imagen_url")
@@ -411,6 +413,10 @@ def crear_producto():
             )
 
             categoria = datos.get("categoria", "General")
+            
+            # 🎯 ASEGÚRATE DE EXTRAER ESTOS DOS CAMPOS AQUÍ TAMBIÉN:
+            ubicacion = datos.get("ubicacion", "productos")
+            precio_oferta = datos.get("precio_oferta")
 
             archivo = request.files.get("imagen")
 
@@ -459,6 +465,7 @@ def crear_producto():
 
         nombre = (nombre or "").strip()
         categoria = (categoria or "General").strip()
+        ubicacion = (ubicacion or "productos").strip()
 
         if not nombre:
             return jsonify({
@@ -473,12 +480,18 @@ def crear_producto():
             precio = Decimal(str(precio))
             stock = int(stock)
             stock_minimo = int(stock_minimo)
+            
+            if precio_oferta is not None and str(precio_oferta).strip() != "":
+                precio_oferta = Decimal(str(precio_oferta))
+            else:
+                precio_oferta = None
+
         except (InvalidOperation, ValueError, TypeError):
             return jsonify({
                 "status": "error",
                 "message": (
-                    "El precio, el stock y el stock mínimo "
-                    "deben tener valores válidos."
+                    "El precio, el stock, el stock mínimo "
+                    "o el precio de oferta deben tener valores válidos."
                 )
             }), 400
 
@@ -502,7 +515,9 @@ def crear_producto():
             stock=stock,
             stock_minimo=stock_minimo,
             categoria=categoria,
-            imagen_url=imagen_url
+            imagen_url=imagen_url,
+            ubicacion=ubicacion,
+            precio_oferta=precio_oferta
         )
 
         return jsonify({
@@ -798,7 +813,8 @@ def chat():
                     producto.get("stockMinimo", 5)
                 ),
                 "categoria": producto.get("categoria", "General"),
-                "precio": producto.get("precio")
+                "precio": producto.get("precio"),
+                "ubicacion": producto.get("ubicacion", "productos")
             })
 
         # 5. Crear el prompt con los datos reales disponibles
@@ -875,7 +891,7 @@ PREGUNTA DEL USUARIO:
         app.logger.exception(
             "Error en la ruta /chat de OCTO ERP. "
             "Tipo de error: %s",
-            type(error).__name__
+            type(error)._name_
         )
 
         return jsonify({
@@ -906,41 +922,307 @@ def archivo_demasiado_grande(error):
 #=======================================================
 #Recuperar contraseña
 #=======================================================
-resend.api_key=os.getenv("RESEND_API_KEY")
-@app.route('/api/recuperar-password', methods=['POST'])
+resend.api_key = os.getenv("RESEND_API_KEY")
+
+@app.route("/api/recuperar-password", methods=["POST"])
 def recuperar_password():
-    datos = request.get_json()
-    if not datos or 'correo' not in datos:
-        return jsonify({'mensaje':'faltan datos en la solicitud'}),400
+    datos = request.get_json(silent=True) or {}
+    correo = (datos.get("correo") or "").strip().lower()
 
-    correo = datos.get('correo').strip().lower()
-    usuario = db.obtener_usuario_por_correo(correo)
-    if usuario:
-        token = secrets.token_urlsafe(32)
-        enlace =f"https://octo-erp.onrender.com/restablecer?token={token}"
+    if not correo:
+        return jsonify({
+            "mensaje": "Ingresa tu correo"
+        }), 400
 
-        try:
-            params={
-                "from":"onboarding@resend.dev",
-                "to":[correo],
-                "subject":"Restablecer contraseña-OctoERP",
-                "html":f"""
-                    <div style="font-family:Arial,sans-serif;color:#333;">
-                    <h2>Solicitud de recuperación de contraseña</h2>
-                    <p>Hola, <b>{usuario['nombre']}</b>. Has solicitado restablecer tu contraseña</p>
-                    <p>Haz clic en el siguiente botón para continuar:</p>
-                    <a href = "{enlace}" style="background-color:#007bff;color:white;padding:10px 20px;text-decoration:none;
-                    border-radius:5px;display:inline-block;">Restablecer contraseña</a>
-                    <p style="margin-top:20px;font-size:12px:color:#666;">Si tú no solicitaste este cambio,puedes ignorar este mensaje</p>
-                    </div>
+    try:
+        usuario = db.obtener_usuario_por_correo(correo)
+
+        mensaje = (
+            "Si el correo esta registrado, "
+            "recibiras las instrucciones para recuperar la contraseña"
+        )
+
+        if not usuario:
+            return jsonify({"mensaje": mensaje}), 200
+
+        if not os.getenv("RESEND_API_KEY"):
+            app.logger.error("Falta configurar RESEND_API_KEY")
+            return jsonify({
+                "mensaje": "El servidor de correo no está configurado"
+            }), 500
+
+        token = firmador.dumps({
+            "id": usuario["id"],
+            "accion": "restablecer_password",
+            "password_hash": usuario["password"]
+        })
+
+        enlace = (
+            "https://octo-erp.com/restablecer"
+            f"?token={token}"
+        )
+
+        params = {
+            "from": "onboarding@resend.dev",
+            "to": [correo],
+            "subject": "Restablecer contraseña",
+            "html": f"""
+                <div style="font-family:Arial,sans-serif;color:#333;">
+                <h2>Recuperación de contraseña</h2>
+                <p>Has solicitado restablecer tu contraseña</p>
+                <p>Haz click en el siguiente botón para continuar:</p>
+                <a href="{enlace}" style="background:#007bff;color:white;padding:12px 20px;text-decoration:none; 
+                border-radius:5px;display:inline-block;"> Restablecer contraseña </a>
+                <p>Este enlace caduca en 30 minutos</p>
+                <p>Si no solicitaste este cambio, ignora este mensaje</p>
+                </div>
                 """
-            }
+        }
 
-            resend.Emails.send(params)
-            print(f"Correo de recuperación enviado exitosamentea:{correo}")
-        except Exception as e:
-            print(f"Error al enviar correo con Resent:{e}")
-    return jsonify({'mensaje':'Si el correo está registrado,recibirás las instrucciones'}),200
+        resend.Emails.sed(params)
+
+        app.logger.info("Correo de recuperación enviado")
+        return jsonify({"mensaje": mensaje}), 200
+
+    except Exception:
+        app.logger.exception(
+            "Error al solicitar la recuperacion de contraseña"
+        )
+        return jsonify({
+            "mensaje": "No se pudo enviar el correo. Intente más tarde"
+        }), 500
+
+@app.route("/restablecer", methods=["GET"])
+def pagina_restablecer():
+    token = request.args.get("token", "")
+
+    if not token:
+        return "El enlace de recuperación no es valido", 400
+
+    return"""
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Restablecer contraseña</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background: #f3f5fa;
+                    display:grid;
+                    place-items: center;
+                    min-height: 100vh;
+                    margin: 0;
+                }
+                main {
+                    background: white;
+                    padding: 30px;
+                    border-radius: 14px;
+                    width: min(360px, calc(100% - 60px));
+                    box-shadow: 0 8px 30px #0001;
+                }
+                h1 {
+                    font-size: 24px;
+                }
+                label{
+                    display: block;
+                    margin-top: 16px;
+                }
+                input, button {
+                    box-sizing: border-box;
+                    width: 100%;
+                    padding: 12px;
+                    margin-top: 8px;
+                    border-radius: 7px;
+                }
+                input {
+                    border: 1px solid #ccc;
+                }
+                button {
+                    border: 0;
+                    background: #19196c;
+                    color: white;
+                    cursor: pointer;
+                    margin-top: 22px;
+                }
+                mensaje {
+                    margin-top: 16px;
+                }
+            </style>
+        </head>
+        <body>
+            <main>
+                <h1>Nueva contraseña</h1>
+                <p>Escribe y confirma tu nueva contraseña</p>
+
+                <form id="formRestablecer">
+                    <label for="password">Nueva contraseña</label>
+                    <input id="password" type="password" minlength="6" autocomplete="new-password" required>
+                    <label for="confirmar">Confirmar contraseña</label>
+                    <input id="confirmar" type="password" minlegth="6" autocomplete="new-password" required>
+                    <button id="btnCambiar" type="submit">Cambiar contraseña</button>
+                    <p id="mensaje" role="status"></p>
+                </form>
+            </main>
+
+            <script>
+                const form = document.gelElementById("formRestablecer");
+                const mensaje = document.gelElementById("mensaje")';
+                const boton = document.gelElementById("btnCambiar")';
+                const token = new URLSearchParams(window.locate.search).get("token")';
+
+                form.addEventListener("submit), async(e) => {
+                    e.preventDefault();
+                    
+                    const password = document.getElementById("password").value;
+                    const confirmar = document.gelElemenrById}("confirmar").value;
+
+                    if (!token) {
+                        mensaje.textContent = "El enlace no contiene un token valido";
+                        return;
+                    }
+
+                    if (password !== confirmar) {
+                        mensaje.textContent = "Las contraseñas no coinciden";
+                        return;
+                    }
+
+                    boton.disable = true;
+                    mensaje.textContent = "Actualizando contraseña...";
+
+                    try:
+                        const respuesta = await fetch("/api/restablecer-password", 
+                            {
+                                method="POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    token: token,
+                                    password: password
+                                })
+                            }
+                        );
+                        
+                        const datos = await respuesta.json();
+
+                        if (!respuesta.ok) {
+                            mensaje.textContent = datos.mensaje || "No se pudo cambiar la contraseña";
+                            return;
+                        }
+
+                        form.reset();
+                        mensaje.textContent = "Contraseña actualizada. Ya puedes iniciar sesión";
+
+                        const enlace = document.createElement("a");
+                        enlace.href = "https://eddersalazarguillen28-dot.github.io/";
+                        enlace.textContent = "Ir al inicio";
+                        mensaje.appendChild(enlace);
+                        boton.hidden = true;
+                                
+                        window.history.replaceState(
+                            {}, document.title, window.location.pathname
+                        );
+                    } catch (error) {
+                        console.error("Error de conexión:", error);
+                        mensaje.textContent = "Error de conexión. Inténtalo nuevamente";
+                    } finally {
+                        boton,disabled = false;
+                    }
+                });
+            </script>   
+        </body>
+        </html>
+        """
+
+@app.route("/api/restablecer-password", methods=["POST"])
+def restablecer_password():
+    datos = request.get_json(silent=True) or {}
+
+    token = datos.get("token") or ""
+    password = datos.get("password") or ""
+
+    if not token or not password:
+        return jsonify({
+            "mensaje": "Faltan el token o la nueva contraseña"
+        }), 400
+
+    if len(password) < 6:
+        return jsonify({
+            "mensaje": "La contraseña debe tener al menos 6 caracteres"
+        }), 400
+
+    try:
+        datos_token = firmador.loads(token, max_age=1800)
+
+    except (BadSignature, SignatureExpired):
+        return jsonify({
+            "mensaje": ("El enlace es inválidoo ha caducado " "Solicita uno nuevo")
+        }), 400
+
+    if datos_token.get("accion") != "restablecer_pasword":
+        return jsonify({
+            "mensaje": "El token no corresponde a una recuperación"
+        }), 400
+
+    conexion = None
+
+    try:
+        conexion = db.obtener_conexion()
+
+        with conexion.cursor() as cursor:
+            cursor.execute("""
+                SELECT password
+                FROM usuarios
+                WHERE id = %s
+                FOR UPDATE;
+                """, (datos_token.get("id",)))
+
+            usuario = cursor.fetchone()
+
+            if not usuario:
+                return jsonify({
+                    "mensaje": "La cuenta ya no existe"
+               }), 400
+            
+            if  usuario["password"] != datos_token.get("password_hash"):
+                return jsonify({
+                    "mensaje": (
+                        "Este enlace ya fue utilizado o dejó de ser válido "
+                        "Solicita uno nuevo"
+                    )
+                }), 400
+
+            nuevo_hash = generate_password_hash(password)
+
+            cursor.execute("""
+                UPDATE usuarios
+                SET password = %s
+                WHERE ID = %s
+                """, (nuevo_hash, datos_token["id"]))
+
+        conexion.commit()
+
+        return jsonify({
+            "mensaje": "Contraseña actualizada correctamente"
+        }), 200
+
+    except Exception:
+        if conexion:
+            conexion.rollback()
+
+        app.logger.exception(
+            "Error al actualizar la constraseña"
+        )
+
+        return jsonify({
+            "mensaje": "No se pudo actualizarl a contraseña"
+        }), 500
+
+    finally:
+        if conexion:
+            conexion.close()
 
 print("RUTAS REGISTRADAS EN FLASK: ")
 print(app.url_map)

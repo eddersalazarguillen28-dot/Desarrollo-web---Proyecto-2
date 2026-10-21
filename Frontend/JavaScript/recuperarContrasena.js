@@ -28,8 +28,6 @@ document.addEventListener('DOMContentLoaded',() => {
                 body:JSON.stringify({correo})
             });
 
-            ///////////////////////////////////////////////////
-
             const datos = await respuesta.json();
             if (respuesta.ok){
                 alert("El correo ha sido enviado, revisa tu bandeja de entrada para restablecer tu contraseña");

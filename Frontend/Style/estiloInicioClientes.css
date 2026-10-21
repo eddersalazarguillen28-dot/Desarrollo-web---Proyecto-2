@@ -1,5 +1,11 @@
+/* ============================================================
+   Estilo principal de la página de inicio para clientes
+   ============================================================ */
 
-/* ---------- Variables y temas ---------- */
+
+/* ------------------------------------------------------------
+   Variables globales y temas (oscuro / claro)
+   ------------------------------------------------------------ */
 :root,
 :root[data-theme="dark"] {
     --bg-page: #060b18;
@@ -25,6 +31,7 @@
     --font-body: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
+/* Tema claro */
 :root[data-theme="light"] {
     --bg-page: #f1f5f9;
     --bg-card: #ffffff;
@@ -45,6 +52,10 @@
     --skeleton-b: rgba(15, 23, 42, 0.11);
 }
 
+
+/* ------------------------------------------------------------
+   Reset y estilos base
+   ------------------------------------------------------------ */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -71,16 +82,21 @@ body#page-inicio {
     position: relative;
 }
 
+/* Clase utilitaria para ocultar cosas */
 .hidden {
     display: none !important;
 }
 
+/* Accesibilidad: foco visible */
 :focus-visible {
     outline: 2px solid var(--cyan-neon);
     outline-offset: 3px;
 }
 
-/* ---------- Navbar ---------- */
+
+/* ------------------------------------------------------------
+   Barra de navegación
+   ------------------------------------------------------------ */
 .navbar-octo {
     position: fixed;
     top: 0;
@@ -104,6 +120,7 @@ body#page-inicio {
     position: relative;
 }
 
+/* Logo */
 .nav-logo {
     display: flex;
     align-items: center;
@@ -129,6 +146,7 @@ body#page-inicio {
     color: var(--purple-primary);
 }
 
+/* Enlaces de navegación */
 .nav-links {
     display: flex;
     align-items: center;
@@ -158,6 +176,7 @@ body#page-inicio {
     color: var(--purple-primary);
 }
 
+/* Lineíta animada debajo del enlace */
 .nav-item::after {
     content: '';
     position: absolute;
@@ -174,46 +193,11 @@ body#page-inicio {
     width: 100%;
 }
 
+/* Acciones a la derecha: tema, carrito, menú, auth */
 .nav-actions {
     display: flex;
     align-items: center;
     gap: 12px;
-}
-
-/* Indicador de conexiÃ³n a la BD */
-.db-status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    background: rgba(0, 245, 160, 0.1);
-    border: 1px solid rgba(0, 245, 160, 0.3);
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--emerald-green);
-    transition: all 0.3s ease;
-}
-
-.db-dot {
-    width: 7px;
-    height: 7px;
-    background-color: currentColor;
-    border-radius: 50%;
-    box-shadow: 0 0 8px currentColor;
-    animation: pulseDot 2s infinite alternate;
-}
-
-.db-status-badge.connecting {
-    background: rgba(251, 191, 36, 0.1);
-    border-color: rgba(251, 191, 36, 0.3);
-    color: var(--warn);
-}
-
-.db-status-badge.offline {
-    background: rgba(239, 68, 68, 0.1);
-    border-color: rgba(239, 68, 68, 0.3);
-    color: var(--danger);
 }
 
 .nav-svg-icon {
@@ -238,6 +222,7 @@ body#page-inicio {
     transition: all 0.2s ease;
 }
 
+/* El botón de menú solo aparece en móvil */
 .btn-mobile-menu {
     display: none;
 }
@@ -249,6 +234,7 @@ body#page-inicio {
     color: var(--purple-primary);
 }
 
+/* Girar el icono del sol al pasar el mouse */
 .btn-theme-toggle:hover svg {
     transform: rotate(90deg);
 }
@@ -257,6 +243,7 @@ body#page-inicio {
     transition: transform 0.4s ease;
 }
 
+/* Contador rojo/verde encima del carrito */
 .cart-count {
     position: absolute;
     top: -4px;
@@ -274,10 +261,12 @@ body#page-inicio {
     padding: 0 4px;
 }
 
+/* Animación cuando se agrega algo al carrito */
 .btn-cart.bump {
     animation: bump 0.45s ease;
 }
 
+/* Botones de login y registro */
 .auth-buttons {
     display: flex;
     align-items: center;
@@ -313,7 +302,47 @@ body#page-inicio {
     background-color: var(--purple-hover);
 }
 
-/* ---------- Modal carrito ---------- */
+/* Chip que muestra si estamos conectados a la base de datos */
+.db-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: rgba(0, 245, 160, 0.1);
+    border: 1px solid rgba(0, 245, 160, 0.3);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--emerald-green);
+    transition: all 0.3s ease;
+}
+
+.db-dot {
+    width: 7px;
+    height: 7px;
+    background-color: currentColor;
+    border-radius: 50%;
+    box-shadow: 0 0 8px currentColor;
+    animation: pulseDot 2s infinite alternate;
+}
+
+/* Estados del chip según la conexión */
+.db-status-badge.connecting {
+    background: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.3);
+    color: var(--warn);
+}
+
+.db-status-badge.offline {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: var(--danger);
+}
+
+
+/* ------------------------------------------------------------
+   Modal del carrito (panel que entra desde la derecha)
+   ------------------------------------------------------------ */
 .carrito-modal-overlay {
     position: fixed;
     inset: 0;
@@ -336,6 +365,7 @@ body#page-inicio {
     animation: slideInRight 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* Cabecera del modal */
 .carrito-header {
     padding: 20px 24px;
     border-bottom: 1px solid var(--border-subtle);
@@ -368,6 +398,7 @@ body#page-inicio {
     color: var(--danger);
 }
 
+/* Lista de productos dentro del carrito */
 .carrito-body {
     padding: 20px 24px;
     flex-grow: 1;
@@ -412,6 +443,7 @@ body#page-inicio {
     gap: 8px;
 }
 
+/* Botones de + y - para la cantidad */
 .btn-cant {
     width: 26px;
     height: 26px;
@@ -446,6 +478,7 @@ body#page-inicio {
     margin-left: 4px;
 }
 
+/* Pie del modal: total y botón de compra */
 .carrito-footer {
     padding: 20px 24px;
     border-top: 1px solid var(--border-subtle);
@@ -481,7 +514,10 @@ body#page-inicio {
     box-shadow: 0 8px 22px rgba(113, 104, 255, 0.45);
 }
 
-/* ---------- Toasts ---------- */
+
+/* ------------------------------------------------------------
+   Toasts (mensajitos que aparecen abajo a la derecha)
+   ------------------------------------------------------------ */
 .toast-stack {
     position: fixed;
     right: 20px;
@@ -513,9 +549,10 @@ body#page-inicio {
     animation: toastOut 0.3s ease forwards;
 }
 
-/* ==========================================================================
-   HERO TENTÃCULOS
-   ========================================================================== */
+
+/* ------------------------------------------------------------
+   Hero con tentáculos de fondo
+   ------------------------------------------------------------ */
 .hero-tentacles {
     position: relative;
     display: flex;
@@ -529,7 +566,7 @@ body#page-inicio {
     text-align: center;
 }
 
-/* Grid + glow de fondo */
+/* Cuadrícula sutil que se desvanece hacia los bordes */
 .cyber-grid-overlay {
     position: absolute;
     inset: 0;
@@ -543,6 +580,7 @@ body#page-inicio {
     mask-image: radial-gradient(ellipse at 50% 45%, #000 25%, transparent 80%);
 }
 
+/* Resplandor morado detrás del título */
 .hero-bg-glow-octo {
     position: absolute;
     top: 45%;
@@ -556,7 +594,7 @@ body#page-inicio {
     animation: breathe 6s ease-in-out infinite;
 }
 
-/* Fondo SVG de tentÃ¡culos */
+/* Contenedor del SVG de tentáculos y burbujas */
 .hero-tentacles-bg {
     position: absolute;
     inset: 0;
@@ -573,7 +611,7 @@ body#page-inicio {
     display: block;
 }
 
-/* Cada tentÃ¡culo ondula desde su propio origen */
+/* Cada tentáculo ondula desde su propio centro */
 .tent-path {
     transform-box: fill-box;
     transform-origin: center;
@@ -584,14 +622,7 @@ body#page-inicio {
 .tent-path.t-c { animation: tentWave 13s ease-in-out -4s infinite; }
 .tent-path.t-d { animation: tentWave 15s ease-in-out -6s infinite reverse; }
 
-@keyframes tentWave {
-    0%, 100% { transform: translateY(0) translateX(0) scaleY(1); }
-    25%      { transform: translateY(-14px) translateX(8px) scaleY(1.02); }
-    50%      { transform: translateY(8px) translateX(-10px) scaleY(0.98); }
-    75%      { transform: translateY(-6px) translateX(6px) scaleY(1.01); }
-}
-
-/* Burbujas flotantes */
+/* Burbujas que suben */
 .burbujas {
     position: absolute;
     inset: 0;
@@ -613,7 +644,7 @@ body#page-inicio {
     animation: bubbleUp var(--d) ease-in var(--dl) infinite;
 }
 
-/* Contenido centrado */
+/* Contenido principal del hero */
 .hero-content {
     position: relative;
     z-index: 2;
@@ -628,7 +659,7 @@ body#page-inicio {
     align-items: center;
 }
 
-/* Entrada orquestada */
+/* Cada hijo entra con un pequeño retraso escalonado */
 .hero-content > * {
     opacity: 0;
     animation: riseIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
@@ -640,6 +671,7 @@ body#page-inicio {
 .hero-content > *:nth-child(4) { animation-delay: 0.42s; }
 .hero-content > *:nth-child(5) { animation-delay: 0.54s; }
 
+/* Badge que a veces se usa arriba del título */
 .octo-badge {
     display: inline-flex;
     align-items: center;
@@ -664,6 +696,7 @@ body#page-inicio {
     animation: pulseDot 1.5s infinite alternate;
 }
 
+/* Título principal */
 .hero-title {
     font-family: var(--font-display);
     font-size: clamp(34px, 5.2vw, 60px);
@@ -674,6 +707,7 @@ body#page-inicio {
     max-width: 780px;
 }
 
+/* Texto con degradado animado tipo tinta */
 .text-glow-gradient {
     display: inline-block;
     background: linear-gradient(110deg, #7168ff 0%, #00f2fe 45%, #00f5a0 90%);
@@ -692,6 +726,7 @@ body#page-inicio {
     max-width: 580px;
 }
 
+/* Grupo de botones del hero */
 .hero-cta-group {
     display: flex;
     gap: 14px;
@@ -703,6 +738,7 @@ body#page-inicio {
     justify-content: center;
 }
 
+/* Botón principal con brillo que recorre al hover */
 .octo-glow-btn {
     display: inline-flex;
     align-items: center;
@@ -751,6 +787,7 @@ body#page-inicio {
     transform: translateX(4px);
 }
 
+/* Botón secundario (por si se necesita) */
 .btn-hero-secondary {
     display: inline-flex;
     align-items: center;
@@ -770,6 +807,7 @@ body#page-inicio {
     color: var(--purple-primary);
 }
 
+/* Fila de estadísticas debajo del título */
 .hero-stats-row {
     display: flex;
     align-items: center;
@@ -807,7 +845,10 @@ body#page-inicio {
     background-color: var(--border-subtle);
 }
 
-/* ---------- Tarjeta destacada flotante ---------- */
+
+/* ------------------------------------------------------------
+   Tarjeta flotante del producto destacado
+   ------------------------------------------------------------ */
 .pulpo-card--floating {
     position: absolute;
     right: 24px;
@@ -825,6 +866,7 @@ body#page-inicio {
     animation: floatCard 5s ease-in-out infinite;
 }
 
+/* Estado de transición cuando se cambia de producto */
 .pulpo-card--floating.swap {
     opacity: 0;
     transform: translateY(8px) scale(0.97);
@@ -843,6 +885,7 @@ body#page-inicio {
     box-shadow: 0 0 10px var(--purple-primary);
 }
 
+/* Aro de aura alrededor de la imagen */
 .img-octo-container {
     position: relative;
     margin: 8px auto 6px;
@@ -879,6 +922,7 @@ body#page-inicio {
     text-overflow: ellipsis;
 }
 
+/* Descripción recortada a dos líneas */
 .hero-card-info p {
     font-size: 11px;
     color: var(--text-muted);
@@ -923,9 +967,10 @@ body#page-inicio {
     cursor: not-allowed;
 }
 
-/* ==========================================================================
-   CARACTERÃSTICAS Y PRODUCTOS
-   ========================================================================== */
+
+/* ------------------------------------------------------------
+   Sección de características / beneficios
+   ------------------------------------------------------------ */
 .features-section {
     margin: 30px 0 70px;
     width: 100%;
@@ -951,6 +996,7 @@ body#page-inicio {
     border-color: var(--border-glow);
 }
 
+/* Cuadrito con el icono dentro de cada tarjeta */
 .feature-icon-wrapper {
     width: 44px;
     height: 44px;
@@ -985,6 +1031,10 @@ body#page-inicio {
     line-height: 1.55;
 }
 
+
+/* ------------------------------------------------------------
+   Sección de productos (preview del catálogo)
+   ------------------------------------------------------------ */
 .products-preview-section {
     margin-bottom: 60px;
     width: 100%;
@@ -1006,6 +1056,7 @@ body#page-inicio {
     font-size: 14px;
 }
 
+/* Nota que aparece si el servidor tarda en responder */
 .carga-nota {
     text-align: center;
     color: var(--warn);
@@ -1021,6 +1072,7 @@ body#page-inicio {
     width: 100%;
 }
 
+/* Tarjeta individual de producto */
 .product-card {
     background: var(--bg-card);
     border: 1px solid var(--border-subtle);
@@ -1032,6 +1084,7 @@ body#page-inicio {
     transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Entrada escalonada cuando se anima el grid */
 .products-grid.anima .product-card {
     opacity: 0;
     animation: riseIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
@@ -1044,6 +1097,7 @@ body#page-inicio {
     box-shadow: 0 16px 36px rgba(113, 104, 255, 0.22);
 }
 
+/* Producto sin stock */
 .product-card.agotado {
     opacity: 0.65;
 }
@@ -1070,6 +1124,7 @@ body#page-inicio {
     transform: scale(1.08) rotate(-2deg);
 }
 
+/* Etiqueta de stock (verde, amarilla o roja) */
 .product-tag {
     position: absolute;
     top: 10px;
@@ -1092,6 +1147,7 @@ body#page-inicio {
     color: var(--danger);
 }
 
+/* Info del producto (categoría, nombre, descripción) */
 .product-info {
     padding: 18px;
     display: flex;
@@ -1118,6 +1174,7 @@ body#page-inicio {
     line-height: 1.5;
 }
 
+/* Fila inferior con precio y botón de agregar */
 .product-action-row {
     display: flex;
     justify-content: space-between;
@@ -1156,7 +1213,7 @@ body#page-inicio {
     cursor: not-allowed;
 }
 
-/* Skeleton de carga */
+/* Skeleton mientras cargan los productos */
 .skeleton-card {
     height: 330px;
     border-radius: 14px;
@@ -1166,7 +1223,7 @@ body#page-inicio {
     animation: shimmer 1.6s linear infinite;
 }
 
-/* Estado de error */
+/* Mensaje de error si falla la carga */
 .estado-error {
     grid-column: 1 / -1;
     text-align: center;
@@ -1196,6 +1253,7 @@ body#page-inicio {
     background: var(--purple-hover);
 }
 
+/* Botón para ir a ver todo el catálogo */
 .view-more-container {
     text-align: center;
     margin-top: 35px;
@@ -1219,6 +1277,10 @@ body#page-inicio {
     transform: translateY(-2px);
 }
 
+
+/* ------------------------------------------------------------
+   Footer
+   ------------------------------------------------------------ */
 .footer-about {
     text-align: center;
     padding: 24px 20px;
@@ -1228,6 +1290,10 @@ body#page-inicio {
     width: 100%;
 }
 
+
+/* ------------------------------------------------------------
+   animar elementos al hacer scroll
+   ------------------------------------------------------------ */
 .reveal-on-scroll {
     opacity: 0;
     transform: translateY(24px);
@@ -1239,29 +1305,36 @@ body#page-inicio {
     transform: translateY(0);
 }
 
-/* ==========================================================================
-   ANIMACIONES
-   ========================================================================== */
+
+/* ------------------------------------------------------------
+   Animaciones
+   ------------------------------------------------------------ */
+
+/* Aparición desde abajo */
 @keyframes riseIn {
     from { opacity: 0; transform: translateY(24px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Fade simple */
 @keyframes fadeIn {
     from { opacity: 0; }
     to   { opacity: 1; }
 }
 
+/* El panel del carrito entra desde la derecha */
 @keyframes slideInRight {
     from { transform: translateX(100%); }
     to   { transform: translateX(0); }
 }
 
+/* Cada item del carrito entra deslizándose */
 @keyframes itemIn {
     from { opacity: 0; transform: translateX(16px); }
     to   { opacity: 1; transform: translateX(0); }
 }
 
+/* Los toasts entran y salen por la derecha */
 @keyframes toastIn {
     from { opacity: 0; transform: translateX(30px); }
     to   { opacity: 1; transform: translateX(0); }
@@ -1271,54 +1344,74 @@ body#page-inicio {
     to { opacity: 0; transform: translateX(30px); }
 }
 
+/* Saltito del carrito al agregar algo */
 @keyframes bump {
     0%, 100% { transform: scale(1); }
     40%      { transform: scale(1.25) rotate(-8deg); }
 }
 
+/* Brillo que recorre los skeletons */
 @keyframes shimmer {
     to { background-position: -300% 0; }
 }
 
+/* Degradado de tinta que se mueve en el texto */
 @keyframes inkFlow {
     to { background-position: 200% center; }
 }
 
+/* El resplandor del hero respira */
 @keyframes breathe {
     0%, 100% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
     50%      { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
 }
 
+/* Latido para el punto de estado */
 @keyframes pulseDot {
     0%   { opacity: 0.45; transform: scale(0.8); }
     100% { opacity: 1; transform: scale(1.25); }
 }
 
+/* Pulso del aura alrededor de la imagen destacada */
 @keyframes pulseAura {
     0%, 100% { transform: scale(1); opacity: 0.5; }
     50%      { transform: scale(1.25); opacity: 0.85; }
 }
 
+/* La tarjeta destacada flota suavemente */
 @keyframes floatCard {
     0%, 100% { transform: translateY(0); }
     50%      { transform: translateY(-8px); }
 }
 
+/* Las burbujas suben y se desvanecen */
 @keyframes bubbleUp {
     0%   { transform: translateY(0) scale(0.6); opacity: 0; }
     15%  { opacity: 0.9; }
     100% { transform: translateY(-460px) scale(1); opacity: 0; }
 }
 
-/* ==========================================================================
-   RESPONSIVE
-   ========================================================================== */
+/* Ondulación de los tentáculos */
+@keyframes tentWave {
+    0%, 100% { transform: translateY(0) translateX(0) scaleY(1); }
+    25%      { transform: translateY(-14px) translateX(8px) scaleY(1.02); }
+    50%      { transform: translateY(8px) translateX(-10px) scaleY(0.98); }
+    75%      { transform: translateY(-6px) translateX(6px) scaleY(1.01); }
+}
+
+
+/* ------------------------------------------------------------
+   Responsive
+   ------------------------------------------------------------ */
+
+/* Tablets grandes */
 @media (max-width: 992px) {
     .hero-tentacles {
         min-height: 560px;
         padding: 50px 0 70px;
     }
 
+    /* La tarjeta destacada deja de flotar y se pone debajo */
     .pulpo-card--floating {
         position: relative;
         right: auto;
@@ -1331,11 +1424,13 @@ body#page-inicio {
     }
 }
 
+/* Tablets y móviles en horizontal */
 @media (max-width: 768px) {
     .container-inicio {
         padding: 80px 16px 40px;
     }
 
+    /* Aparece el botón hamburguesa */
     .btn-mobile-menu {
         display: inline-flex;
     }
@@ -1352,6 +1447,7 @@ body#page-inicio {
         display: none;
     }
 
+    /* El menú se despliega como panel */
     .nav-links {
         position: fixed;
         top: 60px;
@@ -1390,6 +1486,7 @@ body#page-inicio {
     }
 }
 
+/* Móviles */
 @media (max-width: 520px) {
     .hero-tentacles {
         min-height: 520px;
@@ -1421,6 +1518,7 @@ body#page-inicio {
     }
 }
 
+/* Si el usuario prefiere menos animaciones */
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

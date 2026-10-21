@@ -1,3 +1,8 @@
+/* ============================================================
+   Módulo de reportes
+   ============================================================ */
+
+/* Contenedor principal de la página de reportes */
 #page-reportes .main {
     padding: 30px;
     background-color: #f4f6fa;
@@ -5,6 +10,10 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
+
+/* ------------------------------------------------------------
+   Panel grande (ocupa todo el ancho) con los filtros y la tabla
+   ------------------------------------------------------------ */
 .panel-full-width {
     background-color: #ffffff;
     border-radius: 12px;
@@ -16,6 +25,7 @@
     box-sizing: border-box;
 }
 
+/* Cabecera del panel: título + etiqueta morada */
 .panel-header {
     margin-bottom: 25px;
 }
@@ -37,6 +47,10 @@
     display: inline-block;
 }
 
+
+/* ------------------------------------------------------------
+   Filtros del reporte (fecha, tipo, botones)
+   ------------------------------------------------------------ */
 .filtros-reporte {
     display: flex;
     gap: 20px;
@@ -44,6 +58,7 @@
     flex-wrap: wrap;
 }
 
+/* Cada grupo label + input/select */
 .form-campo {
     display: flex;
     flex-direction: column;
@@ -75,6 +90,7 @@
     border-color: #7367f0;
 }
 
+/* Botón morado para aplicar filtros */
 .btn-guardar {
     background-color: #7367f0;
     color: #ffffff;
@@ -95,6 +111,7 @@
     transform: translateY(-2px);
 }
 
+/* Botón verde para exportar */
 .btn-exportar {
     background-color: #107c41;
     color: #ffffff;
@@ -115,6 +132,10 @@
     transform: translateY(-2px);
 }
 
+
+/* ------------------------------------------------------------
+   Tabla del reporte
+   ------------------------------------------------------------ */
 .tabla table {
     width: 100%;
     border-collapse: collapse;
@@ -140,6 +161,7 @@
     color: #171d33;
 }
 
+/* Pie de la tabla: total y paginación */
 .footer-tabla {
     display: flex;
     justify-content: space-between;
@@ -165,21 +187,33 @@
     color: #7367f0;
 }
 
+
+/* ------------------------------------------------------------
+   Responsive: en móvil los filtros se apilan
+   ------------------------------------------------------------ */
 @media (max-width: 768px) {
     .filtros-reporte {
         flex-direction: column;
         align-items: stretch;
     }
-    
-    .btn-guardar, .btn-exportar {
+
+    .btn-guardar,
+    .btn-exportar {
         width: 100%;
     }
-    
+
     .tabla {
         overflow-x: auto;
     }
 }
-/* Posicionamiento del contenedor PDF fuera de pantalla para captura exacta */
+
+
+/* ------------------------------------------------------------
+   Documento de factura (el que se exporta a PDF)
+   ------------------------------------------------------------ */
+
+/* Se saca de la pantalla pero se mantiene renderizado para que
+   html2canvas / jsPDF puedan capturarlo con medidas exactas */
 #factura-container {
     position: absolute;
     left: -9999px;
@@ -187,7 +221,7 @@
     width: 800px;
 }
 
-/* Estilos para estados en la vista previa */
+/* Colores para los estados dentro de la vista previa del reporte */
 .estado-completado {
     color: #28a745;
     font-weight: 600;
@@ -204,7 +238,7 @@
     font-weight: 600;
 }
 
-/* Botón de exportación PDF */
+/* Botoncito rojizo para exportar una fila a PDF */
 .btn-pdf {
     background-color: #802417;
     color: #ffffff;
@@ -221,7 +255,10 @@
     background-color: #5c1910;
 }
 
-/* Documento de Factura PDF */
+
+/* ------------------------------------------------------------
+   Layout del documento de factura
+   ------------------------------------------------------------ */
 .factura-documento {
     padding: 30px;
     font-family: Arial, sans-serif;
@@ -231,6 +268,7 @@
     margin: auto;
 }
 
+/* Cabecera con el logo a un lado y los datos al otro */
 .factura-header {
     display: flex;
     justify-content: space-between;
@@ -266,6 +304,7 @@
     font-size: 13px;
 }
 
+/* Dos tarjetitas con datos del cliente y de la empresa */
 .factura-info-grid {
     display: flex;
     justify-content: space-between;
@@ -292,6 +331,10 @@
     font-size: 13px;
 }
 
+
+/* ------------------------------------------------------------
+   Tabla de productos dentro de la factura
+   ------------------------------------------------------------ */
 .factura-tabla {
     width: 100%;
     border-collapse: collapse;
@@ -303,7 +346,7 @@
     color: #ffffff;
 }
 
-.factura-tabla th, 
+.factura-tabla th,
 .factura-tabla td {
     padding: 10px;
 }
@@ -312,10 +355,15 @@
     border-bottom: 1px solid #eeeeee;
 }
 
-.text-left { text-align: left; }
+/* Utilidades de alineación para las celdas */
+.text-left   { text-align: left; }
 .text-center { text-align: center; }
-.text-right { text-align: right; }
+.text-right  { text-align: right; }
 
+
+/* ------------------------------------------------------------
+   Totales de la factura
+   ------------------------------------------------------------ */
 .factura-totales-container {
     display: flex;
     justify-content: flex-end;
@@ -338,11 +386,16 @@
     margin: 8px 0;
 }
 
+/* Línea del gran total, resaltada en rojo vino */
 .factura-monto-total {
     font-size: 18px !important;
     color: #802417;
 }
 
+
+/* ------------------------------------------------------------
+   Pie de la factura
+   ------------------------------------------------------------ */
 .factura-footer {
     text-align: center;
     border-top: 1px solid #dddddd;

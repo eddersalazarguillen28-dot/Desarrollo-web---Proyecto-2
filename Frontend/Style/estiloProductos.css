@@ -1,3 +1,8 @@
+/* ============================================================
+   Sección de productos en formato tarjetas (catálogo visual)
+   ============================================================ */
+
+/* Tarjeta blanca que contiene todo el bloque de productos */
 .seccion-productos {
     background-color: #ffffff;
     border-radius: 12px;
@@ -8,7 +13,10 @@
     box-sizing: border-box;
 }
 
-/* Título */
+
+/* ------------------------------------------------------------
+   Título de la sección
+   ------------------------------------------------------------ */
 .contenedorTitulo {
     display: flex;
     justify-content: space-between;
@@ -23,7 +31,10 @@
     margin: 0;
 }
 
-/* Buscador */
+
+/* ------------------------------------------------------------
+   Buscador
+   ------------------------------------------------------------ */
 .contenedor-buscador {
     width: 100%;
     height: 42px;
@@ -50,7 +61,10 @@
     color: #9ba7c0;
 }
 
-/* Grilla de Tarjetas de Productos */
+
+/* ------------------------------------------------------------
+   Grid de tarjetas de productos
+   ------------------------------------------------------------ */
 .grid-productos {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -58,6 +72,7 @@
     margin-bottom: 25px;
 }
 
+/* Tarjeta individual de cada producto */
 .producto-card {
     background: #ffffff;
     border: 1px solid #eef0f5;
@@ -69,12 +84,14 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
+/* Se levanta un poquito al pasar el mouse */
 .producto-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 12px 25px rgba(115, 103, 240, 0.15);
     border-color: #7367f0;
 }
 
+/* Imagen dentro de la tarjeta */
 .card-img {
     width: 130px;
     height: 130px;
@@ -98,12 +115,17 @@
 
 .card-precio {
     font-size: 20px;
-    color: #107c41; 
+    color: #107c41;
     font-weight: bold;
     margin: 0;
 }
 
-/* Modal Detalle de Producto */
+
+/* ------------------------------------------------------------
+   Modal con el detalle del producto
+   ------------------------------------------------------------ */
+
+/* Fondo oscuro que cubre toda la pantalla */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -117,15 +139,17 @@
     align-items: center;
     z-index: 2000;
     opacity: 0;
-    pointer-events: none; 
+    pointer-events: none;
     transition: opacity 0.3s ease;
 }
 
+/* Cuando tiene la clase "activo" se muestra */
 .modal-overlay.activo {
     opacity: 1;
     pointer-events: auto;
 }
 
+/* La cajita blanca del modal */
 .modal-content {
     background: #ffffff;
     width: 420px;
@@ -138,10 +162,12 @@
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
 }
 
+/* Al activarse, baja un poquito hasta su posición final */
 .modal-overlay.activo .modal-content {
     transform: translateY(0);
 }
 
+/* La X para cerrar */
 .cerrar-modal {
     position: absolute;
     top: 15px;
@@ -157,6 +183,7 @@
     color: #e54d68;
 }
 
+/* Cabecera del modal con la imagen grande */
 .modal-header {
     text-align: center;
     border-bottom: 1px solid #eef0f5;
@@ -176,6 +203,7 @@
     font-size: 20px;
 }
 
+/* Etiqueta con el nombre de la categoría */
 .modal-categoria-badge {
     background: #f0efff;
     color: #7367f0;
@@ -185,6 +213,7 @@
     font-weight: bold;
 }
 
+/* Cuerpo del modal: descripción y precio */
 .modal-body h3 {
     font-size: 15px;
     color: #171d33;
@@ -214,7 +243,10 @@
     font-size: 22px;
 }
 
-/* Pie de Tabla / Paginación */
+
+/* ------------------------------------------------------------
+   Pie de la sección: total de productos + paginación
+   ------------------------------------------------------------ */
 .footer-tabla {
     border-top: 1px solid #eef0f5;
     padding-top: 15px;

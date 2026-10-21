@@ -335,7 +335,7 @@ async function eliminarVenta(ventaId) {
                 );
             }
             alert("Venta eliminada correctamente");
-            await actualizarDashboard();
+            window.location.reload();
         } catch (error) {
             console.error("Error al eliminar la venta", error);
             alert(error.message || "Ocurrió un erro al eliminar la venta");
