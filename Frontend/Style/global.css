@@ -1,6 +1,7 @@
-/* =====================================================
-   VARIABLES Y RESET GENERAL
-   ===================================================== */
+/* ============================================================
+   Reset y variables globales
+   ============================================================ */
+
 * {
     margin: 0;
     padding: 0;
@@ -11,7 +12,7 @@
 :root {
     --sidebar-width: 230px;
     --header-height: 60px;
-    /* Degradado fusionado perfectamente con el encabezado */
+    /* El degradado del sidebar se funde con el header */
     --sidebar-bg: linear-gradient(180deg, #160e31 0%, #040b1b 100%);
     --active-bg: #4f5be3;
 }
@@ -22,11 +23,12 @@ body {
     overflow-x: hidden;
 }
 
-/* =====================================================
-   ESTANDARIZACIÓN DE CONTENEDORES Y TAMAÑOS
-   ===================================================== */
-.main, 
-.seccion-productos, 
+
+/* ============================================================
+   Contenedores: todos al 100% para que no se desalineen
+   ============================================================ */
+.main,
+.seccion-productos,
 .resumen-seccion,
 .contenido-grid,
 .estadistica-grid,
@@ -37,6 +39,7 @@ body {
     box-sizing: border-box !important;
 }
 
+/* Envoltorio que deja espacio para el sidebar y el header */
 .main-wrapper {
     margin-left: var(--sidebar-width);
     margin-top: var(--header-height);
@@ -46,14 +49,16 @@ body {
     box-sizing: border-box;
 }
 
+/* Si el sidebar se colapsa, el contenido ocupa todo el ancho */
 body.sidebar-collapsed .main-wrapper {
     margin-left: 0;
     width: 100%;
 }
 
-/* =====================================================
-   BARRA LATERAL (SIDEBAR)
-   ===================================================== */
+
+/* ============================================================
+   Barra lateral (sidebar)
+   ============================================================ */
 #sidebar-container {
     width: var(--sidebar-width);
     height: 100vh;
@@ -88,7 +93,9 @@ body.sidebar-collapsed .main-wrapper {
     gap: 8px;
 }
 
-.nav-link, .menu-item {
+/* Enlaces del menú lateral */
+.nav-link,
+.menu-item {
     text-decoration: none;
     color: #e2e8f0;
     padding: 14px 20px;
@@ -100,30 +107,35 @@ body.sidebar-collapsed .main-wrapper {
     display: block;
 }
 
-.nav-link:hover, .menu-item:hover {
+/* Al pasar el mouse, se desplaza un poquito a la derecha */
+.nav-link:hover,
+.menu-item:hover {
     background-color: rgb(93, 24, 203);
     transform: translateX(8px);
     border-radius: 8px;
 }
 
+/* Enlace de la página actual */
 .nav-link.active {
     background-color: var(--active-bg);
     color: white;
     font-weight: bold;
 }
 
-/* Empujar "Cerrar sesión" al fondo de la barra */
+/* Empuja "Cerrar sesión" hacia el fondo del sidebar */
 .nav-logout {
     margin-top: auto;
 }
 
+/* Sidebar colapsado: se esconde hacia la izquierda */
 body.sidebar-collapsed #sidebar-container {
     transform: translateX(-100%);
 }
 
-/* =====================================================
-   ENCABEZADO MODULAR (HEADER)
-   ===================================================== */
+
+/* ============================================================
+   Encabezado modular (header)
+   ============================================================ */
 #header-container {
     position: fixed;
     top: 0;
@@ -140,6 +152,7 @@ body.sidebar-collapsed #sidebar-container {
     transition: all 0.3s ease;
 }
 
+/* Si el sidebar se colapsa, el header ocupa todo el ancho */
 body.sidebar-collapsed #header-container {
     left: 0;
     width: 100%;
@@ -151,6 +164,7 @@ body.sidebar-collapsed #header-container {
     gap: 15px;
 }
 
+/* Botón hamburguesa */
 .btn-toggle {
     background: none;
     border: none;
@@ -178,6 +192,7 @@ body.sidebar-collapsed #header-container {
     gap: 10px;
 }
 
+/* Círculo con la inicial del usuario */
 .user-avatar {
     width: 35px;
     height: 35px;
@@ -189,9 +204,12 @@ body.sidebar-collapsed #header-container {
     align-items: center;
 }
 
-/* =====================================================
-   TARJETAS, BOTONES, TABLAS Y ANIMACIONES
-   ===================================================== */
+
+/* ============================================================
+   Tarjetas, botones, tablas y animaciones comunes
+   ============================================================ */
+
+/* Aparición desde abajo, usado en secciones al cargar */
 .fade-in-up {
     animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     opacity: 0;
@@ -205,33 +223,46 @@ body.sidebar-collapsed #header-container {
     }
 }
 
-.producto-card, .estadistica-card, .panel {
+/* Tarjetas que se mueven sutilmente al hover */
+.producto-card,
+.estadistica-card,
+.panel {
     transition: transform 0.3s ease, box-shadow 0.4s ease;
     will-change: transform, box-shadow;
 }
 
-.producto-card:hover, .estadistica-card:hover {
+.producto-card:hover,
+.estadistica-card:hover {
     transform: translateY(-8px);
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
     cursor: pointer;
 }
 
-button, .btn-nuevoCliente, .btnFactura, .btn-guardar {
+/* Botones con un "pop" al pasar el mouse */
+button,
+.btn-nuevoCliente,
+.btnFactura,
+.btn-guardar {
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s, filter 0.2s;
     cursor: pointer;
 }
 
-button:hover, .btn-nuevoCliente:hover, .btnFactura:hover, .btn-guardar:hover {
+button:hover,
+.btn-nuevoCliente:hover,
+.btnFactura:hover,
+.btn-guardar:hover {
     transform: scale(1.04);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     filter: brightness(1.1);
 }
 
+/* Al hacer click, el botón se hunde un poco */
 button:active {
     transform: scale(0.96);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* Fila de tabla que se resalta al pasar el mouse */
 tbody tr {
     transition: background-color 0.2s ease;
 }
@@ -240,14 +271,17 @@ tbody tr:hover {
     background-color: #f8f9fa;
 }
 
+/* Cualquier elemento con [hidden] se oculta de verdad */
 [hidden] {
     display: none !important;
 }
 
-/* =====================================================
-   ASISTENTE DE IA (CHAT FLOTANTE)
-   ===================================================== */
-/* Botón Flotante */
+
+/* ============================================================
+   Asistente de IA (chat flotante)
+   ============================================================ */
+
+/* Botón redondo que abre el chat */
 .chat-trigger {
     position: fixed;
     bottom: 20px;
@@ -277,7 +311,7 @@ tbody tr:hover {
     object-fit: contain;
 }
 
-/* Ventana emergente con las dimensiones de la captura */
+/* Ventana del chat (fija abajo a la derecha) */
 .chat-window {
     position: fixed;
     bottom: 90px;
@@ -297,7 +331,7 @@ tbody tr:hover {
     transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
 }
 
-/* Estado oculto */
+/* Estado oculto del chat */
 .chat-window.oculta {
     opacity: 0;
     visibility: hidden;
@@ -305,7 +339,7 @@ tbody tr:hover {
     pointer-events: none;
 }
 
-/* Cabecera del Chat */
+/* Cabecera del chat: avatar, nombre y estado */
 .chat-header {
     background: linear-gradient(180deg, #111b37 0%, #0d1730 100%);
     color: #ffffff;
@@ -351,6 +385,7 @@ tbody tr:hover {
     font-weight: normal;
 }
 
+/* Puntito verde de "en línea" */
 .header-perfil .estado {
     display: block;
     font-size: 11px;
@@ -372,7 +407,7 @@ tbody tr:hover {
     color: #ffffff;
 }
 
-/* Área de Mensajes */
+/* Zona donde aparecen los mensajes */
 .chat-mensajes {
     flex: 1;
     padding: 20px;
@@ -405,12 +440,15 @@ tbody tr:hover {
     word-break: break-word;
     white-space: pre-line;
 }
+
+/* El texto en negrita dentro de las burbujas se resalta */
 .burbuja b,
-.burbuja strong{
+.burbuja strong {
     color: #171d33;
     font-weight: 700;
 }
 
+/* Burbuja del bot (blanca a la izquierda) */
 .mensaje.bot .burbuja {
     background-color: #ffffff;
     color: #172650;
@@ -419,6 +457,7 @@ tbody tr:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
+/* Burbuja del usuario (morada a la derecha) */
 .mensaje.user .burbuja,
 .mensaje.usuario .burbuja {
     background-color: #7367f0;
@@ -426,7 +465,7 @@ tbody tr:hover {
     border-top-right-radius: 2px;
 }
 
-/* Entrada de texto */
+/* Campo para escribir */
 .chat-input-container {
     padding: 14px 18px;
     background-color: #ffffff;
@@ -455,6 +494,7 @@ tbody tr:hover {
     background-color: #ffffff;
 }
 
+/* Botón redondo de enviar */
 .btn-enviar {
     width: 40px;
     height: 40px;
@@ -475,23 +515,30 @@ tbody tr:hover {
     background-color: #6355eb;
     transform: scale(1.05);
 }
-/* =====================================================
-   DISEÑO RESPONSIVE
-   ===================================================== */
+
+
+/* ============================================================
+   Diseño responsive
+   ============================================================ */
+
+/* Tablets */
 @media (max-width: 992px) {
     .grid-productos {
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     }
+
     .camposVenta {
         grid-template-columns: 1fr;
     }
 }
 
+/* Tablets en vertical y móviles */
 @media (max-width: 768px) {
+    /* El sidebar arranca oculto */
     #sidebar-container {
         transform: translateX(-100%);
     }
-    
+
     #header-container,
     .main-wrapper {
         left: 0;
@@ -499,28 +546,31 @@ tbody tr:hover {
         width: 100%;
     }
 
+    /* En móvil, "sidebar-collapsed" es al revés: muestra el menú */
     body.sidebar-collapsed #sidebar-container {
         transform: translateX(0);
     }
 
+    /* La tabla se vuelve scrolleable horizontalmente */
     table {
         display: block;
         overflow-x: auto;
         white-space: nowrap;
     }
-    
+
     .contenedorTitulo {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
     }
-    
+
     .btnNuevoProducto {
         margin-left: 0;
         width: 100%;
         justify-content: center;
     }
 
+    /* El chat ocupa casi todo el ancho */
     .chat-window {
         width: 90%;
         right: 5%;
@@ -529,20 +579,21 @@ tbody tr:hover {
     }
 }
 
+/* Móviles chicos */
 @media (max-width: 480px) {
     .header-info h2 {
         font-size: 16px;
     }
-    
+
     .user-role {
         display: none;
     }
-    
+
     .modal-content {
         width: 95%;
         padding: 20px;
     }
-    
+
     .producto-resumen {
         flex-direction: column;
         align-items: flex-start;

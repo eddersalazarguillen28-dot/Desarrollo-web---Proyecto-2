@@ -1,29 +1,36 @@
-body{
+/* ============================================================
+   Base de la página
+   ============================================================ */
+body {
     width: 100%;
     min-height: 100%;
     font-family: Arial, Helvetica, sans-serif;
     background: #f4f7fd;
-    color:#172650;
+    color: #172650;
 }
 
-.barraLateral{
+
+/* ============================================================
+   Barra lateral
+   ============================================================ */
+.barraLateral {
     width: 158px;
     min-width: 158px;
     height: 100vh;
     position: fixed;
     left: 0;
     top: 0;
-    background: linear-gradient(180deg,#111b37 0%,#0d1730 100%);
+    background: linear-gradient(180deg, #111b37 0%, #0d1730 100%);
     border-radius: 0 0 0 0;
     color: white;
     padding: 18px 10px;
     display: flex;
     flex-direction: column;
-    box-shadow: 2px 0 10px rgb(20,30,60,.08);
-    
+    box-shadow: 2px 0 10px rgb(20, 30, 60, .08);
 }
 
-.menu-item{
+/* Cada enlace del menú lateral */
+.menu-item {
     height: 30px;
     padding: 0 10px;
     border-radius: 5px;
@@ -38,80 +45,74 @@ body{
     color: white;
 }
 
-.menu-item:hover{
+.menu-item:hover {
     background-color: #475EDC;
-    box-shadow: 0 4px 10px rgba(99,91,255,0.25);
+    box-shadow: 0 4px 10px rgba(99, 91, 255, 0.25);
 }
 
-
-
-#logo{
+#logo {
     width: 150px;
     margin: 5px;
 }
 
-/*Encabezado*/
 
-.header{
+/* ============================================================
+   Encabezado con fecha y perfil del usuario
+   ============================================================ */
+.header {
     display: flex;
     justify-content: flex-end;
     margin-right: 50px;
     align-items: center;
     margin-bottom: 25px;
-
 }
 
-/*Usuario*/
-
-.area-user{
+.area-user {
     display: flex;
     align-items: center;
     gap: 25px;
-    
-    
 }
 
-.date-box{
+/* Cajita de la fecha a la izquierda del avatar */
+.date-box {
     display: flex;
     align-items: center;
     gap: 10px;
     background: white;
-    border:1px solid #e3e7f2;
+    border: 1px solid #e3e7f2;
     border-radius: 25px;
-    padding:10px 17px;
+    padding: 10px 17px;
 }
 
-.calendar{
+.calendar {
     font-size: 19px;
     color: #4657c9;
 }
 
-.date-box strong{
+.date-box strong {
     display: block;
     font-size: 13px;
-    color:#35436d;
+    color: #35436d;
 }
 
-.date-box small{
-    color:#7180a6;
+.date-box small {
+    color: #7180a6;
     font-size: 11px;
-
 }
 
-.user-profile{
+/* Perfil del usuario con avatar circular */
+.user-profile {
     display: flex;
     align-items: center;
     gap: 10px;
-    background:white ;
+    background: white;
     border-radius: 25px;
-    padding:10px 17px;
-    border:1px solid #e3e7f2;
-
-
+    padding: 10px 17px;
+    border: 1px solid #e3e7f2;
 }
 
-.avatar{
-    width:45px;
+.avatar {
+    width: 45px;
     height: 45px;
     border-radius: 50%;
     background: #665cf5;
@@ -122,42 +123,45 @@ body{
     font-weight: 700;
 }
 
-.user-profile strong{
+.user-profile strong {
     display: block;
     font-size: 14px;
 }
 
-.user-profile small{
+.user-profile small {
     display: block;
-    color:#7b86a6;
+    color: #7b86a6;
     font-size: 11px;
     margin-top: 3px;
 }
 
-.arrow{
+.arrow {
     font-size: 20px;
-    color:#5f6b8d;
+    color: #5f6b8d;
 }
 
-/*Main*/
 
-.main{
+/* ============================================================
+   Contenedor principal
+   ============================================================ */
+.main {
     margin-left: 230px;
     padding: 30px 28px;
     min-height: 100vh;
 }
 
-/*Tarjetas*/
 
-.estadistica-grid{
+/* ============================================================
+   Tarjetas de estadísticas (arriba del panel)
+   ============================================================ */
+.estadistica-grid {
     display: grid;
-    grid-template-columns: repeat(4,minmax(0,1fr));
-    gap:18px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
     margin-bottom: 22px;
-
 }
 
-.estadistica-card{
+.estadistica-card {
     display: flex;
     align-items: center;
     gap: 15px;
@@ -167,139 +171,147 @@ body{
     min-width: 0;
 }
 
-.card-morada{
+/* Variantes de color para cada tarjeta */
+.card-morada {
     background: #f1f0ff;
     border-color: #dfdcff;
 }
 
-.card-verde{
+.card-verde {
     background: #eafaf6;
     border-color: #d0f1e8;
 }
 
-.card-roja{
+.card-roja {
     background: #fff1f4;
     border-color: #ffe0e7;
 }
 
-.card-azul{
+.card-azul {
     background: #edf4ff;
     border-color: #dce8ff;
 }
 
-/*icono*/
-
-.estadistica-icon{
+/* Círculo del icono dentro de la tarjeta */
+.estadistica-icon {
     min-width: 48px;
     height: 48px;
     border-radius: 50%;
     display: grid;
-    
 }
 
-
-/***********************************************************/
-
-.estadistica-card p{
+/* Textos dentro de las tarjetas */
+.estadistica-card p {
     font-size: 17px;
     color: #68789e;
     margin-bottom: 7px;
 }
 
-.estadistica-card h2{
+.estadistica-card h2 {
     font-size: 25px;
     margin-bottom: 6px;
     overflow-wrap: anywhere;
 }
 
-.estadistica-card small{
+.estadistica-card small {
     font-size: 14px;
-    color:#7382a2;
+    color: #7382a2;
 }
 
-/*Paneles*/
-.contenido-grid{
+
+/* ============================================================
+   Layout de dos columnas: lista de clientes + formulario
+   ============================================================ */
+.contenido-grid {
     display: flex;
-    gap:20px;
+    gap: 20px;
     align-items: start;
     padding-top: 50px;
     width: 100%;
 }
 
-.clientes-panel-lista{
+.clientes-panel-lista {
     flex: 1;
     width: 100%;
     min-width: 0;
 }
 
-.form-panel{
+.form-panel {
     width: 340px;
     flex-shrink: 0;
 }
 
-.panel{
+/* Caja blanca genérica de panel */
+.panel {
     background: white;
     border: 1px solid #e8edf7;
     border-radius: 13px;
     padding: 22px;
-    box-shadow: 0 5px 22px rgba(34,55,100,0.035);
+    box-shadow: 0 5px 22px rgba(34, 55, 100, 0.035);
     min-width: 0;
 }
 
-.panel-header{
+/* Cabecera del panel: título + botón */
+.panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap:12px;
+    gap: 12px;
     margin-bottom: 20px;
 }
 
-.panel-header h2{
+.panel-header h2 {
     font-size: 20px;
     margin-bottom: 6px;
 }
 
-.panel-header p{
+.panel-header p {
     font-size: 14px;
-    color:#8793ad;
-
+    color: #8793ad;
 }
 
-.btn-nuevoCliente, .btn-guardar{
-    background: linear-gradient(900deg,#6056f4,#7669ff);
+
+/* ============================================================
+   Botones principales (nuevo cliente / guardar)
+   ============================================================ */
+.btn-nuevoCliente,
+.btn-guardar {
+    background: linear-gradient(900deg, #6056f4, #7669ff);
     color: white;
     border: none;
     border-radius: 9px;
     font-weight: 600;
-    cursor:pointer;
+    cursor: pointer;
     transition: 0.2s;
-    
 }
 
-.btn-nuevoCliente{
+.btn-nuevoCliente {
     padding: 12px 15px;
     white-space: nowrap;
 }
 
-.btn-nuevoCliente:hover,btn-guardar:hover{
-    filter:brightness(1.06);
+.btn-nuevoCliente:hover,
+btn-guardar:hover {
+    filter: brightness(1.06);
     transform: translateY(-1px);
-
 }
 
-/**Buscador*/
-.busqueda-box{
+
+/* ============================================================
+   Buscador de clientes
+   ============================================================ */
+.busqueda-box {
     height: 43px;
     display: flex;
     align-items: center;
     gap: 10px;
     border: 1px solid #dfe6f6;
     border-radius: 9px;
-    padding:0 13px;
+    padding: 0 13px;
     margin-bottom: 20px;
 }
 
-.busqueda-box input{
+.busqueda-box input {
     width: 100%;
     border: none;
     outline: none;
@@ -307,58 +319,63 @@ body{
     color: #25365d;
 }
 
-.busqueda-box input::placeholder{
-    color:#9ba7c0;
+.busqueda-box input::placeholder {
+    color: #9ba7c0;
 }
 
-/*Tabla*/
 
-.tabla{
+/* ============================================================
+   Tabla de clientes
+   ============================================================ */
+.tabla {
     width: 100%;
     overflow-x: auto;
 }
 
-table{
+table {
     width: 100%;
     border-collapse: collapse;
     text-align: left;
     font-size: 17px;
 }
 
-thead{
+thead {
     background: #f5f7fc;
-    color:#60729e;
+    color: #60729e;
 }
 
-th{
+th {
     padding: 14px 11px;
     font-weight: 600;
     white-space: nowrap;
 }
 
-td{
-    padding:13px 11px;
+td {
+    padding: 13px 11px;
     border-bottom: 1px solid #edf1f8;
-    color:#43577f;
+    color: #43577f;
 }
 
-tbody tr:hover{
+tbody tr:hover {
     background: #fafbff;
 }
 
-/*JS*/
 
-.nombre-cliente{
+/* ============================================================
+   Celdas especiales de la tabla (nombre con avatar, estado, acciones)
+   ============================================================ */
+
+/* Nombre + avatar del cliente en la misma celda */
+.nombre-cliente {
     display: flex;
     align-items: center;
     gap: 9px;
     min-width: 145px;
-    color:#20335f;
+    color: #20335f;
     font-weight: 600;
-
 }
 
-.avatar-cliente{
+.avatar-cliente {
     width: 33px;
     height: 33px;
     border-radius: 50%;
@@ -370,70 +387,73 @@ tbody tr:hover{
     flex-shrink: 0;
 }
 
-.status{
+/* Etiqueta de estado activo / inactivo */
+.status {
     display: inline-block;
     border-radius: 6px;
     padding: 6px 9px;
     font-size: 14px;
     font-weight: 600;
-
 }
 
-.status.activo{
+.status.activo {
     background: #e2f8f1;
     color: #0a9b79;
 }
 
-.status.inactivo{
+.status.inactivo {
     background: #ffedf1;
-    color:#df4263;
+    color: #df4263;
 }
 
-.actions{
+/* Botones de editar y eliminar */
+.actions {
     display: flex;
 }
 
-.actions-button{
-    width:31px;
+.actions-button {
+    width: 31px;
     height: 31px;
     border: none;
     border-radius: 7px;
-    cursor:pointer;
+    cursor: pointer;
     font-size: 14px;
 }
 
-.edit-button{
+.edit-button {
     background: #efefff;
     color: #6558f5;
 }
 
-.delete-button{
+.delete-button {
     background: #fff0f2;
     color: #e54d68;
 }
 
-
-.empty-row{
+/* Fila vacía cuando no hay clientes */
+.empty-row {
     text-align: center;
     padding: 28px;
     color: #8793ad;
 }
 
-footer-tabla{
+footer-tabla {
     margin-top: 18px;
     font-size: 15px;
     color: #7888aa;
 }
 
-/*Formulario*/
 
-.form-panel form{
+/* ============================================================
+   Formulario del panel lateral
+   ============================================================ */
+.form-panel form {
     display: flex;
     flex-direction: column;
     gap: 17px;
 }
 
-.form-campo label{
+.form-campo label {
     display: block;
     font-size: 15px;
     font-weight: 600;
@@ -441,7 +461,8 @@ footer-tabla{
     margin-bottom: 8px;
 }
 
-.form-campo input, .form-campo select{
+.form-campo input,
+.form-campo select {
     width: 97%;
     height: 43px;
     border: 1px solid #dfe6f5;
@@ -455,43 +476,51 @@ footer-tabla{
     transition: 0.2s;
 }
 
-.form-campo input::placeholder{
+.form-campo input::placeholder {
     color: #9aa7c0;
 }
 
-.form-campo input:focus, .form-campo select:focus{
+/* Borde morado cuando el campo tiene foco */
+.form-campo input:focus,
+.form-campo select:focus {
     border-color: #7569ff;
-    box-shadow: 0 0 0 3px rgba(102,92,245,0.09);
+    box-shadow: 0 0 0 3px rgba(102, 92, 245, 0.09);
 }
 
-.btn-guardar{
+.btn-guardar {
     min-height: 46px;
     padding: 12px;
     font-size: 15px;
 }
 
-.btn-cancelar{
-    border:1px solid #dfe5f2;
+.btn-cancelar {
+    border: 1px solid #dfe5f2;
     background: white;
-    color:#52628a;
+    color: #52628a;
     border-radius: 8px;
     min-height: 40px;
     cursor: pointer;
 }
 
-.form-mensaje{
+/* Mensajito verde de éxito tras guardar */
+.form-mensaje {
     font-size: 14px;
     color: #0a9b79;
     line-height: 1.5;
 }
 
-[hidden]{
+
+/* ============================================================
+   Utilidades
+   ============================================================ */
+[hidden] {
     display: none !important;
 }
 
 
-
-/* Modal de Confirmación Personalizado */
+/* ============================================================
+   Modal de confirmación (eliminar cliente)
+   ============================================================ */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -512,14 +541,15 @@ footer-tabla{
     padding: 24px;
     width: 90%;
     max-width: 420px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     border: 1px solid #eef0f5;
     animation: modalSlide 0.2s ease-out;
 }
 
+/* El modal entra desde arriba */
 @keyframes modalSlide {
     from { transform: translateY(-20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    to   { transform: translateY(0); opacity: 1; }
 }
 
 .modal-header-confirm {

@@ -1,4 +1,8 @@
-/* Layout Flexible del M贸dulo */
+/* ============================================================
+   Layout general del módulo (tabla de productos + panel lateral)
+   ============================================================ */
+
+/* Contenedor que pone la tabla y el panel uno al lado del otro */
 .contenido-grid {
     display: flex;
     gap: 20px;
@@ -6,6 +10,7 @@
     width: 100%;
 }
 
+/* Tarjeta blanca donde va la tabla del inventario */
 .seccion-productos {
     background-color: #ffffff;
     border-radius: 12px;
@@ -18,7 +23,10 @@
     box-sizing: border-box;
 }
 
-/* Panel Desplegable Lateral */
+
+/* ------------------------------------------------------------
+   Panel lateral desplegable (donde va el formulario)
+   ------------------------------------------------------------ */
 .form-panel {
     width: 360px;
     flex-shrink: 0;
@@ -31,6 +39,7 @@
     transition: all 0.3s ease;
 }
 
+/* Cabecera del panel: título a la izquierda, botón de cerrar a la derecha */
 .panel-header {
     display: flex;
     justify-content: space-between;
@@ -50,6 +59,7 @@
     font-size: 13px;
 }
 
+/* La X para cerrar el panel */
 .btn-x-panel {
     background: none;
     border: none;
@@ -64,7 +74,10 @@
     color: #171d33;
 }
 
-/* Cabecera y Bot贸n "Ingresar Stock" */
+
+/* ------------------------------------------------------------
+   Cabecera de la sección: título + botón "Ingresar Stock"
+   ------------------------------------------------------------ */
 .contenedorTitulo {
     display: flex;
     justify-content: space-between;
@@ -79,6 +92,7 @@
     margin: 0;
 }
 
+/* Botón morado que abre el panel para agregar producto */
 .btnNuevoProducto {
     border: none;
     background: linear-gradient(135deg, #7367f0 0%, #6355eb 100%);
@@ -101,7 +115,10 @@
     box-shadow: 0 6px 16px rgba(115, 103, 240, 0.35);
 }
 
-/* Buscador */
+
+/* ------------------------------------------------------------
+   Buscador
+   ------------------------------------------------------------ */
 .contenedor-buscador {
     width: 100%;
     height: 42px;
@@ -128,7 +145,10 @@
     color: #9ba7c0;
 }
 
-/* Tabla de Inventario */
+
+/* ------------------------------------------------------------
+   Tabla de inventario
+   ------------------------------------------------------------ */
 .contenedorTabla {
     width: 100%;
     overflow-x: auto;
@@ -160,6 +180,7 @@ td {
     vertical-align: middle;
 }
 
+/* Fila resaltada al pasar el mouse */
 tbody tr:hover {
     background: #fafbff;
 }
@@ -169,6 +190,7 @@ td strong {
     font-weight: 700;
 }
 
+/* La primera columna es la miniatura del producto */
 #cuerpo-inventario td:first-child {
     width: 110px;
     text-align: center;
@@ -180,7 +202,10 @@ td strong {
     justify-content: center;
 }
 
-/* Badges de Stock */
+
+/* ------------------------------------------------------------
+   Badges de stock (verde si hay, rojo si queda poco)
+   ------------------------------------------------------------ */
 .stock {
     display: inline-flex;
     padding: 4px 12px;
@@ -201,7 +226,10 @@ td strong {
     background-color: #fce8e6;
 }
 
-/* Botones de Acci贸n */
+
+/* ------------------------------------------------------------
+   Botones de acción dentro de la tabla (editar / eliminar)
+   ------------------------------------------------------------ */
 .actions {
     display: flex;
     gap: 6px;
@@ -235,7 +263,10 @@ td strong {
     background: #fdd2d2;
 }
 
-/* Formulario Lateral */
+
+/* ------------------------------------------------------------
+   Formulario del panel lateral
+   ------------------------------------------------------------ */
 .form-campo {
     display: flex;
     flex-direction: column;
@@ -243,6 +274,7 @@ td strong {
     margin-bottom: 12px;
 }
 
+/* Para poner dos campos en la misma fila */
 .campos-dobles {
     display: flex;
     gap: 12px;
@@ -266,12 +298,14 @@ td strong {
     width: 100%;
 }
 
+/* Borde morado cuando el campo tiene el foco */
 .form-campo input:focus,
 .form-campo select:focus,
 .form-campo textarea:focus {
     border-color: #7367f0;
 }
 
+/* Input de subida de imagen con borde punteado */
 .input-file {
     padding: 8px !important;
     border: 1px dashed #7367f0 !important;
@@ -281,6 +315,7 @@ td strong {
     font-size: 13px !important;
 }
 
+/* Zona de botones del formulario */
 .acciones-form {
     display: flex;
     flex-direction: column;
@@ -314,6 +349,7 @@ td strong {
     width: 100%;
 }
 
+/* Mensajito verde de éxito tras guardar */
 .form-mensaje {
     margin-top: 8px;
     font-size: 13px;
@@ -321,7 +357,10 @@ td strong {
     color: #107c41;
 }
 
-/* Pie de Tabla */
+
+/* ------------------------------------------------------------
+   Pie de la tabla (total de items + paginación)
+   ------------------------------------------------------------ */
 .footer-tabla {
     border-top: 1px solid #eef0f5;
     padding-top: 15px;
@@ -358,7 +397,10 @@ td strong {
     border-color: #7367f0;
 }
 
-/* Ventana Modal de Confirmaci贸n para Baja */
+
+/* ------------------------------------------------------------
+   Modal de confirmación para eliminar un producto
+   ------------------------------------------------------------ */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -384,6 +426,7 @@ td strong {
     animation: modalSlide 0.2s ease-out;
 }
 
+/* El modal entra desde arriba */
 @keyframes modalSlide {
     from { transform: translateY(-20px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
@@ -447,10 +490,15 @@ td strong {
     background: #c82333;
 }
 
+
+/* ------------------------------------------------------------
+   Responsive: en pantallas chicas el panel pasa abajo
+   ------------------------------------------------------------ */
 @media (max-width: 992px) {
     .contenido-grid {
         flex-direction: column;
     }
+
     .form-panel {
         width: 100%;
     }
