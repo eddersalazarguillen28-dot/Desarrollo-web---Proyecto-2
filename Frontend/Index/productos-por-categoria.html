@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../Style/estiloProductosCategoria.css">
+    <title>Document</title>
+</head>
+<body id="pagina-productos-categoria">
+    <header class="navbar-cliente">
+        <div class="navbar-container">
+            <a href="#" class="logo-brand">
+                <img src="../Imagenes/octopus.png" alt="OctoERP" class="logo-icono">
+                <span class="logo-texto">Octo<span class="logo-highlight">ERP</span></span>
+            </a>
+
+            <nav class="nav-links">
+                <a href="#inicio" class="nav-link active">Inicio</a>
+                <a href="#productos" class="nav-link">Productos</a>
+                <a href="#categorias" class="nav-link">Categorias</a>
+                <a href="#servicios" class="nav-link">Servicios</a>
+                <a href="#contacto" class="nav-link">Contacto</a>
+            </nav>
+
+            <div class="navbar-acciones">
+                <!-- Botón Modo Claro / Oscuro -->
+                <button id="btn-toggle-theme" class="btn-icon" aria-label="Cambiar Tema">
+                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </button>
+
+                <!-- Carrito de Compras -->
+                <button class="btn-icon btn-carrito" aria-label="Carrito">
+                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span class="carrito-badge" id="carrito-count">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container-categoria-productos">
+        <a href="categorias.html" class="btn-volver-cat">Volver a categorias</a>
+
+        <div class="header-categoria-seccion">
+            <h1 id="titulo-categoria" class="titulo-glow-categoria">Cargando categoría...</h1>
+            <p id="subtitulo-categoria" class="subtitulo-categoria">Mostrando productos disponibles en tiempo real</p>
+
+        </div>
+
+        <div class="grid-productos-categoria" id="grid-productos-categoria">
+            <!--JS-->
+        </div>
+
+    </main>
+
+    <footer class="footer-categoria">
+        <p>&copy; 2026 OctoERP Hardware &amp; Tech Store. Todos los derechos reservados. Proyecto CTP.</p>
+    </footer>
+
+    <script src="../JavaScript/productosPorCategoria.js"></script>
+</body>
+</html>
