@@ -24,12 +24,14 @@
     color: #25243a;
     font-size: 30px;
     margin: 0 0 -16px;
+    text-align: center;
 }
 
-#page-ventas > p {
+#page-ventas  p {
     color: #77768f;
     margin: 0;
     line-height: 1.6;
+    text-align: center;
 }
 
 #page-ventas .nueva-venta,
@@ -39,8 +41,8 @@
     border-radius: 14px;
     margin: 0;
     min-width: 0;
-    box-shadow: 0 4px 18px #19196c0d;
-    border: 1px solid #e9e7f7;
+    box-shadow: 10px 10px 10px #3a10d3d7;
+    border: 3px solid #3a10d3d7;
 }
 
 #page-ventas h2 {
@@ -100,7 +102,7 @@
 
 #page-ventas .btn-agregar,
 #page-ventas .btnFactura {
-    background: #7b73a1;
+    background: #5742bd;
     color: white;
     border: none;
     padding: 14px 20px;
@@ -111,7 +113,8 @@
     transition: background 0.2s, transform 0.2;
 }
 
-#page-ventas .btn-agregar {
+#page-ventas .btn-agregar,
+#page-ventas .btnFactura {
     width: 100%;
     max-width: 320px;
     margin-top: 24px;
@@ -119,7 +122,7 @@
 
 #page-ventas .btn-agregar:hover,
 #page-ventas .btnFactura:hover {
-    background: #5140a8;
+    background: rgb(64, 129, 64);
     transform: translateY(-1px);
 }
 
