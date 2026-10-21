@@ -1009,18 +1009,18 @@ def obtener_detalles_dashboard():
     finally:
         conn.close()
 
-
-# Recuperación contraseña por correo
-def obtener_usuario_por_correo(correo):
-    """Busca y devuelve un usuario por su correo electrónico"""
+#Para lo de la recuperacion contraseña por correo
+def obtener_usuario_por_correo(correo): 
     conn = obtener_conexion()
+
     try:
         with conn.cursor() as cursor:
             cursor.execute("""
-            SELECT id, nombre, correo, rol
-            FROM usuarios
-            WHERE correo = %s;
-            """, (correo.strip().lower(),))
+                SELECT id, nombre, correo, password, rol
+                FROM usuarios 
+                WHERE correo = %s;
+                """, (correo.strip().lower(),))
+
             return cursor.fetchone()
     finally:
         conn.close()
