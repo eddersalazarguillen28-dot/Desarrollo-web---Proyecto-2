@@ -1,9 +1,15 @@
+/* ============================================================
+   Módulo de ventas
+   ============================================================ */
+
+/* Base de la página de ventas */
 #page-ventas {
     background-color: #f4f5fa;
     font-family: Arial, sans-serif;
     color: #25243a;
 }
 
+/* Contenedor principal: dos columnas lado a lado (form + resumen) */
 #page-ventas .main {
     padding: 30px;
     max-width: 1450px;
@@ -15,6 +21,7 @@
     align-items: start;
 }
 
+/* El título y el subtítulo ocupan toda la fila */
 #page-ventas .main > h1,
 #page-ventas .main > p {
     grid-column: 1 / -1;
@@ -32,6 +39,10 @@
     line-height: 1.6;
 }
 
+
+/* ------------------------------------------------------------
+   Tarjetas blancas: "nueva venta" y "resumen"
+   ------------------------------------------------------------ */
 #page-ventas .nueva-venta,
 #page-ventas .resumen-seccion {
     background: #ffffff;
@@ -49,17 +60,22 @@
     margin: 0 0 24px;
 }
 
+
+/* ------------------------------------------------------------
+   Formulario de nueva venta
+   ------------------------------------------------------------ */
 #page-ventas .form-ventas {
     display: grid;
     grid-template-columns: repeat(2, minmax(0 1fr));
     gap: 22px;
 }
 
+/* Cada grupo label + campo */
 #page-ventas .campo-form {
     min-width: 0;
 }
 
-#page-ventas .campo-form label{
+#page-ventas .campo-form label {
     display: block;
     margin-bottom: 9px;
     font-weight: bold;
@@ -85,19 +101,25 @@
     cursor: pointer;
 }
 
+/* Campos de solo lectura (precio, stock, etc.) con fondo más tenue */
 #page-ventas .campo-form input[readonly] {
     background: #f5f5fb;
     color: black;
     font-weight: bold;
 }
 
+/* Borde morado al enfocar un campo */
 #page-ventas .campo-form input:focus,
 #page-ventas .campo-form select:focus {
     outline: none;
     border-color: #7765d5;
-    box-shadow:  0 0 0 3px #7765d51c;
+    box-shadow: 0 0 0 3px #7765d51c;
 }
 
+
+/* ------------------------------------------------------------
+   Botones de agregar producto y de factura
+   ------------------------------------------------------------ */
 #page-ventas .btn-agregar,
 #page-ventas .btnFactura {
     background: #7b73a1;
@@ -111,6 +133,7 @@
     transition: background 0.2s, transform 0.2;
 }
 
+/* El de "Agregar" tiene un ancho máximo para no estirarse de más */
 #page-ventas .btn-agregar {
     width: 100%;
     max-width: 320px;
@@ -123,6 +146,7 @@
     transform: translateY(-1px);
 }
 
+/* Ambos se atenúan cuando están deshabilitados */
 #page-ventas .btn-agregar:disabled,
 #page-ventas .btnFactura:disabled {
     opacity: 0.5;
@@ -130,11 +154,16 @@
     transform: none;
 }
 
+/* El de facturar ocupa todo el ancho */
 #page-ventas .btnFactura {
     width: 100%;
     margin-top: 18px;
 }
 
+
+/* ------------------------------------------------------------
+   Tabla del resumen de la venta
+   ------------------------------------------------------------ */
 #page-ventas .resumen-seccion {
     overflow: hidden;
 }
@@ -162,6 +191,7 @@
     background: #faf9ff;
 }
 
+/* Botón rojo para eliminar una fila */
 #page-ventas .btn-delete {
     background: #ffe5e5;
     color: #c62828;
@@ -177,6 +207,10 @@
     background: #ffcaca;
 }
 
+
+/* ------------------------------------------------------------
+   Tarjeta de totales (subtotal, IVA, total)
+   ------------------------------------------------------------ */
 #page-ventas .total-card {
     background: #f5f3ff;
     padding: 18px;
@@ -184,6 +218,7 @@
     margin-top: 18px;
 }
 
+/* Cada línea tiene el texto a la izquierda y el monto a la derecha */
 #page-ventas .total-card p,
 #page-ventas .total-card h2 {
     display: flex;
@@ -197,6 +232,7 @@
     font-size: 14px;
 }
 
+/* La línea del total va separada con una línea arriba */
 #page-ventas .total-card h2 {
     border-top: 1px solid #ddd7fa;
     padding-top: 15px;
@@ -208,6 +244,10 @@
     text-align: right;
 }
 
+
+/* ------------------------------------------------------------
+   Mensaje de éxito al registrar la venta
+   ------------------------------------------------------------ */
 #page-ventas .mensaje-venta {
     grid-column: 1 / -1;
     background: #e8f7ed;
@@ -221,6 +261,7 @@
     display: none;
 }
 
+/* La X para cerrar el mensaje */
 #page-ventas #cerrar-mensaje {
     float: right;
     cursor: pointer;
@@ -229,6 +270,10 @@
     color: inherit;
 }
 
+
+/* ------------------------------------------------------------
+   Responsive: en pantallas chicas pasa todo a una columna
+   ------------------------------------------------------------ */
 @media (max-width: 700px) {
     #page-ventas .main {
         grid-template-columns: minmax(0, 1fr);
@@ -254,6 +299,7 @@
         font-size: 19px;
     }
 
+    /* La tabla se aprieta y permite scroll horizontal si hace falta */
     #page-ventas .resumen-seccion th,
     #page-ventas .resumen-seccion td {
         padding: 10px;
