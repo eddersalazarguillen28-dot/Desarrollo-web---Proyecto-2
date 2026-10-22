@@ -58,19 +58,9 @@ CORS(
 )
 
 
-
 # =========================================================
 # CONFIGURACIÓN DE CLOUDINARY
-# Las credenciales se configuran en las variables de Render.
 # =========================================================
-
-cloudinary.config(
-    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.getenv("CLOUDINARY_API_KEY"),
-    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
-    secure=True
-)
-
 
 def cloudinary_configurado():
     """Comprueba que las tres credenciales estén configuradas."""
@@ -79,7 +69,6 @@ def cloudinary_configurado():
         "CLOUDINARY_API_KEY",
         "CLOUDINARY_API_SECRET",
     ]
-
     return all(os.getenv(variable) for variable in variables)
 
 
@@ -103,9 +92,7 @@ try:
     db.inicializar_bd()
     app.logger.info("Base de datos inicializada correctamente.")
 except Exception:
-    app.logger.exception(
-        "No se pudo inicializar la base de datos al arrancar."
-    )
+    app.logger.exception("No se pudo inicializar la base de datos al arrancar.")
 
 
 # =========================================================
@@ -129,6 +116,7 @@ def health():
         "status": "ok",
         "servicio": "OCTO ERP API"
     })
+
 
 def solo_administrador(funcion):
     @wraps(funcion)
@@ -154,19 +142,17 @@ def solo_administrador(funcion):
             return jsonify({
                 "status": "error",
                 "message": "Firma del token invalida"
-            }),401
+            }), 401
 
         conexion = None
-
         try:
             conexion = db.obtener_conexion()
-
             with conexion.cursor() as cursor:
                 cursor.execute("""
                     SELECT rol
                     FROM usuarios
                     WHERE id = %s
-                    """, (datos["id"],))
+                """, (datos["id"],))
 
                 usuario = cursor.fetchone()
 
@@ -178,19 +164,17 @@ def solo_administrador(funcion):
 
         except Exception:
             app.logger.exception("Error al verificar permisos")
-
             return jsonify({
                 "status": "error",
                 "message": "No se pudieron verificar los permisos"
             }), 500
-               
-
         finally:
             if conexion:
                 conexion.close()
 
         return funcion(*args, **kwargs)
     return protegida
+
 
 # =========================================================
 # REGISTRO DE USUARIOS
@@ -199,10 +183,8 @@ def solo_administrador(funcion):
 @app.route("/api/registro", methods=["POST"])
 def registrar_usuario():
     conexion = None
-
     try:
         datos = request.get_json(silent=True) or {}
-
         nombre = (datos.get("nombre") or "").strip()
         correo = (datos.get("correo") or "").strip().lower()
         password = datos.get("password") or ""
@@ -250,7 +232,7 @@ def registrar_usuario():
                 INSERT INTO clientes (nombre, correo, estado)
                 VALUES (%s, %s, %s)
                 ON CONFLICT (correo) DO NOTHING
-                """,(nombre, correo, "Activo"))
+            """, (nombre, correo, "Activo"))
 
         conexion.commit()
 
@@ -263,14 +245,11 @@ def registrar_usuario():
     except Exception:
         if conexion:
             conexion.rollback()
-
         app.logger.exception("Error durante el registro.")
-
         return jsonify({
             "status": "error",
             "message": "No se pudo registrar el usuario."
         }), 500
-
     finally:
         if conexion:
             conexion.close()
@@ -283,10 +262,8 @@ def registrar_usuario():
 @app.route("/api/login", methods=["POST"])
 def iniciar_sesion():
     conexion = None
-
     try:
         datos = request.get_json(silent=True) or {}
-
         correo = (datos.get("correo") or "").strip().lower()
         password = datos.get("password") or ""
 
@@ -307,20 +284,15 @@ def iniciar_sesion():
                 """,
                 (correo,)
             )
-
             usuario = cursor.fetchone()
 
-        if not usuario or not check_password_hash(
-            usuario["password"], password
-        ):
+        if not usuario or not check_password_hash(usuario["password"], password):
             return jsonify({
                 "status": "error",
                 "message": "Correo o contraseña incorrectos."
             }), 401
 
-        token = firmador.dumps({
-            "id": usuario["id"]
-        })
+        token = firmador.dumps({"id": usuario["id"]})
 
         return jsonify({
             "status": "ok",
@@ -336,12 +308,10 @@ def iniciar_sesion():
 
     except Exception:
         app.logger.exception("Error durante el inicio de sesión.")
-
         return jsonify({
             "status": "error",
             "message": "No se pudo iniciar sesión."
         }), 500
-
     finally:
         if conexion:
             conexion.close()
@@ -355,15 +325,12 @@ def iniciar_sesion():
 def listar_productos():
     try:
         productos = db.obtener_productos()
-
         return jsonify({
             "status": "ok",
             "productos": productos
         }), 200
-
     except Exception:
         app.logger.exception("Error al consultar productos.")
-
         return jsonify({
             "status": "error",
             "message": "No se pudieron consultar los productos."
@@ -371,97 +338,57 @@ def listar_productos():
 
 
 # =========================================================
-# CREAR PRODUCTOS CON O SIN IMAGEN
+# CREAR PRODUCTOS
 # =========================================================
 
 @app.route("/api/productos", methods=["POST"])
 def crear_producto():
     imagen_url = None
-
     try:
-        # También se admiten las solicitudes JSON anteriores.
         if request.is_json:
             datos = request.get_json(silent=True) or {}
-
             nombre = datos.get("nombre")
             precio = datos.get("precio")
             stock = datos.get("stock")
-
-            stock_minimo = datos.get(
-                "stockMinimo",
-                datos.get("stock_minimo", 5)
-            )
-
+            stock_minimo = datos.get("stockMinimo", datos.get("stock_minimo", 5))
             categoria = datos.get("categoria", "General")
             ubicacion = datos.get("ubicacion", "productos")
             precio_oferta = datos.get("precio_oferta")
-
-            # Compatibilidad con clientes que ya envíen una URL.
             imagen_url = datos.get("imagen_url")
-
         else:
-            # FormData: permite enviar campos y un archivo de imagen.
             datos = request.form
-
             nombre = datos.get("nombre")
             precio = datos.get("precio")
             stock = datos.get("stock")
-
-            stock_minimo = datos.get(
-                "stockMinimo",
-                datos.get("stock_minimo", 5)
-            )
-
+            stock_minimo = datos.get("stockMinimo", datos.get("stock_minimo", 5))
             categoria = datos.get("categoria", "General")
-            
-            # 🎯 ASEGÚRATE DE EXTRAER ESTOS DOS CAMPOS AQUÍ TAMBIÉN:
             ubicacion = datos.get("ubicacion", "productos")
             precio_oferta = datos.get("precio_oferta")
-
             archivo = request.files.get("imagen")
 
             if archivo and archivo.filename:
                 if not cloudinary_configurado():
                     return jsonify({
                         "status": "error",
-                        "message": (
-                            "Cloudinary no está configurado "
-                            "correctamente en Render."
-                        )
+                        "message": "Cloudinary no está configurado en Render."
                     }), 500
 
-                tipos_permitidos = {
-                    "image/jpeg",
-                    "image/png",
-                    "image/webp",
-                    "image/gif",
-                }
-
+                tipos_permitidos = {"image/jpeg", "image/png", "image/webp", "image/gif"}
                 if archivo.mimetype not in tipos_permitidos:
                     return jsonify({
                         "status": "error",
-                        "message": (
-                            "Formato no permitido. "
-                            "Utiliza JPG, PNG, WEBP o GIF."
-                        )
+                        "message": "Formato no permitido. Utiliza JPG, PNG, WEBP o GIF."
                     }), 400
 
-                # Subir el archivo a Cloudinary.
                 resultado = cloudinary.uploader.upload(
                     archivo,
                     folder="octo-erp/productos",
                     resource_type="image",
-                    allowed_formats=[
-                        "jpg", "jpeg", "png", "webp", "gif"
-                    ]
+                    allowed_formats=["jpg", "jpeg", "png", "webp", "gif"]
                 )
-
                 imagen_url = resultado.get("secure_url")
-
                 if not imagen_url:
-                    raise RuntimeError(
-                        "Cloudinary no devolvió la URL de la imagen."
-                    )
+                    raise RuntimeError("Cloudinary no devolvió la URL de la imagen.")
 
         nombre = (nombre or "").strip()
         categoria = (categoria or "General").strip()
@@ -472,9 +399,6 @@ def crear_producto():
                 "status": "error",
                 "message": "El nombre del producto es obligatorio."
             }), 400
-
-        if not categoria:
-            categoria = "General"
 
         try:
             precio = Decimal(str(precio))
@@ -489,25 +413,14 @@ def crear_producto():
         except (InvalidOperation, ValueError, TypeError):
             return jsonify({
                 "status": "error",
-                "message": (
-                    "El precio, el stock, el stock mínimo "
-                    "o el precio de oferta deben tener valores válidos."
-                )
+                "message": "El precio, stock o precio de oferta deben tener valores válidos."
             }), 400
 
         if not precio.is_finite() or precio < 0:
-            return jsonify({
-                "status": "error",
-                "message": "El precio no puede ser negativo."
-            }), 400
+            return jsonify({"status": "error", "message": "El precio no puede ser negativo."}), 400
 
         if stock < 0 or stock_minimo < 0:
-            return jsonify({
-                "status": "error",
-                "message": (
-                    "El stock y el stock mínimo no pueden ser negativos."
-                )
-            }), 400
+            return jsonify({"status": "error", "message": "El stock no puede ser negativo."}), 400
 
         producto_id = db.agregar_producto(
             nombre=nombre,
@@ -529,13 +442,9 @@ def crear_producto():
 
     except Exception:
         app.logger.exception("Error al crear producto.")
-
         return jsonify({
             "status": "error",
-            "message": (
-                "No se pudo crear el producto. "
-                "Revisa los registros del servicio en Render."
-            )
+            "message": "No se pudo crear el producto."
         }), 500
 
 
@@ -547,98 +456,58 @@ def crear_producto():
 def borrar_producto(p_id):
     try:
         resultado = db.eliminar_producto(p_id)
-
         if resultado is False:
             return jsonify({
                 "status": "error",
-                "message": (
-                    "No se pudo eliminar el producto. "
-                    "Puede que no exista o tenga ventas asociadas."
-                )
+                "message": "No se pudo eliminar el producto."
             }), 400
 
         return jsonify({
             "status": "ok",
             "message": "Solicitud de eliminación procesada."
         }), 200
-
     except Exception:
         app.logger.exception("Error al eliminar producto.")
-
         return jsonify({
             "status": "error",
-            "message": (
-                "No se pudo eliminar el producto. "
-                "Comprueba si tiene ventas asociadas."
-            )
+            "message": "No se pudo eliminar el producto."
         }), 500
 
 
 # =========================================================
-# CONSULTAR CLIENTES
+# CONSULTAR Y CREAR CLIENTES
 # =========================================================
 
 @app.route("/api/clientes", methods=["GET"])
 def listar_clientes():
     try:
         clientes = db.obtener_clientes()
-
-        return jsonify({
-            "status": "ok",
-            "clientes": clientes
-        }), 200
-
+        return jsonify({"status": "ok", "clientes": clientes}), 200
     except Exception:
         app.logger.exception("Error al consultar clientes.")
+        return jsonify({"status": "error", "message": "No se pudieron consultar los clientes."}), 500
 
-        return jsonify({
-            "status": "error",
-            "message": "No se pudieron consultar los clientes."
-        }), 500
-
-
-# =========================================================
-# CREAR CLIENTES
-# =========================================================
 
 @app.route("/api/clientes", methods=["POST"])
 def crear_cliente():
     try:
         datos = request.get_json(silent=True) or {}
-
         nombre = (datos.get("nombre") or "").strip()
         correo = (datos.get("correo") or "").strip() or None
         telefono = (datos.get("telefono") or "").strip() or None
 
         if not nombre:
-            return jsonify({
-                "status": "error",
-                "message": "El nombre del cliente es obligatorio."
-            }), 400
+            return jsonify({"status": "error", "message": "El nombre es obligatorio."}), 400
 
-        cliente_id = db.agregar_cliente(
-            nombre=nombre,
-            correo=correo,
-            telefono=telefono
-        )
-
-        return jsonify({
-            "status": "ok",
-            "message": "Cliente creado correctamente.",
-            "cliente_id": cliente_id
-        }), 201
-
+        cliente_id = db.agregar_cliente(nombre=nombre, correo=correo, telefono=telefono)
+        return jsonify({"status": "ok", "message": "Cliente creado.", "cliente_id": cliente_id}), 201
     except Exception:
         app.logger.exception("Error al crear cliente.")
-
-        return jsonify({
-            "status": "error",
-            "message": "No se pudo crear el cliente."
-        }), 500
+        return jsonify({"status": "error", "message": "No se pudo crear el cliente."}), 500
 
 
 # =========================================================
-# DASHBOARD
+# DASHBOARD Y REPORTES DE VENTAS
 # =========================================================
 
 @app.route("/api/dashboard", methods=["GET"])
@@ -647,16 +516,12 @@ def dashboard():
         productos = db.obtener_productos()
         detalles = db.obtener_detalles_dashboard()
 
-        # Convertir valores numéricos especiales para JSON.
         detalles_json = []
-
         for detalle in detalles:
             detalle_dict = dict(detalle)
-
             for clave, valor in detalle_dict.items():
                 if isinstance(valor, Decimal):
                     detalle_dict[clave] = float(valor)
-
             detalles_json.append(detalle_dict)
 
         return jsonify({
@@ -664,32 +529,64 @@ def dashboard():
             "productos": productos,
             "detalles": detalles_json
         }), 200
-
     except Exception:
         app.logger.exception("Error al cargar el dashboard.")
+        return jsonify({"status": "error", "message": "No se pudo cargar el dashboard."}), 500
+
+
+@app.route("/api/reportes/ventas", methods=["GET"])
+def api_reportes_ventas():
+    conexion = None
+    try:
+        conexion = db.obtener_conexion()
+        with conexion.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute("""
+                SELECT 
+                    v.id,
+                    TO_CHAR(v.fecha, 'YYYY-MM-DD') AS fecha,
+                    COALESCE(c.nombre, 'Cliente Mostrador') AS cliente,
+                    v.total AS monto_total,
+                    'Completado' AS estado
+                FROM ventas v
+                LEFT JOIN clientes c ON v.cliente_id = c.id
+                ORDER BY v.fecha DESC, v.id DESC;
+            """)
+            ventas = cursor.fetchall()
+            
+            for v in ventas:
+                if isinstance(v.get("monto_total"), Decimal):
+                    v["monto_total"] = float(v["monto_total"])
+                v["referencia"] = f"VNT-{v['id']:03d}" if isinstance(v['id'], int) else f"VNT-{v['id']}"
+                v["descripcion"] = f"Venta de Hardware / Factura #{v['id']}"
 
         return jsonify({
+            "status": "ok",
+            "ventas": [dict(v) for v in ventas]
+        }), 200
+    except Exception:
+        app.logger.exception("Error al obtener reporte de ventas.")
+        return jsonify({
             "status": "error",
-            "message": "No se pudo cargar el dashboard."
+            "message": "No se pudo cargar el reporte de ventas."
         }), 500
+    finally:
+        if conexion:
+            conexion.close()
+
 
 # =========================================================
-# REGISTRAR VENTAS
+# REGISTRAR Y ELIMINAR VENTAS
 # =========================================================
 
 @app.route("/api/ventas", methods=["POST"])
 def crear_venta():
     try:
         datos = request.get_json(silent=True) or {}
-
         cliente_id = datos.get("cliente_id")
         detalles = datos.get("detalles")
 
         if not isinstance(detalles, list) or not detalles:
-            return jsonify({
-                "status": "error",
-                "message": "La venta debe incluir al menos un producto."
-            }), 400
+            return jsonify({"status": "error", "message": "La venta debe incluir al menos un producto."}), 400
 
         if cliente_id in ("", 0, "0"):
             cliente_id = None
@@ -698,63 +595,30 @@ def crear_venta():
             try:
                 cliente_id = int(cliente_id)
             except (TypeError, ValueError):
-                return jsonify({
-                    "status": "error",
-                    "message": "El identificador del cliente no es válido."
-                }), 400
+                return jsonify({"status": "error", "message": "Cliente no válido."}), 400
 
-        venta_id = db.registrar_venta(
-            cliente_id=cliente_id,
-            detalles=detalles
-        )
-
-        return jsonify({
-            "status": "ok",
-            "message": "Venta registrada correctamente.",
-            "venta_id": venta_id
-        }), 201
+        venta_id = db.registrar_venta(cliente_id=cliente_id, detalles=detalles)
+        return jsonify({"status": "ok", "message": "Venta registrada.", "venta_id": venta_id}), 201
 
     except ValueError as e:
-        return jsonify({
-            "status": "error",
-            "message": str(e)
-        }), 400
-
+        return jsonify({"status": "error", "message": str(e)}), 400
     except Exception:
         app.logger.exception("Error al registrar venta.")
+        return jsonify({"status": "error", "message": "No se pudo registrar la venta."}), 500
 
-        return jsonify({
-            "status": "error",
-            "message": (
-                "No se pudo registrar la venta. "
-                "Revisa el stock y los registros de Render."
-            )
-        }), 500
 
 @app.route("/api/ventas/<int:venta_id>", methods=["DELETE"])
 @solo_administrador
 def borrar_venta(venta_id):
     try:
         db.eliminar_venta(venta_id)
-
-        return jsonify({
-            "status": "ok",
-            "message": "Venta eliminada correctamente"
-        }), 200
-
+        return jsonify({"status": "ok", "message": "Venta eliminada correctamente"}), 200
     except ValueError as error:
-        return jsonify({
-            "status": "error",
-            "message": str(error)
-        }), 400 
-
+        return jsonify({"status": "error", "message": str(error)}), 400 
     except Exception:
         app.logger.exception("Error al eliminar la venta %s", venta_id)
+        return jsonify({"status": "error", "message": "No se pudo eliminar la venta"}), 500
 
-        return jsonify({
-            "status": "error",
-            "message": "No se pudo eliminar la venta"
-        }), 500
 
 # =========================================================
 # CHAT CON GEMINI
@@ -763,165 +627,61 @@ def borrar_venta(venta_id):
 @app.route("/chat", methods=["POST"])
 def chat():
     try:
-        # 1. Recibir y validar los datos del frontend
         datos = request.get_json(silent=True) or {}
-
-        # Aceptar ambos nombres para mantener compatibilidad
-        pregunta = (
-            datos.get("mensaje") or datos.get("pregunta") or ""
-        ).strip()
+        pregunta = (datos.get("mensaje") or datos.get("pregunta") or "").strip()
 
         if not pregunta:
-            return jsonify({
-                "status": "error",
-                "respuesta": "Escribe una pregunta.",
-                "message": "Escribe una pregunta."
-            }), 400
+            return jsonify({"status": "error", "respuesta": "Escribe una pregunta."}), 400
 
-        # 2. Comprobar que Gemini esté configurado
         if not cliente_gemini:
-            return jsonify({
-                "status": "error",
-                "respuesta": (
-                    "El asistente de IA no está configurado. "
-                    "Verifica GEMINI_API_KEY en las variables "
-                    "de entorno de Render."
-                ),
-                "message": "Gemini no está configurado."
-            }), 503
+            return jsonify({"status": "error", "respuesta": "Gemini no está configurado."}), 503
 
-        # 3. Obtener los productos de la base de datos actual
-        productos = db.obtener_productos()
-
-        if productos is None:
-            productos = []
-
-        # 4. Preparar los datos para la IA
+        productos = db.obtener_productos() or []
         contexto = []
-
         for producto in productos:
             contexto.append({
-                "id": producto.get(
-                    "id", producto.get("producto_id")
-                ),
+                "id": producto.get("id"),
                 "nombre": producto.get("nombre", "Sin nombre"),
-                "stock": producto.get(
-                    "stock", producto.get("stock_actual", 0)
-                ),
-                "stock_minimo": producto.get(
-                    "stock_minimo",
-                    producto.get("stockMinimo", 5)
-                ),
+                "stock": producto.get("stock", 0),
                 "categoria": producto.get("categoria", "General"),
                 "precio": producto.get("precio"),
                 "ubicacion": producto.get("ubicacion", "productos")
             })
 
-        # 5. Crear el prompt con los datos reales disponibles
         prompt = f"""
 Eres el asistente inteligente de inventario de OCTO ERP.
-
-INSTRUCCIONES:
-- Responde siempre en español.
-- Sé claro, amable y práctico.
-- Utiliza los datos reales proporcionados.
-- No inventes productos, precios, cantidades ni ventas.
-- Si un dato no está disponible, indícalo claramente.
-- Si te preguntan por el inventario, utiliza el contexto.
-- Si no hay productos registrados, informa que el inventario está vacío.
-- Puedes recomendar revisar o reabastecer productos con poco stock,
-  pero no afirmes que se vendieron unidades si no tienes ese dato.
-
-INVENTARIO ACTUAL:
-{contexto}
-
-PREGUNTA DEL USUARIO:
-{pregunta}
+INSTRUCCIONES: Responde en español, sé claro y práctico con datos reales.
+INVENTARIO: {contexto}
+PREGUNTA: {pregunta}
 """
 
-        # 6. Consultar Gemini con reintentos automáticos
         modelo = os.getenv("GEMINI_MODEL", "gemini-3.7-flash")
-        app.logger.info(
-            "Modelo de Gemini configurado: %s", modelo
-        )
-
         respuesta = None
 
         for intento in range(3):
             try:
-                respuesta = cliente_gemini.models.generate_content(
-                    model=modelo,
-                    contents=prompt
-                )
+                respuesta = cliente_gemini.models.generate_content(model=modelo, contents=prompt)
                 break
-
             except errors.ServerError as error:
-                # Reintentar únicamente ante el error HTTP 503
                 if "503" not in str(error) or intento == 2:
                     raise
+                time.sleep(2 ** (intento + 1))
 
-                espera = 2 ** (intento + 1)
-
-                app.logger.warning(
-                    "Gemini está temporalmente saturado. "
-                    "Intento %s de 3. Nuevo intento en %s segundos.",
-                    intento + 1,
-                    espera
-                )
-
-                time.sleep(espera)
-
-        # 7. Comprobar que Gemini haya generado texto
         texto = getattr(respuesta, "text", None)
-
         if not texto or not texto.strip():
-            texto = (
-                "No pude generar una respuesta en este momento. "
-                "Inténtalo nuevamente."
-            )
+            texto = "No pude generar una respuesta en este momento."
 
-
-        # 8. Enviar una respuesta compatible con el frontend
-        return jsonify({
-            "status": "ok",
-            "respuesta": texto
-        }), 200
+        return jsonify({"status": "ok", "respuesta": texto}), 200
 
     except Exception as error:
-        app.logger.exception(
-            "Error en la ruta /chat de OCTO ERP. "
-            "Tipo de error: %s",
-            type(error)._name_
-        )
+        app.logger.exception("Error en la ruta /chat.")
+        return jsonify({"status": "error", "respuesta": "No se pudo procesar la consulta."}), 500
 
-        return jsonify({
-            "status": "error",
-            "respuesta": (
-                "No se pudo procesar la consulta. "
-                "Inténtalo nuevamente."
-            ),
-            "message": (
-                "Error al consultar el asistente de IA."
-            )
-        }), 500
 
 # =========================================================
-# MANEJO DE ARCHIVOS DEMASIADO GRANDES
+# RECUPERACIÓN DE CONTRASEÑA
 # =========================================================
 
-@app.errorhandler(413)
-def archivo_demasiado_grande(error):
-    return jsonify({
-        "status": "error",
-        "message": (
-            "La solicitud supera el límite de 5 MB. "
-            "Reduce el tamaño de la imagen e inténtalo de nuevo."
-        )
-    }), 413
-
-#=======================================================
-#Recuperar contraseña
-#=======================================================
 resend.api_key = os.getenv("RESEND_API_KEY")
 
 @app.route("/api/recuperar-password", methods=["POST"])
@@ -930,26 +690,17 @@ def recuperar_password():
     correo = (datos.get("correo") or "").strip().lower()
 
     if not correo:
-        return jsonify({
-            "mensaje": "Ingresa tu correo"
-        }), 400
+        return jsonify({"mensaje": "Ingresa tu correo"}), 400
 
     try:
         usuario = db.obtener_usuario_por_correo(correo)
-
-        mensaje = (
-            "Si el correo esta registrado, "
-            "recibiras las instrucciones para recuperar la contraseña"
-        )
+        mensaje = "Si el correo esta registrado, recibiras las instrucciones"
 
         if not usuario:
             return jsonify({"mensaje": mensaje}), 200
 
         if not os.getenv("RESEND_API_KEY"):
-            app.logger.error("Falta configurar RESEND_API_KEY")
-            return jsonify({
-                "mensaje": "El servidor de correo no está configurado"
-            }), 500
+            return jsonify({"mensaje": "El servidor de correo no está configurado"}), 500
 
         token = firmador.dumps({
             "id": usuario["id"],
@@ -957,10 +708,7 @@ def recuperar_password():
             "password_hash": usuario["password"]
         })
 
-        enlace = (
-            "https://octo-erp.com/restablecer"
-            f"?token={token}"
-        )
+        enlace = f"https://octo-erp.com/restablecer?token={token}"
 
         params = {
             "from": "onboarding@resend.dev",
@@ -969,37 +717,27 @@ def recuperar_password():
             "html": f"""
                 <div style="font-family:Arial,sans-serif;color:#333;">
                 <h2>Recuperación de contraseña</h2>
-                <p>Has solicitado restablecer tu contraseña</p>
                 <p>Haz click en el siguiente botón para continuar:</p>
-                <a href="{enlace}" style="background:#007bff;color:white;padding:12px 20px;text-decoration:none; 
-                border-radius:5px;display:inline-block;"> Restablecer contraseña </a>
-                <p>Este enlace caduca en 30 minutos</p>
-                <p>Si no solicitaste este cambio, ignora este mensaje</p>
+                <a href="{enlace}" style="background:#007bff;color:white;padding:12px 20px;text-decoration:none; border-radius:5px;display:inline-block;"> Restablecer contraseña </a>
                 </div>
-                """
+            """
         }
 
-        resend.Emails.sed(params)
-
-        app.logger.info("Correo de recuperación enviado")
+        resend.Emails.send(params)
         return jsonify({"mensaje": mensaje}), 200
 
     except Exception:
-        app.logger.exception(
-            "Error al solicitar la recuperacion de contraseña"
-        )
-        return jsonify({
-            "mensaje": "No se pudo enviar el correo. Intente más tarde"
-        }), 500
+        app.logger.exception("Error al solicitar recuperación.")
+        return jsonify({"mensaje": "No se pudo enviar el correo."}), 500
+
 
 @app.route("/restablecer", methods=["GET"])
 def pagina_restablecer():
     token = request.args.get("token", "")
-
     if not token:
-        return "El enlace de recuperación no es valido", 400
+        return "El enlace de recuperación no es válido", 400
 
-    return"""
+    return f"""
         <!DOCTYPE html>
         <html lang="es">
         <head>
@@ -1007,225 +745,120 @@ def pagina_restablecer():
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Restablecer contraseña</title>
             <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    background: #f3f5fa;
-                    display:grid;
-                    place-items: center;
-                    min-height: 100vh;
-                    margin: 0;
-                }
-                main {
-                    background: white;
-                    padding: 30px;
-                    border-radius: 14px;
-                    width: min(360px, calc(100% - 60px));
-                    box-shadow: 0 8px 30px #0001;
-                }
-                h1 {
-                    font-size: 24px;
-                }
-                label{
-                    display: block;
-                    margin-top: 16px;
-                }
-                input, button {
-                    box-sizing: border-box;
-                    width: 100%;
-                    padding: 12px;
-                    margin-top: 8px;
-                    border-radius: 7px;
-                }
-                input {
-                    border: 1px solid #ccc;
-                }
-                button {
-                    border: 0;
-                    background: #19196c;
-                    color: white;
-                    cursor: pointer;
-                    margin-top: 22px;
-                }
-                mensaje {
-                    margin-top: 16px;
-                }
+                body {{ font-family: Arial, sans-serif; background: #f3f5fa; display:grid; place-items: center; min-height: 100vh; margin: 0; }}
+                main {{ background: white; padding: 30px; border-radius: 14px; width: min(360px, calc(100% - 60px)); box-shadow: 0 8px 30px #0001; }}
+                input, button {{ box-sizing: border-box; width: 100%; padding: 12px; margin-top: 8px; border-radius: 7px; }}
+                input {{ border: 1px solid #ccc; }}
+                button {{ border: 0; background: #19196c; color: white; cursor: pointer; margin-top: 22px; }}
             </style>
         </head>
         <body>
             <main>
                 <h1>Nueva contraseña</h1>
                 <p>Escribe y confirma tu nueva contraseña</p>
-
                 <form id="formRestablecer">
                     <label for="password">Nueva contraseña</label>
-                    <input id="password" type="password" minlength="6" autocomplete="new-password" required>
+                    <input id="password" type="password" minlength="6" required>
                     <label for="confirmar">Confirmar contraseña</label>
-                    <input id="confirmar" type="password" minlegth="6" autocomplete="new-password" required>
+                    <input id="confirmar" type="password" minlength="6" required>
                     <button id="btnCambiar" type="submit">Cambiar contraseña</button>
-                    <p id="mensaje" role="status"></p>
+                    <p id="mensaje"></p>
                 </form>
             </main>
-
             <script>
-                const form = document.gelElementById("formRestablecer");
-                const mensaje = document.gelElementById("mensaje")';
-                const boton = document.gelElementById("btnCambiar")';
-                const token = new URLSearchParams(window.locate.search).get("token")';
+                const form = document.getElementById("formRestablecer");
+                const mensaje = document.getElementById("mensaje");
+                const boton = document.getElementById("btnCambiar");
+                const token = new URLSearchParams(window.location.search).get("token");
 
-                form.addEventListener("submit), async(e) => {
+                form.addEventListener("submit", async (e) => {{
                     e.preventDefault();
-                    
                     const password = document.getElementById("password").value;
-                    const confirmar = document.gelElemenrById}("confirmar").value;
+                    const confirmar = document.getElementById("confirmar").value;
 
-                    if (!token) {
-                        mensaje.textContent = "El enlace no contiene un token valido";
+                    if (!token) {{
+                        mensaje.textContent = "El enlace no contiene un token válido";
                         return;
-                    }
-
-                    if (password !== confirmar) {
+                    }}
+                    if (password !== confirmar) {{
                         mensaje.textContent = "Las contraseñas no coinciden";
                         return;
-                    }
+                    }}
 
-                    boton.disable = true;
+                    boton.disabled = true;
                     mensaje.textContent = "Actualizando contraseña...";
 
-                    try:
-                        const respuesta = await fetch("/api/restablecer-password", 
-                            {
-                                method="POST",
-                                headers: {
-                                    "Content-Type": "application/json"
-                                },
-                                body: JSON.stringify({
-                                    token: token,
-                                    password: password
-                                })
-                            }
-                        );
+                    try {{
+                        const respuesta = await fetch("/api/restablecer-password", {{
+                            method: "POST",
+                            headers: {{ "Content-Type": "application/json" }},
+                            body: JSON.stringify({{ token: token, password: password }})
+                        }});
                         
                         const datos = await respuesta.json();
-
-                        if (!respuesta.ok) {
+                        if (!respuesta.ok) {{
                             mensaje.textContent = datos.mensaje || "No se pudo cambiar la contraseña";
+                            boton.disabled = false;
                             return;
-                        }
+                        }}
 
                         form.reset();
                         mensaje.textContent = "Contraseña actualizada. Ya puedes iniciar sesión";
-
-                        const enlace = document.createElement("a");
-                        enlace.href = "https://eddersalazarguillen28-dot.github.io/";
-                        enlace.textContent = "Ir al inicio";
-                        mensaje.appendChild(enlace);
                         boton.hidden = true;
-                                
-                        window.history.replaceState(
-                            {}, document.title, window.location.pathname
-                        );
-                    } catch (error) {
-                        console.error("Error de conexión:", error);
-                        mensaje.textContent = "Error de conexión. Inténtalo nuevamente";
-                    } finally {
-                        boton,disabled = false;
-                    }
-                });
+                    }} catch (error) {{
+                        console.error("Error:", error);
+                        mensaje.textContent = "Error de conexión.";
+                        boton.disabled = false;
+                    }}
+                }});
             </script>   
         </body>
         </html>
-        """
+    """
+
 
 @app.route("/api/restablecer-password", methods=["POST"])
 def restablecer_password():
     datos = request.get_json(silent=True) or {}
-
     token = datos.get("token") or ""
     password = datos.get("password") or ""
 
-    if not token or not password:
-        return jsonify({
-            "mensaje": "Faltan el token o la nueva contraseña"
-        }), 400
-
-    if len(password) < 6:
-        return jsonify({
-            "mensaje": "La contraseña debe tener al menos 6 caracteres"
-        }), 400
+    if not token or not password or len(password) < 6:
+        return jsonify({"mensaje": "Datos no válidos"}), 400
 
     try:
         datos_token = firmador.loads(token, max_age=1800)
-
     except (BadSignature, SignatureExpired):
-        return jsonify({
-            "mensaje": ("El enlace es inválidoo ha caducado " "Solicita uno nuevo")
-        }), 400
+        return jsonify({"mensaje": "El enlace ha caducado"}), 400
 
-    if datos_token.get("accion") != "restablecer_pasword":
-        return jsonify({
-            "mensaje": "El token no corresponde a una recuperación"
-        }), 400
+    if datos_token.get("accion") != "restablecer_password":
+        return jsonify({"mensaje": "Token no corresponde"}), 400
 
     conexion = None
-
     try:
         conexion = db.obtener_conexion()
-
         with conexion.cursor() as cursor:
-            cursor.execute("""
-                SELECT password
-                FROM usuarios
-                WHERE id = %s
-                FOR UPDATE;
-                """, (datos_token.get("id",)))
-
+            cursor.execute("SELECT password FROM usuarios WHERE id = %s FOR UPDATE;", (datos_token.get("id"),))
             usuario = cursor.fetchone()
 
-            if not usuario:
-                return jsonify({
-                    "mensaje": "La cuenta ya no existe"
-               }), 400
-            
-            if  usuario["password"] != datos_token.get("password_hash"):
-                return jsonify({
-                    "mensaje": (
-                        "Este enlace ya fue utilizado o dejó de ser válido "
-                        "Solicita uno nuevo"
-                    )
-                }), 400
+            if not usuario or usuario["password"] != datos_token.get("password_hash"):
+                return jsonify({"mensaje": "Enlace ya utilizado o no válido"}), 400
 
             nuevo_hash = generate_password_hash(password)
-
-            cursor.execute("""
-                UPDATE usuarios
-                SET password = %s
-                WHERE ID = %s
-                """, (nuevo_hash, datos_token["id"]))
+            cursor.execute("UPDATE usuarios SET password = %s WHERE id = %s", (nuevo_hash, datos_token["id"]))
 
         conexion.commit()
-
-        return jsonify({
-            "mensaje": "Contraseña actualizada correctamente"
-        }), 200
+        return jsonify({"mensaje": "Contraseña actualizada correctamente"}), 200
 
     except Exception:
         if conexion:
             conexion.rollback()
-
-        app.logger.exception(
-            "Error al actualizar la constraseña"
-        )
-
-        return jsonify({
-            "mensaje": "No se pudo actualizarl a contraseña"
-        }), 500
-
+        app.logger.exception("Error al actualizar contraseña")
+        return jsonify({"mensaje": "No se pudo actualizar"}), 500
     finally:
         if conexion:
             conexion.close()
 
-print("RUTAS REGISTRADAS EN FLASK: ")
-print(app.url_map)
 
 if __name__ == "__main__":
     puerto = int(os.environ.get("PORT", 5000))
