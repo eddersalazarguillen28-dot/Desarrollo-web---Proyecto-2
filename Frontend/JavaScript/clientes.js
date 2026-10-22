@@ -179,11 +179,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const activos = document.getElementById("clientesActivos");
         const inactivos = document.getElementById("clientesInactivos");
         const contador = document.getElementById("contadorClientes");
-        const totalVentas = document.getElementById("totalVentas");
-
-        if (totalVentas) {
-            totalVentas.textContent = listaClientes.reduce((suma, cliente) => suma + Number(cliente.ventas_registradas || 0), 0);        
-        }
 
         if (total) total.textContent = listaClientes.length;
         if (activos) {
