@@ -63,63 +63,13 @@
                                 </tr>
                             </thead>
                             <tbody id="cuerpoReporte">
-                                <tr data-referencia="VNT-001">
-                                    <td>2026-10-12</td>
-                                    <td>#VNT-001</td>
-                                    <td>Ana Torres - Laptop Dell XPS</td>
-                                    <td>₡999,000</td>
-                                    <td><span class="estado-completado">Completado</span></td>
-                                    <td>
-                                        <button class="btn-pdf" onclick="generarFacturaPDF({
-                                            numeroFactura: 'VNT-001',
-                                            fecha: '2026-10-12',
-                                            cliente: 'Ana Torres',
-                                            descripcion: 'Laptop Dell XPS',
-                                            montoTotal: 999000,
-                                            estado: 'Completado'
-                                        })">PDF</button>
-                                    </td>
-                                </tr>
-                                <tr data-referencia="VNT-002">
-                                    <td>2026-10-10</td>
-                                    <td>#VNT-002</td>
-                                    <td>Cliente Mostrador - Mouse Inalámbrico</td>
-                                    <td>₡25,000</td>
-                                    <td><span class="estado-completado">Completado</span></td>
-                                    <td>
-                                        <button class="btn-pdf" onclick="generarFacturaPDF({
-                                            numeroFactura: 'VNT-002',
-                                            fecha: '2026-10-10',
-                                            cliente: 'Cliente Mostrador',
-                                            descripcion: 'Mouse Inalámbrico',
-                                            montoTotal: 25000,
-                                            estado: 'Completado'
-                                        })">PDF</button>
-                                    </td>
-                                </tr>
-                                <tr data-referencia="VNT-003">
-                                    <td>2026-10-08</td>
-                                    <td>#VNT-003</td>
-                                    <td>Carlos Ruiz - Monitor 24"</td>
-                                    <td>₡199,000</td>
-                                    <td><span class="estado-pendiente">Pendiente</span></td>
-                                    <td>
-                                        <button class="btn-pdf" onclick="generarFacturaPDF({
-                                            numeroFactura: 'VNT-003',
-                                            fecha: '2026-10-08',
-                                            cliente: 'Carlos Ruiz',
-                                            descripcion: 'Monitor 24',
-                                            montoTotal: 199000,
-                                            estado: 'Pendiente'
-                                        })">PDF</button>
-                                    </td>
-                                </tr>
+                                <!-- Se llena dinámicamente desde la Base de Datos (PostgreSQL) -->
                             </tbody>
                         </table>
                     </div>
 
                     <div class="footer-tabla">
-                        <span id="contadorReporte">Mostrando facturas registradas</span>
+                        <span id="contadorReporte">Cargando facturas...</span>
                         
                         <div class="btnPaginas">
                             <button>&lt;</button>
@@ -139,7 +89,7 @@
             
             <div class="factura-header">
                 <div>
-                    <h1 class="factura-titulo">OctoERP / StepStyle</h1>
+                    <h1 class="factura-titulo">OctoERP / Tech Store</h1>
                     <p class="factura-subtitulo">Comprobante de Venta / Reporte Individual</p>
                 </div>
                 <div class="factura-header-derecha">

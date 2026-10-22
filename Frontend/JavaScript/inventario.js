@@ -35,6 +35,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (guardarBtn) guardarBtn.textContent = "Guardar Producto";
         if (btnCancelarForm) btnCancelarForm.hidden = true;
         if (mensajeForm) mensajeForm.textContent = "";
+
+        const grupoOferta = document.getElementById("grupo-precio-oferta");
+        if (grupoOferta) grupoOferta.style.display = "none";
     }
 
     // =====================================================
@@ -111,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px;">Cargando inventario...</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 20px;">Cargando inventario...</td></tr>`;
 
         try {
             const respuesta = await consultarAPI("/api/productos");
@@ -119,13 +122,13 @@ document.addEventListener("DOMContentLoaded", () => {
             renderizarTabla();
         } catch (error) {
             console.error("Error cargando inventario:", error);
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px; color: #dc3545;">No se pudo cargar el inventario. Revisá la conexión con Render.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 20px; color: #dc3545;">No se pudo cargar el inventario. Revisá la conexión con Render.</td></tr>`;
             if (contador) contador.textContent = "Error al cargar los productos";
         }
     }
 
     // =====================================================
-    // MOSTRAR PRODUCTOS Y BUSCADOR EN TIEMPO REAL
+    // MOSTRAR PRODUCTOS Y BUSCADOR EN TIEMPO REAL (7 Columnas)
     // =====================================================
     function renderizarTabla() {
         if (!tbody) return;
@@ -137,11 +140,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const filtrados = inventario.filter(prod =>
             (prod.nombre || "").toLowerCase().includes(texto) ||
             (prod.categoria || "").toLowerCase().includes(texto) ||
-            (prod.sku || `#PROD-${prod.id}`).toLowerCase().includes(texto)
+            (prod.ubicacion || "").toLowerCase().includes(texto)
         );
 
         if (filtrados.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px;">No hay productos registrados.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 20px;">No hay productos registrados.</td></tr>`;
             if (contador) contador.textContent = "No hay productos en inventario";
             return;
         }
@@ -151,7 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const stock = Number(prod.stock) || 0;
             const claseStock = stock > 10 ? "good" : "low";
 
-            // Columna de imagen
+            // 1. Columna de imagen
             const imagenTd = document.createElement("td");
             const contenedorImagen = document.createElement("div");
             contenedorImagen.className = "imagen-producto";
@@ -245,24 +248,24 @@ document.addEventListener("DOMContentLoaded", () => {
             imagenTd.appendChild(contenedorImagen);
             tr.appendChild(imagenTd);
 
-            // Nombre
+            // 2. Columna Nombre del Artículo
             const nombreTd = document.createElement("td");
             const nombreStrong = document.createElement("strong");
             nombreStrong.textContent = prod.nombre || "";
             nombreTd.appendChild(nombreStrong);
             tr.appendChild(nombreTd);
 
-            // Categoría
+            // 3. Columna Ubicación
+            const ubicacionTd = document.createElement("td");
+            ubicacionTd.textContent = prod.ubicacion || "productos";
+            tr.appendChild(ubicacionTd);
+
+            // 4. Columna Categoría
             const catTd = document.createElement("td");
             catTd.textContent = prod.categoria || "General";
             tr.appendChild(catTd);
 
-            // Código SKU
-            const skuTd = document.createElement("td");
-            skuTd.textContent = prod.sku || `#PROD-${prod.id}`;
-            tr.appendChild(skuTd);
-
-            // Stock
+            // 5. Columna Stock Actual
             const stockTd = document.createElement("td");
             const stockSpan = document.createElement("span");
             stockSpan.className = `stock ${claseStock}`;
@@ -270,7 +273,18 @@ document.addEventListener("DOMContentLoaded", () => {
             stockTd.appendChild(stockSpan);
             tr.appendChild(stockTd);
 
-            // Acciones
+            // 6. Columna Precio (Muestra precio base y oferta si aplica)
+            const precioTd = document.createElement("td");
+            const precioBaseNum = Number(prod.precio || 0).toLocaleString();
+            if (prod.precio_oferta !== null && prod.precio_oferta !== undefined && prod.precio_oferta !== "") {
+                const precioOfertaNum = Number(prod.precio_oferta).toLocaleString();
+                precioTd.innerHTML = `<span style="text-decoration: line-through; color: #94a3b8; font-size: 12px;">₡${precioBaseNum}</span><br><strong style="color: #ea580c;">₡${precioOfertaNum}</strong>`;
+            } else {
+                precioTd.innerHTML = `<strong>₡${precioBaseNum}</strong>`;
+            }
+            tr.appendChild(precioTd);
+
+            // 7. Columna Acciones
             const accionesTd = document.createElement("td");
             const acciones = document.createElement("div");
             acciones.className = "actions";
@@ -307,10 +321,30 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("nombreProd").value = prod.nombre || "";
         document.getElementById("descProd").value = prod.descripcion || "";
         document.getElementById("categoriaProd").value = prod.categoria || "General";
-        document.getElementById("skuProd").value = prod.sku || `#PROD-${prod.id}`;
         document.getElementById("stockProd").value = prod.stock ?? 0;
         document.getElementById("precioProd").value = prod.precio ?? 0;
 
+        // Cargar ubicación seleccionada
+        const selectUbicacion = document.getElementById("ubicacionProd");
+        if (selectUbicacion) {
+            selectUbicacion.value = prod.ubicacion || "productos";
+        }
+
+        // Cargar precio de oferta y mostrar/ocultar su contenedor
+        const inputOferta = document.getElementById("precioOfertaProd");
+        const grupoOferta = document.getElementById("grupo-precio-oferta");
+        
+        if (inputOferta) {
+            inputOferta.value = prod.precio_oferta ?? "";
+        }
+
+        if (grupoOferta) {
+            if (prod.ubicacion === "descuentos") {
+                grupoOferta.style.display = "flex";
+            } else {
+                grupoOferta.style.display = "none";
+            }
+        }
 
         if (tituloForm) tituloForm.textContent = "Ajustar Producto";
         if (subtituloForm) subtituloForm.textContent = "Modifica existencias o datos del producto";
@@ -356,7 +390,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const nombre = document.getElementById("nombreProd")?.value.trim() || "";
         const descripcion = document.getElementById("descProd")?.value.trim() || "";
         const categoria = document.getElementById("categoriaProd")?.value.trim() || "General";
-        const sku = document.getElementById("skuProd")?.value.trim() || "";
         const stock = Number(document.getElementById("stockProd")?.value || 0);
         const precio = Number(document.getElementById("precioProd")?.value || 0);
         const ubicacion = document.getElementById("ubicacionProd")?.value.trim() || "productos";
@@ -383,12 +416,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 cuerpo.append("nombre", nombre);
                 cuerpo.append("descripcion", descripcion);
                 cuerpo.append("categoria", categoria);
-                cuerpo.append("sku", sku);
                 cuerpo.append("precio", String(precio));
                 cuerpo.append("stock", String(stock));
-                cuerpo.append("ubicacion", ubicacion); // 👈 Añadir esto
+                cuerpo.append("ubicacion", ubicacion);
                 if (precioOferta) {
-                    cuerpo.append("precio_oferta", precioOferta); // 👈 Añadir esto
+                    cuerpo.append("precio_oferta", precioOferta);
                 }
                 cuerpo.append("imagen", archivo);
             } else {
@@ -396,11 +428,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     nombre,
                     descripcion,
                     categoria,
-                    sku,
                     precio,
                     stock,
-                    ubicacion, // 👈 Añadir esto
-                    precio_oferta: precioOferta ? Number(precioOferta) : null // 👈 Añadir esto
+                    ubicacion,
+                    precio_oferta: precioOferta ? Number(precioOferta) : null
                 });
             }
 
@@ -424,7 +455,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if (mensajeForm) mensajeForm.textContent = error.message;
         }
     });
-
 
     // =====================================================
     // EVENTOS Y CONTROLES
