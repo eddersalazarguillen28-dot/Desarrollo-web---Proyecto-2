@@ -515,24 +515,14 @@ def obtener_clientes():
         with conn.cursor() as cursor:
             cursor.execute("""
                 SELECT
-                    c.id,
-                    c.nombre,
-                    c.telefono,
-                    c.correo,
-                    c.direccion,
-                    c.estado,
-                    COUNT(v.id)::INTEGER AS ventas_registradas
-                FROM clientes AS c
-                LEFT JOIN ventas AS v 
-                ON v.cliente_id = c.id
-                GROUP BY
-                    c.id,
-                    c.nombre,
-                    c.telefono,
-                    c.correo,
-                    c.direccion,
-                    c.estado,
-                ORDER BY c.id DESC;
+                    id,
+                    nombre,
+                    telefono,
+                    correo,
+                    direccion,
+                    estado
+                FROM clientes
+                ORDER BY id DESC;
             """)
 
             return [dict(cliente) for cliente in cursor.fetchall()]
