@@ -80,6 +80,40 @@
             </div>
         </div>
     </header>
+    <!-- ============================================================
+         2. MODAL DEL CARRITO
+         ============================================================ -->
+    <div id="modal-carrito" class="carrito-modal-overlay hidden">
+        <div class="carrito-modal-content">
+
+            <!-- Cabecera del modal -->
+            <div class="carrito-header">
+                <h2>
+                    <svg class="modal-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    Tu Carrito de Compras
+                </h2>
+                <button class="btn-cerrar-carrito" id="btn-cerrar-carrito" aria-label="Cerrar">&times;</button>
+            </div>
+
+            <!-- Lista de items -->
+            <div class="carrito-body" id="carrito-items-lista">
+                <p class="carrito-vacio-msg">Tu carrito está vacío actualmente.</p>
+            </div>
+
+            <!-- Pie del modal: total y botón de compra -->
+            <div class="carrito-footer">
+                <div class="carrito-total-row">
+                    <span>Total a pagar:</span>
+                    <span id="carrito-monto-total">₡0</span>
+                </div>
+                <button class="btn-procesar-compra" id="btn-finalizar-compra">Finalizar Compra</button>
+            </div>
+
+        </div>
+    </div>
+
 
     <!--Hero-->
     <section class="hero">
