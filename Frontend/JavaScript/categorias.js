@@ -22,6 +22,8 @@ function cambiarTema(){
 
 }
 
+
+
 //Cargar productos dede el render
 
 async function cargarCategoriasDesdeAPI() {

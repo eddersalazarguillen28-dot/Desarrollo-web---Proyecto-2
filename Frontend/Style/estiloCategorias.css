@@ -3,24 +3,35 @@
    ============================================================ */
 
 /* Tema claro */
-:root[data-theme="light"] {
-    --bg-base: #f4f6fb;
-    --bg-surface: #ffffff;
-    --bg-dark-navy: #111029;
+/*VARIABLES DE COLORES*/
+:root[data-theme="light"]{
+    --bg-base: #f4f6fb;             
+    --bg-surface: #ffffff;          
+    --bg-dark-navy: #111029;        
     --text-primary: #1f2937;
-    --text-muted: #6b7280;
+    --text-muted: #6b7280;          
     --border-color: #e2e8f0;
-    --primary-purple: #6c5ce7;
-    --price-green: #059669;
+    --primary-purple: #6c5ce7;      
+    --price-green: #059669;         
     --price-green-hover: #047857;
     --shadow-card: 0 4px 15px rgba(17, 16, 41, 0.05);
     --navbar-bg: rgba(255, 255, 255, 0.92);
-    --cards-bg: linear-gradient(135deg, var(--bg-surface) 0%, #e4e3fa 100%);
+    --cards-bg:linear-gradient(135deg,var(--bg-surface) 0%, #e4e3fa 100%);
+    --border-subtle: #cbd5e1;
+    --modal-bg: #ffffff;
+    --border-glow: rgba(108, 92, 231, 0.35);
+    --emerald-green: #059669;
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
+    --modal-card-bg: #f8fafc;
+    --warn: #fbbf24;
+    --purple-hover: #5b4bc4;
+    --cyan-neon: #0284c7;
+
 }
 
-/* Tema oscuro */
+
 :root[data-theme="dark"] {
-    --bg-base: #0c0b1a;
+    --bg-base: #0c0b1a;             
     --bg-surface: #151428;
     --bg-dark-navy: #0c0b1a;
     --text-primary: #f3f4f6;
@@ -31,8 +42,19 @@
     --price-green-hover: #059669;
     --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
     --navbar-bg: rgba(21, 20, 40, 0.92);
-    --cards-bg: linear-gradient(135deg, var(--bg-dark-navy) 0%, #1c1a40 100%);
+    --cards-bg:linear-gradient(135deg,var(--bg-dark-navy) 0%, #1c1a40 100%);
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --modal-bg: #0a1226;
+    --border-glow: rgba(113, 104, 255, 0.5);
+    --emerald-green: #00f5a0;
+    --shadow-soft: 0 12px 35px rgba(0, 0, 0, 0.5);
+    --modal-card-bg: #121e3d;
+    --danger: #ef4444;
+    --purple-hover: #5d53ea;
+    --cyan-neon: #00f2fe;
+    --font-display: 'Sora', 'Segoe UI', system-ui, sans-serif;
 }
+
 
 
 /* ============================================================
@@ -60,146 +82,214 @@ body {
 }
 
 
-/* ============================================================
-   Iconos reutilizables
-   ============================================================ */
-.svg-icon {
-    width: 23px;
-    height: 22px;
-}
-
-.svg-icon-sm {
-    width: 18px;
-    height: 18px;
-    margin-right: 8px;
-    color: var(--primary-purple);
-}
-
-
-/* ============================================================
-   Barra de navegación superior
-   ============================================================ */
-.navbar-cliente {
+/* ------------------------------------------------------------
+   Barra de navegación
+   ------------------------------------------------------------ */
+.navbar-octo {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     z-index: 1000;
     background-color: var(--navbar-bg);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border-color);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
-.navbar-container {
+.nav-container {
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 14px 24px;
+    padding: 12px 24px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    position: relative;
 }
 
-/* Logo de OctoERP */
-.logo-brand {
-    text-decoration: none;
+/* Logo */
+.nav-logo {
     display: flex;
     align-items: center;
     gap: 10px;
-}
-
-.logo-icono {
-    width: 34px;
-    height: 34px;
-    object-fit: contain;
-}
-
-.logo-texto {
+    text-decoration: none;
+    font-family: var(--font-display);
     font-size: 22px;
     font-weight: 800;
     color: var(--text-primary);
-    letter-spacing: -0.5px;
 }
 
-.logo-highlight {
+.nav-logo img {
+    height: 36px;
+    width: auto;
+    transition: transform 0.4s ease;
+}
+
+.nav-logo:hover img {
+    transform: rotate(-8deg) scale(1.08);
+}
+
+.nav-logo span span {
     color: var(--primary-purple);
 }
 
-/* Enlaces del menú */
+/* Enlaces de navegación */
 .nav-links {
     display: flex;
-    gap: 20px;
+    align-items: center;
+    gap: 28px;
 }
 
-.nav-link {
+.auth-buttons-mobile {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.nav-item {
     text-decoration: none;
     color: var(--text-muted);
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
     position: relative;
-    padding: 4px 0;
+    padding: 6px 0;
+    transition: color 0.2s ease;
 }
 
-/* Línea morada que crece al hover */
-.nav-link::after {
+.nav-item:hover,
+.nav-item.active {
+    color: var(--primary-purple);
+}
+
+/* Lineíta animada debajo del enlace */
+.nav-item::after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 0%;
+    width: 0;
     height: 2px;
-    background-color: var(--primary-purple);
+    background: linear-gradient(90deg, var(--primary-purple), var(--cyan-neon));
     transition: width 0.3s ease;
 }
 
-.nav-link:hover::after,
-.nav-link:active::after {
+.nav-item:hover::after,
+.nav-item.active::after {
     width: 100%;
 }
 
-/* Acciones a la derecha (tema, carrito) */
-.navbar-acciones {
+/* Acciones a la derecha: tema, carrito, menú, auth */
+.nav-actions {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.btn-icon {
+.nav-svg-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.btn-theme-toggle,
+.btn-cart,
+.btn-mobile-menu {
     background: transparent;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-subtle);
     color: var(--text-primary);
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
 }
 
-.btn-icon:hover {
+/* El botón de menú solo aparece en móvil */
+.btn-mobile-menu {
+    display: none;
+}
+
+.btn-theme-toggle:hover,
+.btn-cart:hover,
+.btn-mobile-menu:hover {
     border-color: var(--primary-purple);
     color: var(--primary-purple);
 }
 
-/* Carrito con contador encima */
-.btn-carrito {
-    position: relative;
+/* Girar el icono del sol al pasar el mouse */
+.btn-theme-toggle:hover svg {
+    transform: rotate(90deg);
 }
 
-.carrito-badge {
+.btn-theme-toggle svg {
+    transition: transform 0.4s ease;
+}
+
+/* Contador rojo/verde encima del carrito */
+.cart-count {
     position: absolute;
     top: -4px;
     right: -4px;
-    background-color: var(--price-green);
-    color: #ffffff;
-    font-size: 10px;
-    width: 18px;
+    background-color: var(--emerald-green);
+    color: #000;
+    font-size: 11px;
+    font-weight: 800;
+    min-width: 18px;
     height: 18px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0 4px;
 }
+
+/* Animación cuando se agrega algo al carrito */
+.btn-cart.bump {
+    animation: bump 0.45s ease;
+}
+
+/* Botones de login y registro */
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-nav {
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.btn-login {
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+}
+
+.btn-login:hover {
+    border-color: var(--primary-purple);
+    color: var(--primary-purple);
+}
+
+.btn-register {
+    background-color: var(--primary-purple);
+    color: #fff;
+}
+
+.btn-register:hover {
+    background-color: var(--purple-hover);
+}
+
 
 
 /* ============================================================
