@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,10 +9,11 @@
     <link rel="stylesheet" href="../Style/estiloInventario.css">
     <title>Inventario - OctoERP Tech Store</title>
 </head>
+
 <body id="page-inventario">
     <div id="sidebar-container"></div>
     <div id="header-container"></div>
-    
+
     <div class="main-wrapper">
         <main class="main">
             <!-- Grid principal que acomoda la tabla y el formulario lateral -->
@@ -20,18 +22,23 @@
                 <!-- Sección de Lista de Productos -->
                 <section class="seccion-productos">
                     <div class="contenedorTitulo">
-                        <h2>Inventario</h2>
+                        <div>
+                            <h2>Inventario de Existencias</h2>
+                            <p style="margin: 4px 0 0 0; color: #64748b; font-size: 14px;">Administra el catálogo
+                                general, precios y ofertas en tiempo real</p>
+                        </div>
                         <button class="btnNuevoProducto" id="btn-abrir-modal">
-                            <span>+</span> Ingresar producto
+                            <span>+</span> Ingresar Producto
                         </button>
                     </div>
 
                     <!-- Buscador -->
                     <div class="contenedor-buscador">
-                        <input type="text" id="buscador-inventario" placeholder="Buscar por nombre, SKU, categoría o ubicación...">
+                        <input type="text" id="buscador-inventario"
+                            placeholder=" Buscar por nombre, categoría o ubicación...">
                     </div>
 
-                    <!-- Tabla de Inventario -->
+                    <!-- Tabla de Inventario (7 columnas exactas) -->
                     <div class="contenedorTabla">
                         <table>
                             <thead>
@@ -40,9 +47,8 @@
                                     <th>Nombre del Artículo</th>
                                     <th>Ubicación</th>
                                     <th>Categoría</th>
-                                    <th>Código (SKU)</th>
                                     <th>Stock Actual</th>
-                                    <th>Precio Base</th>
+                                    <th>Precio</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -66,31 +72,33 @@
                     <div class="panel-header">
                         <div>
                             <h2 id="tituloForm">Ingresar Producto</h2>
-                            <p id="subtituloForm">Añade un nuevo producto con imagen y destino en la tienda</p>
+                            <p id="subtituloForm">Añade o modifica las propiedades del producto en la tienda</p>
                         </div>
-                        <button type="button" id="btn-cerrar-form" class="btn-x-panel">✕</button>
+                        <button type="button" id="btn-cerrar-form" class="btn-x-panel" title="Cerrar panel">✕</button>
                     </div>
 
                     <form id="form-nuevo-producto">
                         <input type="hidden" id="prodId">
 
+                        <!-- Nombre del Artículo -->
                         <div class="form-campo">
                             <label for="nombreProd">Nombre del Artículo *</label>
                             <input type="text" id="nombreProd" placeholder="Ej: NVIDIA RTX 4070 Ti Super" required>
                         </div>
-                        
+
+                        <!-- Descripción -->
                         <div class="form-campo">
                             <label for="descProd">Descripción del Producto</label>
                             <textarea id="descProd" rows="3" placeholder="Ej: 16GB GDDR6X, DLSS 3.5..."></textarea>
                         </div>
 
-                        <!-- Ubicación en la tienda y Categoría -->
+                        <!-- Ubicación en la tienda y Categoría (En pareja simétrica) -->
                         <div class="campos-dobles">
                             <div class="form-campo">
-                                <label for="ubicacionProd">Ubicación en la Tienda *</label>
+                                <label for="ubicacionProd">Ubicación / Destino *</label>
                                 <select id="ubicacionProd" required>
-                                    <option value="productos">Catálogo General (Productos)</option>
-                                    <option value="descuentos">Sección de Descuentos 🎃</option>
+                                    <option value="productos">Catálogo General (Tienda)</option>
+                                    <option value="descuentos">Sección de Descuentos </option>
                                     <option value="inicio">Página de Inicio (Destacados)</option>
                                 </select>
                             </div>
@@ -111,20 +119,13 @@
                             </div>
                         </div>
 
-                        <!-- Código SKU y Stock -->
-                        <div class="campos-dobles">
-                            <div class="form-campo">
-                                <label for="skuProd">Código (SKU)</label>
-                                <input type="text" id="skuProd" placeholder="Ej: #GPU-4070">
-                            </div>
-
-                            <div class="form-campo">
-                                <label for="stockProd">Stock Inicial *</label>
-                                <input type="number" id="stockProd" min="0" placeholder="10" required>
-                            </div>
+                        <!-- Stock Inicial (Campo individual bien dimensionado) -->
+                        <div class="form-campo">
+                            <label for="stockProd">Stock Inicial *</label>
+                            <input type="number" id="stockProd" min="0" placeholder="10" required>
                         </div>
 
-                        <!-- Precios (Base y Oferta) -->
+                        <!-- Precios (Base y Oferta en pareja simétrica) -->
                         <div class="campos-dobles">
                             <div class="form-campo">
                                 <label for="precioProd">Precio Base (₡) *</label>
@@ -132,17 +133,18 @@
                             </div>
 
                             <div class="form-campo" id="grupo-precio-oferta" style="display: none;">
-                                <label for="precioOfertaProd" style="color: #ff7700;">Precio con Descuento (₡)</label>
+                                <label for="precioOfertaProd" style="color: #ea580c;">Precio Oferta (₡) *</label>
                                 <input type="number" id="precioOfertaProd" min="0" placeholder="200000">
                             </div>
                         </div>
 
                         <!-- Subir Imagen -->
                         <div class="form-campo">
-                            <label for="imagenProd">Subir Imagen (Opcional)</label>
+                            <label for="imagenProd">Subir Imagen del Producto</label>
                             <input type="file" id="imagenProd" accept="image/*" class="input-file">
                         </div>
 
+                        <!-- Acciones -->
                         <div class="acciones-form">
                             <button type="submit" class="btn-guardar" id="btn-guardar-prod">Guardar Producto</button>
                             <button type="button" id="btn-cancelar-form" class="btn-cancelar" hidden>Cancelar</button>
@@ -163,7 +165,7 @@
                 <button type="button" id="btnCerrarModalConfirm" class="btn-x-modal">✕</button>
             </div>
             <div class="modal-body-confirm">
-                <p id="textoModalConfirm">¿Estás seguro de que deseas dar de baja este producto?</p>
+                <p id="textoModalConfirm">¿Estás seguro de que deseas dar de baja este producto del sistema?</p>
             </div>
             <div class="modal-footer-confirm">
                 <button type="button" id="btnCancelarConfirm" class="btn-modal-cancelar">Cancelar</button>
@@ -173,7 +175,7 @@
     </div>
 
     <!-- Botón Flotante del Chat -->
-    <button id="btn-abrir-chat" class="chat-trigger" type="button">
+    <button id="btn-abrir-chat" class="chat-trigger" type="button" title="Asistente de Inventario">
         <img src="../Imagenes/octopus1.png" alt="Chat" style="width:30px;">
     </button>
 
@@ -206,24 +208,27 @@
     <script src="../JavaScript/layout.js"></script>
     <script src="../JavaScript/chat.js"></script>
 
-    <!-- Script Inline de Apoyo para Mostrar/Ocultar Precio de Oferta dinámicamente -->
+    <!-- Script Inline para alternar visibilidad de Precio Oferta de forma limpia -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const selectUbicacion = document.getElementById("ubicacionProd");
             const grupoOferta = document.getElementById("grupo-precio-oferta");
 
             if (selectUbicacion && grupoOferta) {
-                selectUbicacion.addEventListener("change", () => {
+                const actualizarGrupoOferta = () => {
                     if (selectUbicacion.value === "descuentos") {
-                        grupoOferta.style.display = "block";
+                        grupoOferta.style.display = "flex";
                     } else {
                         grupoOferta.style.display = "none";
                         const inputOferta = document.getElementById("precioOfertaProd");
                         if (inputOferta) inputOferta.value = "";
                     }
-                });
+                };
+
+                selectUbicacion.addEventListener("change", actualizarGrupoOferta);
             }
         });
     </script>
 </body>
+
 </html>
