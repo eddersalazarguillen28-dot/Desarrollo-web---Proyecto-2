@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/^(<br>)+/, '');
   }
 
-  function agregarMensajeUI(texto, emisor) {
+ function agregarMensajeUI(texto, emisor) {
     const divMensaje = document.createElement('div');
     divMensaje.classList.add('mensaje', emisor);
 
@@ -52,7 +52,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (emisor === 'bot') {
       const avatar = document.createElement('div');
       avatar.className = 'avatar-pequeno';
-      avatar.textContent = 'X';
+      
+      const imgAvatar = document.createElement('img');
+      imgAvatar.src = '../Imagenes/octopus.png'; 
+      imgAvatar.alt = 'Bot';
+      imgAvatar.style.width = '20px';  
+      imgAvatar.style.height = '20px';
+      imgAvatar.style.objectFit = 'contain';
+      
+      avatar.appendChild(imgAvatar);
 
       // Convertir Markdown a HTML antes de parsear
       const htmlFormateado = markdownAHTML(texto);
