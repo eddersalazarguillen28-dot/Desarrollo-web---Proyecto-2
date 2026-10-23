@@ -319,9 +319,11 @@ async function guardarPerfil(evento) {
 
         mostrarMensaje("¡Perfil actualizado correctamente!", "exito");
 
-        // Redirección inteligente basada en el rol del usuario guardado
+        // Redirección inteligente y robusta basada en el rol
+        const rolUsuario = (usuarioGuardado.rol || "").trim().toLowerCase();
+
         setTimeout(() => {
-            if (usuarioGuardado.rol === "administrador") {
+            if (rolUsuario === "administrador") {
                 window.location.href = "dashboard.html";
             } else {
                 window.location.href = "inicio.html";
