@@ -532,7 +532,7 @@ def obtener_clientes():
                     c.correo,
                     c.direccion,
                     c.estado
-                ORDER BY c.id DESC:
+                ORDER BY c.id DESC;
             """)
 
             return[dict(cliente) for cliente in cursor.fetchall()]
