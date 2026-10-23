@@ -94,7 +94,10 @@ formulario.addEventListener("submit", async function (evento) {
             localStorage.setItem("token", datos.token)
 
             setTimeout(() => {
-                window.location.href = "inicioClientes.html";
+               if (datos.usuario.rol === "administrador")
+               {
+                window.location.href = "inicio.html";
+               } else window.location.href = "inicioClientes.html";
             }, 1000);
         } else {
             contrasenaError.style.color = "red";
@@ -106,17 +109,3 @@ formulario.addEventListener("submit", async function (evento) {
         contrasenaError.textContent = "Error al conectar con el servidor";
     }
 });
-
-// Dentro de tu función o evento de respuesta exitosa del login (/api/login):
-if (datos.status === "ok") {
-    // Guardar el token y los datos del usuario en localStorage
-    localStorage.setItem("token", datos.token);
-    localStorage.setItem("usuario", JSON.stringify(datos.usuario));
-
-    // 🟢 Redirección según el rol del usuario
-    if (datos.usuario.rol === "administrador") {
-        window.location.href = "inventario.html"; // O tu panel de administración principal
-    } else {
-        window.location.href = "inicioClientes.html"; // Vista para clientes normales
-    }
-}
