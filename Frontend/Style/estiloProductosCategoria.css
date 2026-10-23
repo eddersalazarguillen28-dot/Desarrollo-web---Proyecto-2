@@ -13,6 +13,15 @@
     --navbar-bg: rgba(255, 255, 255, 0.92);
     --cards-bg:linear-gradient(135deg,var(--bg-surface) 0%, #e4e3fa 100%);
     --border-subtle:rgba(195, 195, 197, 0.92);
+    --modal-bg: #ffffff;
+    --border-glow: rgba(108, 92, 231, 0.35);
+    --emerald-green: #059669;
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
+    --modal-card-bg: #f8fafc;
+    --warn: #fbbf24;
+    --purple-hover: #5b4bc4;
+    --cyan-neon: #0284c7;
+
 }
 
 
@@ -30,7 +39,17 @@
     --navbar-bg: rgba(21, 20, 40, 0.92);
     --cards-bg:linear-gradient(135deg,var(--bg-dark-navy) 0%, #1c1a40 100%);
     --border-subtle:#cbd5e1;
+    --modal-bg: #0a1226;
+    --border-glow: rgba(113, 104, 255, 0.5);
+    --emerald-green: #00f5a0;
+    --shadow-soft: 0 12px 35px rgba(0, 0, 0, 0.5);
+    --modal-card-bg: #121e3d;
+    --danger: #ef4444;
+    --purple-hover: #5d53ea;
+    --cyan-neon: #00f2fe;
+    --font-display: 'Sora', 'Segoe UI', system-ui, sans-serif;
 }
+
 
 html{
     scroll-behavior: smooth;
@@ -54,8 +73,223 @@ body#pagina-productos-categoria{
     flex-direction: column;
 }
 
+/*NAV*/
+
+
+/* ------------------------------------------------------------
+   Barra de navegación
+   ------------------------------------------------------------ */
+.navbar-octo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: var(--navbar-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.nav-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+
+/* Logo */
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.nav-logo img {
+    height: 36px;
+    width: auto;
+    transition: transform 0.4s ease;
+}
+
+.nav-logo:hover img {
+    transform: rotate(-8deg) scale(1.08);
+}
+
+.nav-logo span span {
+    color: var(--primary-purple);
+}
+
+/* Enlaces de navegación */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.auth-buttons-mobile {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.nav-item {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 15px;
+    font-weight: 600;
+    position: relative;
+    padding: 6px 0;
+    transition: color 0.2s ease;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    color: var(--primary-purple);
+}
+
+/* Lineíta animada debajo del enlace */
+.nav-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary-purple), var(--cyan-neon));
+    transition: width 0.3s ease;
+}
+
+.nav-item:hover::after,
+.nav-item.active::after {
+    width: 100%;
+}
+
+/* Acciones a la derecha: tema, carrito, menú, auth */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-svg-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.btn-theme-toggle,
+.btn-cart,
+.btn-mobile-menu {
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+/* El botón de menú solo aparece en móvil */
+.btn-mobile-menu {
+    display: none;
+}
+
+.btn-theme-toggle:hover,
+.btn-cart:hover,
+.btn-mobile-menu:hover {
+    border-color: var(--purple-primary);
+    color: var(--purple-primary);
+}
+
+/* Girar el icono del sol al pasar el mouse */
+.btn-theme-toggle:hover svg {
+    transform: rotate(90deg);
+}
+
+.btn-theme-toggle svg {
+    transition: transform 0.4s ease;
+}
+
+/* Contador rojo/verde encima del carrito */
+.cart-count {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background-color: var(--emerald-green);
+    color: #000;
+    font-size: 11px;
+    font-weight: 800;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+}
+
+/* Animación cuando se agrega algo al carrito */
+.btn-cart.bump {
+    animation: bump 0.45s ease;
+}
+
+/* Botones de login y registro */
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-nav {
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.btn-login {
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+}
+
+.btn-login:hover {
+    border-color: var(--primary-purple);
+    color: var(--primary-purple);
+}
+
+.btn-register {
+    background-color: var(--primary-purple);
+    color: #fff;
+}
+
+.btn-register:hover {
+    background-color: var(--purple-hover);
+}
+
+
+
+
 /*Iconos*/
 
+/*
 .svg-icon{
     width: 23px;
     height: 22px;
@@ -67,9 +301,11 @@ body#pagina-productos-categoria{
     margin-right: 8px;
     color: var(--primary-purple);
 }
+*/
 
 /*NAV BAR SUPERIOR*/
 
+/*
 .navbar-cliente{
     position: fixed;
     top: 0;
@@ -187,6 +423,7 @@ body#pagina-productos-categoria{
     align-items: center;
     justify-content: center;
 }
+*/
 
 /*Contenedor principal*/
 
@@ -339,4 +576,217 @@ body#pagina-productos-categoria{
     background-color: var(--navbar-bg);
     font-size: 13px;
     width: 100%;
+}
+
+/* ------------------------------------------------------------
+   Modal del carrito (panel que entra desde la derecha)
+   ------------------------------------------------------------ */
+.carrito-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    display: flex;
+    justify-content: flex-end;
+    animation: fadeIn 0.25s ease;
+}
+
+.carrito-modal-content {
+    background-color: var(--modal-bg);
+    width: 100%;
+    max-width: 420px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--border-subtle);
+    animation: slideInRight 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Cabecera del modal */
+.carrito-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.carrito-header h2 {
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+}
+
+.modal-title-icon {
+    width: 22px;
+    height: 22px;
+    margin-right: 8px;
+}
+
+.btn-cerrar-carrito {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 26px;
+    cursor: pointer;
+}
+
+.btn-cerrar-carrito:hover {
+    color: var(--danger);
+}
+
+/* Lista de productos dentro del carrito */
+.carrito-body {
+    padding: 20px 24px;
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.carrito-vacio-msg {
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 40px;
+}
+
+.carrito-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: var(--modal-card-bg);
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border-subtle);
+    animation: itemIn 0.3s ease;
+}
+
+.carrito-item-info h4 {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.carrito-item-info p {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--emerald-green);
+}
+
+.carrito-item-controles {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Botones de + y - para la cantidad */
+.btn-cant {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid var(--border-subtle);
+    background: transparent;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    transition: all 0.2s ease;
+}
+
+.btn-cant:hover {
+    border-color: var(--primary-purple);
+    color: var(--primary-purple);
+}
+
+.cant-num {
+    min-width: 18px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.btn-eliminar-item {
+    background: transparent;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 20px;
+    margin-left: 4px;
+}
+
+/* Pie del modal: total y botón de compra */
+.carrito-footer {
+    padding: 20px 24px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.carrito-total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.carrito-total-row span:last-child {
+    color: var(--emerald-green);
+}
+
+.btn-procesar-compra {
+    width: 100%;
+    background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple));
+    color: #fff;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-procesar-compra:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(113, 104, 255, 0.45);
+}
+
+
+/* ------------------------------------------------------------
+   Toasts (mensajitos que aparecen abajo a la derecha)
+   ------------------------------------------------------------ */
+.toast-stack {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 3000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    background: var(--modal-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-glow);
+    border-left: 4px solid var(--emerald-green);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 14px;
+    box-shadow: var(--shadow-soft);
+    animation: toastIn 0.35s ease;
+}
+
+.toast.warn {
+    border-left-color: var(--warn);
+}
+
+.toast.salida {
+    animation: toastOut 0.3s ease forwards;
+}
+
+.hidden{
+    display: none;
 }

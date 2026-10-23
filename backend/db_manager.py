@@ -4,8 +4,6 @@ from decimal import Decimal, InvalidOperation
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-
-
 # =========================================================
 # CONEXIÓN A POSTGRESQL (RENDER)
 # =========================================================
@@ -24,7 +22,6 @@ def obtener_conexion():
         cursor_factory=RealDictCursor,
         connect_timeout=10
     )
-
 
 # =========================================================
 # INICIALIZACIÓN Y MIGRACIÓN DE LA BASE DE DATOS
@@ -191,7 +188,6 @@ def inicializar_bd():
     finally:
         conn.close()
 
-
 # =========================================================
 # VALIDACIONES
 # =========================================================
@@ -208,7 +204,6 @@ def _validar_entero_positivo(valor, campo):
 
     return valor
 
-
 def _validar_stock(valor, campo="stock"):
     if (
         isinstance(valor, bool)
@@ -220,7 +215,6 @@ def _validar_stock(valor, campo="stock"):
         )
 
     return valor
-
 
 def _validar_precio(valor, campo="precio"):
     try:
@@ -243,7 +237,6 @@ def _validar_precio(valor, campo="precio"):
 
     return numero
 
-
 def _validar_texto(valor, campo, longitud_maxima):
     if not isinstance(valor, str) or not valor.strip():
         raise ValueError(f"{campo} es obligatorio.")
@@ -257,7 +250,6 @@ def _validar_texto(valor, campo, longitud_maxima):
         )
 
     return valor
-
 
 # =========================================================
 # PRODUCTOS
@@ -304,7 +296,6 @@ def obtener_productos():
 
     finally:
         conn.close()
-
 
 def agregar_producto(
     nombre,
@@ -377,7 +368,6 @@ def agregar_producto(
 
     finally:
         conn.close()
-
 
 def actualizar_producto(
     producto_id,
@@ -474,7 +464,6 @@ def actualizar_producto(
     finally:
         conn.close()
 
-
 def eliminar_producto(producto_id):
     """Elimina productos que no tengan detalles de ventas."""
     _validar_entero_positivo(producto_id, "producto_id")
@@ -513,7 +502,6 @@ def eliminar_producto(producto_id):
 
     finally:
         conn.close()
-
 
 # =========================================================
 # CLIENTES
@@ -886,7 +874,6 @@ def eliminar_venta(venta_id):
     finally:
         conn.close()
 
-
 # =========================================================
 # DATOS DE VENTAS PARA INVENTARIO E IA
 # =========================================================
@@ -904,7 +891,6 @@ def obtener_ventas_ultimos_30d(cursor, producto_id):
     """, (producto_id,))
 
     return int(cursor.fetchone()["total_vendido"])
-
 
 def obtener_datos_inventario():
     """Devuelve productos y unidades vendidas en los últimos 30 días."""
@@ -965,7 +951,6 @@ def obtener_datos_inventario():
 
     finally:
         conn.close()
-
 
 # =========================================================
 # DETALLES DE VENTAS PARA EL DASHBOARD

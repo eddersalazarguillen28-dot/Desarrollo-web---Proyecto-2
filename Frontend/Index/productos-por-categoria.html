@@ -4,46 +4,117 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../Style/estiloProductosCategoria.css">
-    <title>Document</title>
+    <title>Productos por categoria - OctoERP Tech Store</title>
 </head>
 <body id="pagina-productos-categoria">
-    <header class="navbar-cliente">
-        <div class="navbar-container">
-            <a href="#" class="logo-brand">
-                <img src="../Imagenes/octopus.png" alt="OctoERP" class="logo-icono">
-                <span class="logo-texto">Octo<span class="logo-highlight">ERP</span></span>
+     <!-- ============================================================
+         1. BARRA DE NAVEGACIÓN
+         ============================================================ -->
+    <header class="navbar-octo">
+        <div class="nav-container">
+
+            <!-- Logo -->
+            <a href="inicioClientes.html" class="nav-logo">
+                <img src="../Imagenes/Logo.png" alt="OctoERP Logo">
+                <span>Octo<span>ERP</span></span>
             </a>
 
-            <nav class="nav-links">
-                <a href="#inicio" class="nav-link active">Inicio</a>
-                <a href="#productos" class="nav-link">Productos</a>
-                <a href="#categorias" class="nav-link">Categorias</a>
-                <a href="#servicios" class="nav-link">Servicios</a>
-                <a href="#contacto" class="nav-link">Contacto</a>
+            <!-- Enlaces de navegación -->
+            <nav class="nav-links" id="nav-links">
+                <a href="inicioClientes.html" class="nav-item active">Inicio</a>
+                <a href="productos.html" class="nav-item">Productos</a>
+                <a href="categorias.html" class="nav-item">Categorias</a>
+                <a href="descuentos.html" class="nav-item">Descuentos</a>
+                <a href="QuienesSomos.html" class="nav-item">Sobre Nosotros</a>
+                <a href="soporte.html" class="nav-item">Soporte</a>
+
+                <!-- Botones de autenticación (versión móvil) -->
+                <div class="auth-buttons-mobile">
+                    <a href="inicioSesion.html" class="btn-nav btn-login">Iniciar Sesión</a>
+                    <a href="crearCuenta.html" class="btn-nav btn-register">Registrarse</a>
+                </div>
             </nav>
 
-            <div class="navbar-acciones">
-                <!-- Botón Modo Claro / Oscuro -->
-                <button id="btn-toggle-theme" class="btn-icon" aria-label="Cambiar Tema">
-                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            <!-- Acciones del navbar -->
+            <div class="nav-actions">
+
+                <!-- Botón: cambiar tema -->
+                <button id="btn-toggle-theme" class="btn-theme-toggle" title="Cambiar tema" aria-label="Cambiar tema">
+                    <svg class="nav-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                     </svg>
                 </button>
 
-                <!-- Carrito de Compras -->
-                <button class="btn-icon btn-carrito" aria-label="Carrito">
-                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <!-- Botón: carrito -->
+                <button class="btn-cart" id="btn-cart" title="Ver carrito" aria-label="Ver carrito">
+                    <svg class="nav-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
-                    <span class="carrito-badge" id="carrito-count">0</span>
+                    <span class="cart-count" id="cart-count">0</span>
                 </button>
+
+                <!-- Botones de autenticación (versión escritorio) -->
+                <div class="auth-buttons" id="auth-guest">
+                    <a href="inicioSesion.html" class="btn-nav btn-login">Iniciar Sesión</a>
+                    <a href="crearCuenta.html" class="btn-nav btn-register">Registrarse</a>
+                </div>
+
+                <!-- Botón: menú móvil -->
+                <button class="btn-mobile-menu" id="btn-mobile-menu" aria-label="Abrir menú">
+                    <svg class="nav-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+
             </div>
         </div>
     </header>
+    <!-- ============================================================
+         2. MODAL DEL CARRITO
+         ============================================================ -->
+    <div id="modal-carrito" class="carrito-modal-overlay hidden">
+        <div class="carrito-modal-content">
+
+            <!-- Cabecera del modal -->
+            <div class="carrito-header">
+                <h2>
+                    <svg class="modal-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    Tu Carrito de Compras
+                </h2>
+                <button class="btn-cerrar-carrito" id="btn-cerrar-carrito" aria-label="Cerrar">&times;</button>
+            </div>
+
+            <!-- Lista de items -->
+            <div class="carrito-body" id="carrito-items-lista">
+                <p class="carrito-vacio-msg">Tu carrito está vacío actualmente.</p>
+            </div>
+
+            <!-- Pie del modal: total y botón de compra -->
+            <div class="carrito-footer">
+                <div class="carrito-total-row">
+                    <span>Total a pagar:</span>
+                    <span id="carrito-monto-total">₡0</span>
+                </div>
+                <button class="btn-procesar-compra" id="btn-finalizar-compra">Finalizar Compra</button>
+            </div>
+
+        </div>
+    </div>
 
     <main class="container-categoria-productos">
         <a href="categorias.html" class="btn-volver-cat">Volver a categorias</a>
-
         <div class="header-categoria-seccion">
             <h1 id="titulo-categoria" class="titulo-glow-categoria">Cargando categoría...</h1>
             <p id="subtitulo-categoria" class="subtitulo-categoria">Mostrando productos disponibles en tiempo real</p>
