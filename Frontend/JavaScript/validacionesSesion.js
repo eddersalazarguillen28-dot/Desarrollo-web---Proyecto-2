@@ -95,7 +95,7 @@ formulario.addEventListener("submit", async function (evento) {
 
             // Redirigir al Dashboard tras 1 segundo
             setTimeout(() => {
-                window.location.href = "inicio.html";
+                window.location.href = "inicioCliente.html";
             }, 1000);
         } else {
             contrasenaError.style.color = "red";
