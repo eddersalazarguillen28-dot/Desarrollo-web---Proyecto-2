@@ -59,6 +59,7 @@ CORS(
             "origins": ORIGENES_PERMITIDOS,
             "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"],
+            
         }
     },
     supports_credentials=True
@@ -340,7 +341,6 @@ def iniciar_sesion():
     finally:
         if conexion:
             conexion.close()
-
 
 # =========================================================
 # ACTUALIZAR PERFIL DE USUARIO
