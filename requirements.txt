@@ -8,3 +8,4 @@ SQLAlchemy
 cloudinary
 resend
 itsdangerous
+freeflow-llm
