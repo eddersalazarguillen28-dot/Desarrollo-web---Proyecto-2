@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // 2. Renderizar los datos en la tabla HTML
+    // 2. Renderizar los datos en la tabla HTML con numeración diaria automática (Ej: 23/10/2026-001)
     function renderizarTablaReportes(ventas) {
         cuerpoReporte.innerHTML = "";
 
@@ -40,12 +40,42 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        // Ordenar de más antiguo a más nuevo para asignar los correlativos diarios (001, 002...) en orden cronológico
+        const ventasCronologicas = [...ventas].sort((a, b) => {
+            const fechaA = new Date(a.fecha || 0);
+            const fechaB = new Date(b.fecha || 0);
+            return fechaA - fechaB || (a.id || 0) - (b.id || 0);
+        });
+
+        const mapaReferencias = {};
+        const conteoPorDia = {};
+
+        ventasCronologicas.forEach((venta) => {
+            const fechaOriginal = venta.fecha || "2026-10-23";
+            let claveFecha = fechaOriginal.split('T')[0]; // YYYY-MM-DD
+            let partes = claveFecha.split("-");
+            let fechaFormateada = partes.length === 3 ? `${partes[2]}/${partes[1]}/${partes[0]}` : claveFecha;
+
+            if (!conteoPorDia[claveFecha]) {
+                conteoPorDia[claveFecha] = 0;
+            }
+            conteoPorDia[claveFecha]++;
+
+            const secuencia = String(conteoPorDia[claveFecha]).padStart(3, '0');
+            mapaReferencias[venta.id] = {
+                referencia: `${fechaFormateada}-${secuencia}`,
+                fechaFormateada: fechaFormateada
+            };
+        });
+
+        // Renderizar manteniendo el orden original (o el que prefieras) usando el mapa generado
         ventas.forEach((venta) => {
             const tr = document.createElement("tr");
             
-            // Adaptación de nombres de propiedades según devuelva tu base de datos
-            const referencia = venta.referencia || `VNT-${venta.id}`;
-            const fecha = venta.fecha || "2026-10-22";
+            const infoRef = mapaReferencias[venta.id] || { referencia: `VNT-${venta.id}`, fechaFormateada: venta.fecha || "---" };
+            const referencia = infoRef.referencia;
+            const fechaFormateada = infoRef.fechaFormateada;
+
             const cliente = venta.cliente || venta.nombre_cliente || "Cliente General";
             const descripcion = venta.descripcion || "Artículos de Tecnología";
             const monto = Number(venta.monto_total || venta.total || 0);
@@ -53,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const claseEstado = estado.toLowerCase() === "completado" ? "estado-completado" : "estado-pendiente";
 
             tr.innerHTML = `
-                <td>${fecha}</td>
+                <td>${fechaFormateada}</td>
                 <td>#${referencia}</td>
                 <td>${cliente} - ${descripcion}</td>
                 <td>₡${monto.toLocaleString()}</td>
@@ -68,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
             btnPdf.addEventListener("click", () => {
                 generarFacturaPDF({
                     numeroFactura: referencia,
-                    fecha: fecha,
+                    fecha: fechaFormateada,
                     cliente: cliente,
                     descripcion: descripcion,
                     montoTotal: monto,
