@@ -41,8 +41,8 @@ app.config["SECRET_KEY"] = os.environ["SECRET_KEY"]
 
 firmador = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 
-# Límite máximo de cada solicitud, incluidas las imágenes en Base64.
-app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
+# Límite máximo ampliado a 15 MB para soportar imágenes grandes en Base64.
+app.config["MAX_CONTENT_LENGTH"] = 15 * 1024 * 1024
 
 ORIGENES_PERMITIDOS = [
     "https://eddersalazarguillen28-dot.github.io",
@@ -63,6 +63,25 @@ CORS(
     },
     supports_credentials=True
 )
+
+
+# =========================================================
+# MANEJADOR EXPLÍCITO PARA PREFLIGHT DE CORS (OPTIONS)
+# =========================================================
+
+@app.before_request
+def manejar_preflight():
+    if request.method == "OPTIONS":
+        response = jsonify({"status": "ok"})
+        origin = request.headers.get("Origin")
+        if origin in ORIGENES_PERMITIDOS:
+            response.headers.add("Access-Control-Allow-Origin", origin)
+        else:
+            response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        response.headers.add("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+        response.headers.add("Access-Control-Allow-Credentials", "True")
+        return response, 200
 
 
 # =========================================================
