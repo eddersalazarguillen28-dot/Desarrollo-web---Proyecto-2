@@ -93,9 +93,11 @@ formulario.addEventListener("submit", async function (evento) {
 
             localStorage.setItem("token", datos.token)
 
-            // Redirigir al Dashboard tras 1 segundo
             setTimeout(() => {
+               if (datos.usuario.rol === "administrador")
+               {
                 window.location.href = "inicio.html";
+               } else window.location.href = "inicioClientes.html";
             }, 1000);
         } else {
             contrasenaError.style.color = "red";
@@ -107,4 +109,3 @@ formulario.addEventListener("submit", async function (evento) {
         contrasenaError.textContent = "Error al conectar con el servidor";
     }
 });
-

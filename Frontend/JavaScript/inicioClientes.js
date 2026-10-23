@@ -480,3 +480,7 @@ function toast(msg, tipo = "ok") {
         setTimeout(() => t.remove(), 300);
     }, 2600);
 }
+
+const productosInicio = inventario.filter(prod => 
+    productoPerteneceAUbicacion(prod, "inicio")
+);
