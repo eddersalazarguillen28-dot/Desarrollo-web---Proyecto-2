@@ -549,6 +549,28 @@ def crear_cliente():
         app.logger.exception("Error al crear cliente.")
         return jsonify({"status": "error", "message": "No se pudo crear el cliente."}), 500
 
+@app.route("/api/clientes/<int:cliente_id>", methods=["DELETE"])
+def borrar_cliente(cliente_id):
+    try:
+        eliminado = db.eliminar_cliente(cliente_id)
+
+        if not eliminado:
+            return jsonify({
+                "status": "error",
+                "message": "El cliente no existe o no se pudo eliminar"
+            }), 400
+
+        return jsonify({
+            "status": "ok",
+            "message": "Cliente eliminado correctamente"
+        }), 200
+    except Exception:
+        app.logger.exception("Error al eliminar el cliente %s", cliente_id)
+        return jsonify({
+            "status": "error",
+            "message": "No se pudo eliminar el cliente. Compruebe si tiene ventas asociadas"
+        }), 500
+            
 
 # =========================================================
 # DASHBOARD Y REPORTES
