@@ -95,8 +95,10 @@ def inicializar_bd():
                         DEFAULT 'Activo';
             """)
 
+            # Migración segura para la tabla usuarios (incluye foto y rol)
             cursor.execute("""
                 ALTER TABLE usuarios
+                    ADD COLUMN IF NOT EXISTS foto TEXT,
                     ADD COLUMN IF NOT EXISTS rol VARCHAR(50)
                         NOT NULL DEFAULT 'vendedor';
             """)
@@ -535,12 +537,10 @@ def obtener_clientes():
                 ORDER BY c.id DESC;
             """)
 
-            return[dict(cliente) for cliente in cursor.fetchall()]
+            return [dict(cliente) for cliente in cursor.fetchall()]
 
     finally:
         conn.close()
-
-            
 
 def agregar_cliente(
     nombre,
@@ -594,7 +594,6 @@ def agregar_cliente(
 
     finally:
         conn.close()
-
 
 def actualizar_cliente(
     cliente_id,
@@ -661,7 +660,6 @@ def actualizar_cliente(
     finally:
         conn.close()
 
-
 def eliminar_cliente(cliente_id):
     """Elimina un cliente; las ventas conservan su historial."""
     _validar_entero_positivo(cliente_id, "cliente_id")
@@ -687,7 +685,6 @@ def eliminar_cliente(cliente_id):
 
     finally:
         conn.close()
-
 
 # =========================================================
 # REGISTRO DE VENTAS
@@ -825,7 +822,6 @@ def registrar_venta(cliente_id, detalles):
 
     finally:
         conn.close()
-
 
 def eliminar_venta(venta_id):
     venta_id = _validar_entero_positivo(venta_id, "venta_id")
@@ -1005,18 +1001,66 @@ def obtener_detalles_dashboard():
     finally:
         conn.close()
 
-#Para lo de la recuperacion contraseña por correo
+# =========================================================
+# USUARIOS Y PERFIL
+# =========================================================
+
 def obtener_usuario_por_correo(correo): 
     conn = obtener_conexion()
 
     try:
         with conn.cursor() as cursor:
             cursor.execute("""
-                SELECT id, nombre, correo, password, rol
+                SELECT id, nombre, correo, password, rol, foto
                 FROM usuarios 
                 WHERE correo = %s;
                 """, (correo.strip().lower(),))
 
             return cursor.fetchone()
+    finally:
+        conn.close()
+
+
+def actualizar_usuario_perfil(usuario_id, nombre, foto=None, password_hash=None):
+    """Actualiza el nombre, la foto y opcionalmente la contraseña del usuario."""
+    _validar_entero_positivo(usuario_id, "usuario_id")
+    nombre = _validar_texto(nombre, "nombre", 100)
+
+    if foto is not None:
+        if not isinstance(foto, str):
+            raise ValueError("La foto no es válida.")
+        foto = foto.strip() or None
+
+    conn = obtener_conexion()
+
+    try:
+        with conn.cursor() as cursor:
+            if password_hash is not None and str(password_hash).strip() != "":
+                cursor.execute("""
+                    UPDATE usuarios
+                    SET nombre = %s,
+                        foto = %s,
+                        password = %s
+                    WHERE id = %s
+                    RETURNING id;
+                """, (nombre, foto, password_hash, usuario_id))
+            else:
+                cursor.execute("""
+                    UPDATE usuarios
+                    SET nombre = %s,
+                        foto = %s
+                    WHERE id = %s
+                    RETURNING id;
+                """, (nombre, foto, usuario_id))
+
+            actualizado = cursor.fetchone() is not None
+
+        conn.commit()
+        return actualizado
+
+    except Exception:
+        conn.rollback()
+        raise
+
     finally:
         conn.close()
