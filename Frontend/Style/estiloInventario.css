@@ -491,15 +491,188 @@ td strong {
 }
 
 
-/* ------------------------------------------------------------
-   Responsive: en pantallas chicas el panel pasa abajo
-   ------------------------------------------------------------ */
-@media (max-width: 992px) {
-    .contenido-grid {
-        flex-direction: column;
-    }
+/* ============================================================
+   UBICACIONES DESPLEGABLES — OCTO ERP (LIMPIO Y ORDENADO)
+   ============================================================ */
 
-    .form-panel {
-        width: 100%;
-    }
+.campo-ubicaciones {
+    margin-top: 18px;
+}
+
+.titulo-ubicaciones {
+    margin-bottom: 2px;
+}
+
+.ayuda-ubicaciones {
+    margin: 3px 0 12px;
+    color: #7b8498;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.ubicaciones-producto {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.grupo-ubicacion {
+    width: 100%;
+    background: #fff;
+    border: 1px solid #e7e9f1;
+    border-radius: 8px;
+    overflow: hidden;
+    box-sizing: border-box;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.grupo-ubicacion[open] {
+    border-color: #7367f0;
+    box-shadow: 0 2px 6px rgba(115, 103, 240, 0.06);
+}
+
+.cabecera-ubicacion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 48px;
+    padding: 10px 14px;
+    list-style: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: background .2s;
+}
+
+.cabecera-ubicacion::-webkit-details-marker {
+    display: none;
+}
+
+.cabecera-ubicacion::marker {
+    content: "";
+}
+
+.cabecera-ubicacion:hover {
+    background: #fcfcff;
+}
+
+/* Se eliminaron los contenedores de iconos (.icono-ubicacion) por solicitud */
+
+.texto-cabecera {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.texto-cabecera strong {
+    color: #273047;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.texto-cabecera small {
+    color: #8992a5;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+.flecha-ubicacion {
+    flex: 0 0 6px;
+    width: 6px;
+    height: 6px;
+    margin-right: 4px;
+    border-right: 1.8px solid #8992a5;
+    border-bottom: 1.8px solid #8992a5;
+    transform: rotate(45deg);
+    transition: transform .2s;
+}
+
+.grupo-ubicacion[open] .flecha-ubicacion {
+    transform: rotate(225deg);
+    border-color: #7367f0;
+}
+
+.contenido-ubicacion {
+    padding: 4px 12px 12px;
+    border-top: 1px solid #f0f1f6;
+    background: #fafafc;
+}
+
+.contenido-ubicacion .ubicacion-opcion {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-width: 0;
+    margin-top: 8px;
+    padding: 10px 12px;
+    box-sizing: border-box;
+    border: 1px solid #e9eaf2;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    transition: background .18s, border-color .18s;
+}
+
+.contenido-ubicacion .ubicacion-opcion:hover {
+    border-color: #bfaeff;
+    background: #faf9ff;
+}
+
+.contenido-ubicacion .ubicacion-opcion:has(input:checked) {
+    border-color: #7367f0;
+    background: #f5f4ff;
+}
+
+.contenido-ubicacion .ubicacion-opcion input[type="checkbox"] {
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: #7367f0;
+    cursor: pointer;
+}
+
+.contenido-ubicacion .ubicacion-opcion > span {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.contenido-ubicacion .ubicacion-opcion strong {
+    color: #273047;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.contenido-ubicacion .ubicacion-opcion small {
+    color: #8992a5;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.contenido-ubicacion .ubicacion-opcion:has(input:checked) strong {
+    color: #5d50d9;
+}
+
+.nota-ubicacion {
+    margin: 8px 2px 0;
+    color: #7b8498;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.ayuda-campo {
+    display: block;
+    margin-top: 8px;
+    color: #8992a5;
+    font-size: 11px;
+    line-height: 1.5;
 }
