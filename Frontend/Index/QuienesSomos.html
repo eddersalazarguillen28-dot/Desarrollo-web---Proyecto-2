@@ -1,38 +1,50 @@
+```html
 <!DOCTYPE html>
 <html lang="es" data-theme="dark">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Sobre Nosotros - OctoERP Tech Store</title>
-    <!-- Incluimos los estilos de navegación, soporte y cliente -->
+
+    <!-- Hojas de estilo -->
     <link rel="stylesheet" href="../Style/QuienesSomos.css">
-    <link rel="stylesheet" href="../Style/estiloInicioClientes.css">
+   <link rel="stylesheet" href="../Style/estiloInicioClientes.css">
+    <link rel="stylesheet" href="../Style/soporte.css">
+
+    
 </head>
 
 <body>
 
+    <!-- =====================================================
+         NAVEGACIÓN PRINCIPAL
+    ====================================================== -->
     <header class="navbar-octo">
         <div class="nav-container">
-            <!-- Logo que al darle clic lleva a Inicio -->
+
             <a href="inicioClientes.html" class="nav-logo">
                 <img src="../Imagenes/Logo.png" alt="OctoERP Logo" onerror="this.style.display='none'">
                 <span>Octo<span>ERP</span></span>
             </a>
 
-            <!-- Menú de navegación con "Sobre Nosotros" activo -->
-           <nav class="nav-links">
+            <nav class="nav-links" aria-label="Navegación principal">
                 <a href="inicioClientes.html" class="nav-item">Inicio</a>
                 <a href="productos.html" class="nav-item">Productos</a>
-                <a href="descuentos.html" class="nav-item ">Descuentos</a>
+                <a href="descuentos.html" class="nav-item">Descuentos</a>
                 <a href="QuienesSomos.html" class="nav-item active">Sobre Nosotros</a>
                 <a href="soporte.html" class="nav-item">Soporte</a>
             </nav>
 
             <div class="nav-actions">
-                <!-- Botón Modo Claro / Oscuro -->
-                <button id="btn-toggle-theme" class="btn-theme-toggle" title="Cambiar Tema" aria-label="Cambiar Tema">
-                    <svg class="nav-svg-icon" style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+                <!-- Cambiar tema -->
+                <button id="btn-toggle-theme" class="btn-theme-toggle" type="button" title="Cambiar tema"
+                    aria-label="Cambiar tema">
+                    <svg class="nav-svg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        aria-hidden="true">
                         <circle cx="12" cy="12" r="5"></circle>
                         <line x1="12" y1="1" x2="12" y2="3"></line>
                         <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -45,37 +57,75 @@
                     </svg>
                 </button>
 
-                <!-- Botón de Carrito (Con SVG Arreglado) -->
-                <button class="btn-cart" onclick="toggleModalCarrito()" title="Ver Carrito">
-                    <svg class="nav-svg-icon" style="width: 22px; height: 22px; min-width: 22px; display: inline-block;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                 <!-- Carrito de compras -->
+                <button
+                    type="button"
+                    class="btn-cart"
+                    id="btn-cart"
+                    title="Ver carrito"
+                    aria-label="Ver carrito de compras"
+                    aria-controls="modal-carrito">
+
+                    <svg
+                        class="nav-svg-icon"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        aria-hidden="true">
+
+                        <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z">
+                        </path>
                     </svg>
-                    <span class="cart-count" id="cart-count">0</span>
+
+                    <span class="cart-count" id="cart-count" aria-live="polite">0</span>
                 </button>
 
+                <!-- Acciones para visitantes -->
                 <div class="auth-buttons" id="auth-guest">
-                    <a href="inicioSesion.html" class="btn-nav btn-login">Iniciar Sesión</a>
-                    <a href="crearCuenta.html" class="btn-nav btn-register">Registrarse</a>
+                    <a href="inicioSesion.html" class="btn-nav btn-login">
+                        Iniciar Sesión
+                    </a>
+
+                    <a href="crearCuenta.html" class="btn-nav btn-register">
+                        Registrarse
+                    </a>
                 </div>
+
             </div>
         </div>
     </header>
-     
-    <!-- Modal / Desplegable del Carrito -->
+
+
+    <!-- =====================================================
+         MODAL DEL CARRITO
+    ====================================================== -->
     <div id="modal-carrito" class="carrito-modal-overlay hidden">
         <div class="carrito-modal-content">
+
             <div class="carrito-header">
                 <h2>
-                    <svg class="modal-title-icon" style="width: 22px; height: 22px; vertical-align: middle;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    <svg class="modal-title-icon" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        aria-hidden="true">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
                     </svg>
-                    Tu Carrito de Compras
+
+                    Tu carrito de compras
                 </h2>
-                <button class="btn-cerrar-carrito" onclick="toggleModalCarrito()" aria-label="Cerrar">&times;</button>
+
+                <button class="btn-cerrar-carrito" type="button" onclick="toggleModalCarrito()"
+                    aria-label="Cerrar carrito">
+                    &times;
+                </button>
             </div>
 
             <div class="carrito-body" id="carrito-items-lista">
-                <p class="carrito-vacio-msg">Tu carrito está vacío actualmente.</p>
+                <p class="carrito-vacio-msg">
+                    Tu carrito está vacío actualmente.
+                </p>
             </div>
 
             <div class="carrito-footer">
@@ -83,166 +133,548 @@
                     <span>Total a pagar:</span>
                     <span id="carrito-monto-total">₡0</span>
                 </div>
-                <button class="btn-procesar-compra" onclick="procesarCompra()">
-                    Finalizar Compra
+
+                <button class="btn-procesar-compra" type="button" onclick="procesarCompra()">
+                    Finalizar compra
                 </button>
             </div>
+
         </div>
     </div>
-                  
-    <!-- Contenido Principal -->
+
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL
+    ====================================================== -->
     <main class="container-about">
-           <br>
-        <!-- Encabezado de la Tienda -->
+
+        <!-- Presentación de la tienda -->
         <section class="about-hero">
-            <span class="badge-tech">Tu tienda de tecnología y componentes</span>
-            <h1>Pasión por la tecnología, el <span>Hardware</span> y el rendimiento</h1>
+            <span class="badge-tech">
+                Tu tienda de tecnología y componentes
+            </span>
+
+            <h1>
+                Pasión por la tecnología, el
+                <span>Hardware</span> y el rendimiento
+            </h1>
+
             <p>
-                En <strong>OctoERP Tech Store</strong> nos apasiona el alto rendimiento. Somos tu aliado estratégico
-                para conseguir desde el componente individual de última generación hasta la PC Custom totalmente
-                ensamblada para gaming, producción audiovisual y trabajo profesional.
+                En <strong>OctoERP Tech Store</strong> nos apasiona el alto
+                rendimiento. Somos tu aliado estratégico para conseguir desde
+                el componente individual de última generación hasta la PC
+                Custom totalmente ensamblada para gaming, producción audiovisual
+                y trabajo profesional.
             </p>
+
+            <div class="store-image-container">
+                <img src="../Imagenes/7a780137-576e-4064-a437-cfb60f5e8936.jpg"
+                    alt="Instalaciones de OctoERP Tech Store" loading="lazy"
+                    onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1200&q=80';">
+            </div>
         </section>
 
-        <!-- Tarjetas Misión / Visión / Compromiso Tech -->
+
+        <!-- Misión, visión y compromiso tecnológico -->
         <section class="about-grid">
 
-            <div class="about-card">
-                <div class="card-icon"></div>
+            <article class="about-card">
+                <div class="card-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#7168ff" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                        <rect x="9" y="9" width="6" height="6"></rect>
+                        <line x1="9" y1="1" x2="9" y2="4"></line>
+                        <line x1="15" y1="1" x2="15" y2="4"></line>
+                        <line x1="9" y1="20" x2="9" y2="23"></line>
+                        <line x1="15" y1="20" x2="15" y2="23"></line>
+                        <line x1="20" y1="9" x2="23" y2="9"></line>
+                        <line x1="20" y1="15" x2="23" y2="15"></line>
+                        <line x1="1" y1="9" x2="4" y2="9"></line>
+                        <line x1="1" y1="15" x2="4" y2="15"></line>
+                    </svg>
+                </div>
+
                 <h3>Especialistas en Hardware</h3>
-                <p>
-                    Analizamos y probamos detenidamente cada procesador, tarjeta de vídeo, memoria RAM y tarjeta madre
-                    de nuestro catálogo. Nos aseguramos de ofrecerte únicamente componentes con estándares de rendimiento y compatibilidad
-                    garantizada.
-                </p>
-            </div>
 
-            <div class="about-card">
-                <div class="card-icon"></div>
+                <p>
+                    Analizamos y probamos detenidamente cada procesador,
+                    tarjeta de vídeo, memoria RAM y tarjeta madre de nuestro
+                    catálogo. Nos aseguramos de ofrecerte componentes con
+                    estándares de rendimiento y compatibilidad.
+                </p>
+            </article>
+
+            <article class="about-card">
+                <div class="card-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#7168ff" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path
+                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.73z">
+                        </path>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                </div>
+
                 <h3>Stock Real en Tiempo Real</h3>
-                <p>
-                    Integrado directamente con nuestro sistema backend en la nube, el catálogo que ves en la tienda
-                    refleja la disponibilidad física en almacén en tiempo real. Sin falsas esperas ni cancelaciones por falta de inventario.
-                </p>
-            </div>
 
-            <div class="about-card">
-                <div class="card-icon"></div>
-                <h3>Garantía y Soporte Especializado</h3>
                 <p>
-                    Sabemos el valor de tu inversión. Por eso, cada producto y equipo ensamblado cuenta con respaldo
-                    técnico directo, pruebas de estrés previas a la entrega y garantía oficial ante cualquier eventualidad.
+                    Integrado con nuestro sistema backend en la nube, el
+                    catálogo de la tienda refleja la disponibilidad de los
+                    productos según la información registrada en el inventario.
                 </p>
-            </div>
+            </article>
+
+            <article class="about-card">
+                <div class="card-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#7168ff" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
+
+                <h3>Garantía y Soporte Especializado</h3>
+
+                <p>
+                    Sabemos el valor de tu inversión. Por eso, ofrecemos
+                    respaldo técnico para consultas relacionadas con los
+                    productos, los equipos ensamblados y sus garantías.
+                </p>
+            </article>
 
         </section>
 
-        <!-- Diferenciadores en el Mercado -->
-        <section class="tech-features" style="text-align: left; background: rgba(255, 255, 255, 0.02);">
-            <div style="max-width: 950px; margin: 0 auto;">
-                <h2 style="text-align: center; margin-bottom: 30px; color: #ffffff;">Lo que nos diferencia en el mercado</h2>
+
+        <!-- Diferenciadores de OctoERP -->
+        <section class="tech-features features-section">
+            <div class="section-inner">
+
+                <h2 class="section-title">
+                    Lo que nos diferencia en el mercado
+                </h2>
 
                 <div class="features-grid">
-                    <div class="feature-box">
-                        <h4> Ensambles a la Medida</h4>
-                        <p>Diseñamos configuraciones equilibradas para evitar cuellos de botella entre procesador y tarjeta gráfica.</p>
-                    </div>
 
-                    <div class="feature-box">
-                        <h4> Envíos Protegidos</h4>
-                        <p>Utilizamos embalaje especial de alto impacto para proteger componentes frágiles y gabinetes de cristal.</p>
-                    </div>
+                    <article class="feature-box">
+                        <div class="feature-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7168ff"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path
+                                    d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z">
+                                </path>
+                            </svg>
+                        </div>
 
-                    <div class="feature-box">
-                        <h4> Transparencia Total</h4>
-                        <p>Precios claros, desglose detallado de impuestos y comprobantes de compra inmediatos.</p>
-                    </div>
+                        <h4>Ensambles a la Medida</h4>
 
-                    <div class="feature-box">
-                        <h4> Asesores Gamers & Pros</h4>
-                        <p>Nuestro equipo está compuesto por entusiastas del hardware que entienden exactamente lo que tu setup necesita.</p>
-                    </div>
+                        <p>
+                            Diseñamos configuraciones equilibradas para
+                            aprovechar el rendimiento de cada componente.
+                        </p>
+                    </article>
+
+                    <article class="feature-box">
+                        <div class="feature-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7168ff"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="1" y="3" width="15" height="13"></rect>
+                                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                            </svg>
+                        </div>
+
+                        <h4>Envíos Protegidos</h4>
+
+                        <p>
+                            Priorizamos el embalaje adecuado para proteger
+                            componentes y equipos durante su transporte.
+                        </p>
+                    </article>
+
+                    <article class="feature-box">
+                        <div class="feature-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7168ff"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                        </div>
+
+                        <h4>Transparencia Total</h4>
+
+                        <p>
+                            Presentamos la información de los productos,
+                            sus precios y los detalles de compra con claridad.
+                        </p>
+                    </article>
+
+                    <article class="feature-box">
+                        <div class="feature-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7168ff"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </div>
+
+                        <h4>Asesores Gamers y Profesionales</h4>
+
+                        <p>
+                            Te orientamos para identificar los componentes
+                            y equipos que mejor se adaptan a tus necesidades.
+                        </p>
+                    </article>
+
                 </div>
             </div>
         </section>
 
-        <!-- Proceso de Atención y Compra -->
+
+        <!-- Proceso de atención y compra -->
         <section class="tech-features">
             <h2>¿Cómo trabajamos en OctoERP?</h2>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 25px;">
-                <div style="background: rgba(13, 23, 48, 0.6); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: center;">
-                    <div style="font-size: 28px; margin-bottom: 10px;"></div>
-                    <h4 style="color: #7168ff; margin-bottom: 8px;">Explora el Catálogo</h4>
-                    <p style="font-size: 14px; color: #a3a9b8;">Filtra componentes con especificaciones detalladas e imágenes reales.</p>
-                </div>
 
-                <div style="background: rgba(13, 23, 48, 0.6); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: center;">
-                    <div style="font-size: 28px; margin-bottom: 10px;"></div>
-                    <h4 style="color: #7168ff; margin-bottom: 8px;">Asesoría u Orden</h4>
-                    <p style="font-size: 14px; color: #a3a9b8;">Agrega al carrito o consulta con nuestro asistente virtual para resolver dudas de compatibilidad.</p>
-                </div>
+            <div class="process-grid">
 
-                <div style="background: rgba(13, 23, 48, 0.6); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: center;">
-                    <div style="font-size: 28px; margin-bottom: 10px;"></div>
-                    <h4 style="color: #7168ff; margin-bottom: 8px;">Pruebas y Despacho</h4>
-                    <p style="font-size: 14px; color: #a3a9b8;">Verificamos el funcionamiento de los productos y procedemos al empaque y envío rápido.</p>
-                </div>
+                <article class="process-card">
+                    <div class="process-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#7168ff" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </div>
 
-                <div style="background: rgba(13, 23, 48, 0.6); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: center;">
-                    <div style="font-size: 28px; margin-bottom: 10px;"></div>
-                    <h4 style="color: #7168ff; margin-bottom: 8px;">Disfruta tu Setup</h4>
-                    <p style="font-size: 14px; color: #a3a9b8;">Recibe tu pedido listo para conectar, jugar o trabajar con total respaldo.</p>
-                </div>
+                    <h4>1. Explora el Catálogo</h4>
+
+                    <p>
+                        Consulta los productos, sus especificaciones y las
+                        características de cada componente.
+                    </p>
+                </article>
+
+                <article class="process-card">
+                    <div class="process-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#7168ff" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                    </div>
+
+                    <h4>2. Solicita Asesoría</h4>
+
+                    <p>
+                        Agrega productos al carrito o consulta sobre la
+                        compatibilidad de los componentes.
+                    </p>
+                </article>
+
+                <article class="process-card">
+                    <div class="process-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#7168ff" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                        </svg>
+                    </div>
+
+                    <h4>3. Preparación del Pedido</h4>
+
+                    <p>
+                        Preparamos el pedido y verificamos la información
+                        correspondiente antes de su entrega.
+                    </p>
+                </article>
+
+                <article class="process-card">
+                    <div class="process-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#7168ff" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                    </div>
+
+                    <h4>4. Disfruta tu Setup</h4>
+
+                    <p>
+                        Recibe tu pedido y disfruta tus productos para jugar,
+                        trabajar o crear.
+                    </p>
+                </article>
+
             </div>
         </section>
 
-        <!-- Canales de Contacto y Atención -->
-        <section class="tech-features" style="background: rgba(98, 90, 255, 0.04); border: 1px solid rgba(98, 90, 255, 0.2);">
-            <h2>💬 Canales de Contacto y Atención</h2>
-            <p style="color: #a3a9b8; margin-bottom: 30px;">¿Tienes dudas sobre un componente o necesitas cotizar una PC a la medida? ¡Contáctanos!</p>
 
-            <div class="features-grid">
-                <div class="feature-box" style="text-align: center;">
-                    <div style="font-size: 32px; margin-bottom: 10px;"></div>
-                    <h4>WhatsApp Tech</h4>
-                    <p style="color: #2ecc71; font-weight: bold; margin-top: 5px;">+506 6133-6757</p>
-                    <p style="font-size: 12px; color: #64748b; margin-top: 4px;">Atención rápida y cotizaciones</p>
+        <!-- =================================================
+             CANALES DE CONTACTO Y ATENCIÓN
+        ================================================== -->
+        <section class="soporte-section" id="seccion-contacto">
+            <div class="contact-rma-container">
+
+                <!-- Encabezado de contacto -->
+                <div class="rma-header-wrap">
+
+                    <div class="rma-title-info">
+                        <span class="badge-tech">OCTO ERP TECH STORE</span>
+
+                        <h2>Canales de Contacto y Atención</h2>
+
+                        <p>
+                            ¿Tienes dudas sobre un componente, necesitas cotizar
+                            una PC a la medida o deseas conocer más sobre nuestros
+                            productos? Nuestro equipo está listo para ayudarte.
+                        </p>
+                    </div>
+
+                    <div class="rma-status-card">
+                        <div class="status-indicator live">
+                            <span class="pulse-dot"></span>
+                            <span class="status-text">Atención al cliente</span>
+                        </div>
+
+                        <p class="schedule-text">
+                            <strong>Horario de atención:</strong><br>
+                            Lunes a sábado, de 8:00 a. m. a 6:00 p. m.
+                        </p>
+
+                        <p class="response-time">
+                            <strong>Consultas, cotizaciones y asesoría</strong>
+                        </p>
+                    </div>
+
                 </div>
 
-                <div class="feature-box" style="text-align: center;">
-                    <div style="font-size: 32px; margin-bottom: 10px;"></div>
-                    <h4>Correo Electrónico</h4>
-                    <p style="color: #a39bff; font-weight: bold; margin-top: 5px;">soporte@octoerp.com</p>
-                    <p style="font-size: 12px; color: #64748b; margin-top: 4px;">Consultas corporativas y garantía</p>
+
+                <!-- Tarjetas de contacto -->
+                <div class="contact-grid-channels">
+
+                    <!-- WhatsApp -->
+                    <article class="channel-card card-whatsapp">
+                        <div class="channel-icon-wrap icon-wa-bg">
+                            <svg class="svg-channel-icon svg-wa" viewBox="0 0 24 24" fill="currentColor"
+                                aria-hidden="true">
+                                <path
+                                    d="M12.04 2C6.52 2 2.03 6.49 2.03 12.01c0 1.77.46 3.5 1.34 5.02L2 22l5.1-1.34a10 10 0 0 0 4.93 1.29h.01c5.52 0 10.01-4.49 10.01-10.01 0-2.68-1.04-5.2-2.94-7.09A9.94 9.94 0 0 0 12.04 2zm0 18.25a8.2 8.2 0 0 1-4.18-1.14l-.3-.18-3.03.8.81-2.96-.2-.31a8.22 8.22 0 0 1-1.26-4.45c0-4.52 3.68-8.2 8.21-8.2a8.15 8.15 0 0 1 5.8 2.4 8.16 8.16 0 0 1 2.4 5.8c0 4.53-3.68 8.21-8.2 8.21z">
+                                </path>
+                            </svg>
+                        </div>
+
+                        <div class="channel-details">
+                            <h3>WhatsApp Tech</h3>
+
+                            <p>
+                                Contáctanos para consultar precios, disponibilidad,
+                                componentes y cotizaciones personalizadas.
+                            </p>
+
+                            <span class="contact-value">+506 6133-6757</span>
+                        </div>
+
+                        <a href="https://wa.me/50661336757?text=Hola%20OCTO%20ERP%2C%20quisiera%20consultar%20sobre%20sus%20productos."
+                            target="_blank" rel="noopener noreferrer" class="btn-channel btn-wa-action">
+                            <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path
+                                    d="M12.04 2C6.52 2 2.03 6.49 2.03 12.01c0 1.77.46 3.5 1.34 5.02L2 22l5.1-1.34a10 10 0 0 0 4.93 1.29h.01c5.52 0 10.01-4.49 10.01-10.01 0-2.68-1.04-5.2-2.94-7.09A9.94 9.94 0 0 0 12.04 2z">
+                                </path>
+                            </svg>
+
+                            Abrir WhatsApp
+                        </a>
+                    </article>
+
+
+                    <!-- Correo electrónico -->
+                    <article class="channel-card card-email">
+                        <div class="channel-icon-wrap icon-email-bg">
+                            <svg class="svg-channel-icon svg-email" viewBox="0 0 24 24" fill="currentColor"
+                                aria-hidden="true">
+                                <path
+                                    d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z">
+                                </path>
+                            </svg>
+                        </div>
+
+                        <div class="channel-details">
+                            <h3>Correo Electrónico</h3>
+
+                            <p>
+                                Escríbenos para realizar consultas, solicitar
+                                información o resolver dudas sobre garantías.
+                            </p>
+
+                            <span class="contact-value">
+                                soporte@octoerp.com
+                            </span>
+                        </div>
+
+                        <a href="mailto:soporte@octoerp.com?subject=Consulta%20-%20OCTO%20ERP"
+                            class="btn-channel btn-email-action">
+                            <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path
+                                    d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z">
+                                </path>
+                            </svg>
+
+                            Enviar correo
+                        </a>
+                    </article>
+
+
+                    <!-- Horario de atención -->
+                    <article class="channel-card">
+                        <div class="channel-icon-wrap">
+                            <svg class="svg-channel-icon" viewBox="0 0 24 24" fill="none" stroke="#7168ff"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+
+                        <div class="channel-details">
+                            <h3>Horario de Atención</h3>
+
+                            <p>
+                                Comunícate con nuestro equipo para recibir
+                                asesoría sobre productos y cotizaciones.
+                            </p>
+
+                            <span class="contact-value">Lunes a sábado</span>
+
+                            <p>8:00 a. m. - 6:00 p. m.</p>
+                        </div>
+
+                        <a href="https://wa.me/50661336757?text=Hola%20OCTO%20ERP%2C%20quisiera%20consultar%20sobre%20sus%20horarios."
+                            target="_blank" rel="noopener noreferrer" class="btn-channel btn-wa-action">
+                            Consultar disponibilidad
+                        </a>
+                    </article>
+
+
+
+                    <!-- Ubicación y mapa interactivo -->
+                    <div class="location-map-layout">
+
+                        <!-- Información de ubicación -->
+                        <article class="channel-card">
+
+                            <div class="channel-icon-wrap">
+                                <svg class="svg-channel-icon" viewBox="0 0 24 24" fill="none" stroke="#7168ff"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                            </div>
+
+                            <div class="channel-details">
+                                <h3>Ubicación Central</h3>
+
+                                <p>
+                                    Estamos en Costa Rica y buscamos facilitar el acceso
+                                    a soluciones tecnológicas y componentes de computadora.
+                                </p>
+
+                                <span class="contact-value">
+                                    San José, Costa Rica
+                                </span>
+
+                                <p>
+                                    Consulta sobre entregas y despachos.
+                                </p>
+                            </div>
+
+                            <a href="https://www.google.com/maps/search/?api=1&query=San+Jose+Costa+Rica"
+                                target="_blank" rel="noopener noreferrer" class="btn-channel btn-email-action">
+                                Ver ubicación en Google Maps
+                            </a>
+
+                        </article>
+
+                        <!-- Mapa interactivo -->
+                        <div class="location-map-panel">
+                            <iframe
+                                src="https://maps.google.com/maps?q=San%20Jos%C3%A9%2C%20Costa%20Rica&t=&z=13&ie=UTF8&iwloc=&output=embed"
+                                title="Mapa de San José, Costa Rica" loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+                        </div>
+
+                    </div>
+
                 </div>
 
-                <div class="feature-box" style="text-align: center;">
-                    <div style="font-size: 32px; margin-bottom: 10px;"></div>
-                    <h4>Horario de Atención</h4>
-                    <p style="color: #ffffff; font-weight: 600; margin-top: 5px;">Lun - Sáb: 8:00 AM - 6:00 PM</p>
-                    <p style="font-size: 12px; color: #64748b; margin-top: 4px;">Envíos a todo el país</p>
+
+
+
+                <!-- Información adicional de atención -->
+                <div class="rma-steps-banner">
+                    <h4>¿Cómo podemos ayudarte?</h4>
+
+                    <div class="steps-grid">
+
+                        <div class="step-item">
+                            <span class="step-num">1</span>
+
+                            <p>
+                                <strong>Asesoría tecnológica</strong><br>
+                                Te orientamos para elegir los componentes
+                                adecuados según tus necesidades.
+                            </p>
+                        </div>
+
+                        <div class="step-item">
+                            <span class="step-num">2</span>
+
+                            <p>
+                                <strong>Cotizaciones personalizadas</strong><br>
+                                Consulta sobre equipos, configuraciones
+                                y productos disponibles.
+                            </p>
+                        </div>
+
+                        <div class="step-item">
+                            <span class="step-num">3</span>
+
+                            <p>
+                                <strong>Soporte y garantías</strong><br>
+                                Contáctanos para resolver dudas sobre
+                                compras, productos y garantías.
+                            </p>
+                        </div>
+
+                    </div>
                 </div>
 
-                <div class="feature-box" style="text-align: center;">
-                    <div style="font-size: 32px; margin-bottom: 10px;"></div>
-                    <h4>Ubicación Central</h4>
-                    <p style="color: #ffffff; font-weight: 600; margin-top: 5px;">San José, Costa Rica</p>
-                    <p style="font-size: 12px; color: #64748b; margin-top: 4px;">Despachos desde bodega central</p>
-                </div>
             </div>
         </section>
 
     </main>
 
-    <!-- Pie de página -->
+
+    <!-- =====================================================
+         PIE DE PÁGINA
+    ====================================================== -->
     <footer class="footer-about">
-        <p>&copy; 2026 OctoERP Hardware & Tech Store. Todos los derechos reservados. Proyecto CTP.</p>
+        <p>
+            &copy; 2026 OctoERP Hardware &amp; Tech Store.
+            Todos los derechos reservados. Proyecto CTP.
+        </p>
     </footer>
 
-    <!-- Scripts necesarios para autenticación, carrito y tema -->
-    
-    <script src="../JavaScript/carrito.js"></script>
-    
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+   <script src="../JavaScript/inicioClientes.js"></script>
+
 </body>
 
 </html>
+```
