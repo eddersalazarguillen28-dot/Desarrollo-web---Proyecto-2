@@ -56,6 +56,19 @@ async function cargarCategoriasDesdeAPI() {
         contadorCategorias.textContent = "Cargando categorias..."
     }
 
+    const imagenesCategoriasPorDefecto = {
+        "periféricos":"../Imagenes/perifericos.jpg",
+        "componentes":"../Imagenes/componentes.png",
+        "tarjetas de video":"../Imagenes/tarjetaVideo.png",
+        "monitores":"../Imagenes/monitores.png",
+        "memorias ram":"../Imagenes/RAM.png",
+        "almacenamiento":"../Imagenes/almacenamiento.png",
+        "muebles y sillas":"../Imagenes/mueblesSillas.png",
+        "electrónica":"../Imagenes/electronica.png",
+        "general":"../Imagenes/general.png"
+
+    };
+
     try{
         const respuesta = await fetch(`${API_BASE}/api/productos`);
         const texto = await respuesta.text();
@@ -70,11 +83,16 @@ async function cargarCategoriasDesdeAPI() {
 
         productos.forEach(prod => {
             let catNombre = prod.categoria ? prod.categoria.trim() : "General";
+            let catKey = catNombre.toLowerCase();
 
             if (!categoriasMap[catNombre]){
+
+                const imagenDefault = imagenesCategoriasPorDefecto[catKey] || "../Imagenes/Logo.png";
+
                 categoriasMap[catNombre] ={
                     nombre:catNombre,
-                    imagenPortada:prod.imagen_url || "../Imagenes/Logo.png",
+                    key:catKey,
+                    imagenPortada:prod.imagen_url || imagenDefault,
                     productos:[]
                 };
             }
@@ -103,7 +121,7 @@ async function cargarCategoriasDesdeAPI() {
             const imagenUrl = catData.imagenPortada;
 
             const cardHTML = `
-                <a class="categoria-card ${index === 0 ? 'categoria-card-featured': ''}" href="productos-por-categoria.html?cat=${encodeURIComponent(nombreCat)}">
+                <a class="categoria-card ${index === 0 ? 'categoria-card-featured': ''}" href="productos-por-categoria.html?cat=${encodeURIComponent(nombreCat)}" data-categoria="${catData.key}">
                     <div class="imagen-categoria">
                         <img src ="${imagenUrl}" alt="${nombreCat}" loading="lazy">
                         <span></span>
@@ -186,12 +204,11 @@ document.addEventListener("DOMContentLoaded",() => {
                 pointsLeft.push({x: cx-nx, y: cy-ny});
                 pointsRight.push({x: cx+nx, y: cy+ny});
 
+
                 if(i < this.segments){
                     cx += Math.cos(currentAngle)*segmentLen;
                     cy += Math.sin(currentAngle)*segmentLen;
                 }
-
-
 
 
             }

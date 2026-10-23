@@ -5,6 +5,7 @@
 /* Tema claro */
 /*VARIABLES DE COLORES*/
 :root[data-theme="light"]{
+    --bg-page: #f1f5f9;
     --bg-base: #f4f6fb;             
     --bg-surface: #ffffff;          
     --bg-dark-navy: #111029;        
@@ -15,7 +16,7 @@
     --price-green: #059669;         
     --price-green-hover: #047857;
     --shadow-card: 0 4px 15px rgba(17, 16, 41, 0.05);
-    --navbar-bg: rgba(255, 255, 255, 0.92);
+    --navbar-bg: rgba(255, 255, 255, 0.95);
     --cards-bg:linear-gradient(135deg,var(--bg-surface) 0%, #e4e3fa 100%);
     --border-subtle: #cbd5e1;
     --modal-bg: #ffffff;
@@ -31,6 +32,7 @@
 
 
 :root[data-theme="dark"] {
+    --bg-page: #060b18;
     --bg-base: #0c0b1a;             
     --bg-surface: #151428;
     --bg-dark-navy: #0c0b1a;
@@ -41,7 +43,7 @@
     --price-green: #10b981;
     --price-green-hover: #059669;
     --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
-    --navbar-bg: rgba(21, 20, 40, 0.92);
+    --navbar-bg: rgba(6, 11, 24, 0.92);
     --cards-bg:linear-gradient(135deg,var(--bg-dark-navy) 0%, #1c1a40 100%);
     --border-subtle: rgba(255, 255, 255, 0.08);
     --modal-bg: #0a1226;
@@ -75,7 +77,7 @@ html {
 
 body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background-color: var(--bg-base);
+    background-color: var(--bg-page);
     color: var(--text-primary);
     line-height: 1.5;
     scroll-behavior: smooth;
@@ -684,4 +686,41 @@ body {
 
 .hidden{
     display: none;
+}
+
+/*Imagenes de cada categoria*/
+.container-categoria-productos[data-categoria="perifericos"].img-producto-item{
+    content:url('../Imagenes/perifericos.jpg');
+}
+
+.container-categoria-productos[data-categoria="componentes"].img-producto-item{
+    content:url('../Imagenes/componentes.jpg');
+}
+
+.container-categoria-productos[data-categoria="tarjetas de video"].img-producto-item{
+    content:url('../Imagenes/tarjetaVideo.png');
+}
+
+.container-categoria-productos[data-categoria="monitores"].img-producto-item{
+    content:url('../Imagenes/monitores.png');
+}
+
+.container-categoria-productos[data-categoria="memorias RAM"].img-producto-item{
+    content:url('../Imagenes/RAM.png');
+}
+
+.container-categoria-productos[data-categoria="almacenamiento"].img-producto-item{
+    content:url('../Imagenes/almacenamiento.png');
+}
+
+.container-categoria-productos[data-categoria="muebles y sillas"].img-producto-item{
+    content:url('../Imagenes/mueblesSillas.png');
+}
+
+.container-categoria-productos[data-categoria="electronica"].img-producto-item{
+    content:url('../Imagenes/electronica.png');
+}
+
+.container-categoria-productos[data-categoria="general"].img-producto-item{
+    content:url('../Imagenes/general.png');
 }

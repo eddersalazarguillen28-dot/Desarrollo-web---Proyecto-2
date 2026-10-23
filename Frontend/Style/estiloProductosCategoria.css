@@ -285,147 +285,19 @@ body#pagina-productos-categoria{
 }
 
 
+/*Contenedor principal*/
 
-
-/*Iconos*/
-
-/*
-.svg-icon{
-    width: 23px;
-    height: 22px;
-}
-
-.svg-icon-sm{
-    width: 18px;
-    height: 18px;
-    margin-right: 8px;
-    color: var(--primary-purple);
-}
-*/
-
-/*NAV BAR SUPERIOR*/
-
-/*
-.navbar-cliente{
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    background-color: var(--navbar-bg);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border-color);
-}
-
-.navbar-container{
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 14px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo-brand{
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.logo-icono{
-    width: 34px;
-    height: 34px;
-    object-fit: contain;
-}
-
-.logo-texto{
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--text-primary);
-    letter-spacing: -0.5px;
-
-}
-
-.logo-highlight{
-    color:var(--primary-purple);
-}
-
-.nav-links{
-    display: flex;
-    gap: 20px;
-}
-
-.nav-link{
-    text-decoration: none;
-    color:var(--text-muted);
-    font-size: 14px;
-    font-weight: 600;
+.hero {
+    
     position: relative;
-    padding: 4px 0;
-}
-
-.nav-link::after{
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0%;
-    height: 2px;
-    background-color: var(--primary-purple);
-    transition: width 0.3s ease;
-}
-
-.nav-link:hover::after,.nav-link:active::after{
-    width: 100%;
-}
-
-.navbar-acciones{
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.btn-icon{
-    background: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-}
-
-.btn-icon:hover{
-    border-color: var(--primary-purple);
-    color:var(--primary-purple);
+    overflow: hidden;
+    padding: 160px 24px 70px;
+    background: linear-gradient(110deg, #111029 0%, #1c1a40 40%,#111029 100%);
+    color: #ffffff;
     
 }
 
-.btn-carrito{
-    position: relative;
-}
 
-.carrito-badge{
-    position:absolute;
-    top:-4px;
-    right: -4px;
-    background-color: var(--price-green);
-    color: #ffffff;
-    font-size: 10px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-*/
-
-/*Contenedor principal*/
 
 .container-categoria-productos{
     width: 100%;
@@ -436,24 +308,27 @@ body#pagina-productos-categoria{
 }
 
 .header-categoria-seccion{
-    text-align: center;
-    margin-bottom: 30px;
+    flex: 1;
+    max-width: 550px;
 }
 
 .titulo-glow-categoria{
     font-family: 'Sora','Segoe UI',system-ui, -apple-system, sans-serif;
-    font-size: clamp (28px,4vw,42px);
+    font-size: 48px;
     font-weight: 800;
-    background: linear-gradient(110deg,#412aee 0%, #8274ef 50%,#412aee 100%);
+    line-height: 1.1;
+    background: linear-gradient(110deg,#f3f4f6 0%, #8274ef 50%,#f3f4f6 100%);
     -webkit-text-fill-color: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 8px;
+    margin-bottom: 18px;
 }
 
 .subtitulo-categoria{
     color: var(--text-muted);
     font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 30px;
 }
 
 .btn-volver-cat{
@@ -462,7 +337,7 @@ body#pagina-productos-categoria{
     color:var(--text-primary);
     border:1px solid var(--border-subtle);
     padding: 8px 18px;
-    border-radius: 8px;
+    border-radius: 18px;
     text-decoration: none;
     font-size: 14px;
     font-weight: 600;
@@ -479,10 +354,9 @@ body#pagina-productos-categoria{
 /*Grid productos*/
 
 .grid-productos-categoria{
-    display: grid;
-    grid-template-columns: repeat(auto-fill,minmax(260,1fr));
-    width: 40px;
-    display: flex;
+    display: grid !important;
+    grid-template-columns: repeat(4,1fr);
+    width: 100%;
     gap:28px;
 }
 
@@ -515,7 +389,7 @@ body#pagina-productos-categoria{
 
 .img-producto-item{
     max-height: 120px;
-    width: auto;
+    width: 100%;
     object-fit: contain;
 
 }

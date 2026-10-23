@@ -56,7 +56,7 @@ async function cargarProductosDeCategoria(){
         return;
     }
 
-    if(tituloCatElem) tituloCatElem.textContent=`Categoría: ${categoriaSeleccionada}`;
+    if(tituloCatElem) tituloCatElem.textContent=`${categoriaSeleccionada}`;
     if(subtituloCatElem)subtituloCatElem.textContent=`Mostrando existencias en tiempo real para ${categoriaSeleccionada}`;
 
     if(!gridContainer)return;
