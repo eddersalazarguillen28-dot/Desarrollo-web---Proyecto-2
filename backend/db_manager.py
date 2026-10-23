@@ -508,28 +508,39 @@ def eliminar_producto(producto_id):
 # =========================================================
 
 def obtener_clientes():
-    """Obtiene todos los clientes guardados en PostgreSQL."""
+    """Obtiene los clientes y cuenta sus ventas asociadas"""
     conn = obtener_conexion()
 
     try:
         with conn.cursor() as cursor:
             cursor.execute("""
                 SELECT
-                    id,
-                    nombre,
-                    telefono,
-                    correo,
-                    direccion,
-                    estado
-                FROM clientes
-                ORDER BY id DESC;
+                    c.id,
+                    c.nombre,
+                    c.telefono,
+                    c.correo,
+                    c.direccion,
+                    c.estado,
+                    COUNT(v.id)::INTEGER AS ventas_registradas
+                FROM clientes AS c 
+                LEFT JOIN ventas as v 
+                    ON v.cliente_id = c.id
+                GROUP BY
+                    c.id,
+                    c.nombre,
+                    c.telefono,
+                    c.correo,
+                    c.direccion,
+                    c.estado
+                ORDER BY c.id DESC:
             """)
 
-            return [dict(cliente) for cliente in cursor.fetchall()]
+            return[dict(cliente) for cliente in cursor.fetchall()]
 
     finally:
         conn.close()
 
+            
 
 def agregar_cliente(
     nombre,

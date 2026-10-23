@@ -108,6 +108,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         tabla.replaceChildren();
 
+        const tarjetaVentas = document.getElementById("totalVentas");
+
+        if (tarjetaVentas) {
+            tarjetaVentas.textContent = listaClientes.reduce((total, cliente) => total + Number(cliente.ventas_registradas || 0), 0);
+        }
+        
         const texto = (buscar?.value || "").trim().toLocaleLowerCase("es-CR");
 
         const filtrados = listaClientes.filter(cliente =>

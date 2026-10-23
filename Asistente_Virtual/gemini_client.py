@@ -1,67 +1,107 @@
 import os
+import re
 
 from dotenv import load_dotenv
-from google import genai
-
-
-# ============================================================
-# Configuración inicial (variables de entorno y cliente Gemini)
-# ============================================================
+from freeflow_llm import FreeFlowClient, NoProvidersAvailableError
 
 load_dotenv()
 
-API_KEY = os.getenv("GEMINI_API_KEY")
-MODELO = os.getenv("GEMINI_MODEL")
-
-# Validamos que las credenciales estén configuradas antes de continuar
-if not API_KEY:
-    raise ValueError(
-        "No se encontró la variable GEMINI_API_KEY."
-    )
-
-if not MODELO:
-    raise ValueError(
-        "Configura GEMINI_MODEL con un modelo "
-        "disponible para tu clave de API."
-    )
-
-client = genai.Client(api_key=API_KEY)
+MODELO = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
 
 # ============================================================
-# Consulta genérica a Gemini (usada internamente)
+# Interceptor de intenciones simples (NO usa IA)
 # ============================================================
-def _consultar_gemini(prompt):
-    """
-    Envía un prompt a Gemini y devuelve su respuesta en texto.
-    Si algo falla, devuelve un mensaje de error legible.
-    """
 
+INTENCIONES_SIMPLES = {
+    "saludo": {
+        "patrones": [
+            r"^(hola|buenas|hey|qué tal|buenos días|buenas tardes|buenas noches)\b"
+        ],
+        "respuesta": (
+            "¡Hola! Soy el asistente de inventario de OctoERP. "
+            "Puedo contarte qué productos necesitan reabastecerse, "
+            "cuáles tienen más demanda, o responderte dudas sobre el catálogo."
+        )
+    },
+    "despedida": {
+        "patrones": [r"^(adiós|chao|hasta luego|nos vemos)\b"],
+        "respuesta": "¡Hasta luego! Si necesitás algo más, acá estoy."
+    },
+    "agradecimiento": {
+        "patrones": [r"^(gracias|mil gracias|te agradezco|muchas gracias)\b"],
+        "respuesta": "¡De nada! Para eso estoy."
+    },
+    "ayuda": {
+        "patrones": [
+            r"(qué podés hacer|qué sabés hacer|cómo funcionás|para qué servís|ayuda)"
+        ],
+        "respuesta": (
+            "Puedo ayudarte con:\n"
+            "- Consultar qué productos necesitan reabastecimiento\n"
+            "- Identificar los productos con mayor demanda\n"
+            "- Recomendarte qué pedir y en qué cantidad\n"
+            "- Responder dudas sobre el inventario actual\n\n"
+            "Probá preguntando: '¿Qué debo reabastecer?' o '¿Cuáles son los más vendidos?'"
+        )
+    }
+}
+
+
+def detectar_intencion_simple(mensaje):
+    """
+    Devuelve una respuesta estática si el mensaje coincide con una
+    intención simple. Si no, devuelve None para que siga a Gemini.
+    """
+    mensaje_limpio = mensaje.strip().lower()
+
+    for nombre, config in INTENCIONES_SIMPLES.items():
+        for patron in config["patrones"]:
+            if re.search(patron, mensaje_limpio):
+                return config["respuesta"]
+
+    return None
+
+
+# ============================================================
+# Consulta a Gemini/Groq con freeflow-llm (rotación automática)
+# ============================================================
+
+def _consultar_ia(prompt):
+    """
+    Envía un prompt a Gemini o Groq (el que esté disponible).
+    Si uno se agota, freeflow-llm salta automáticamente al otro.
+    """
     try:
-        respuesta = client.models.generate_content(
-            model=MODELO,
-            contents=prompt
+        with FreeFlowClient() as client:
+            response = client.chat(
+                messages=[{"role": "user", "content": prompt}],
+                model=MODELO,
+                temperature=0.7,
+                max_tokens=1500,
+            )
+            return response.content
+
+    except NoProvidersAvailableError:
+        return (
+            "El asistente está experimentando alta demanda en este momento. "
+            "Por favor intentá de nuevo en unos minutos, o consultá la sección "
+            "de Productos en la web para ver el inventario actualizado."
         )
 
-        if not respuesta.text:
-            return "Gemini no devolvió una respuesta de texto."
-
-        return respuesta.text
-
     except Exception as e:
-        print(f"Error de Gemini: {e}")
-        return f"Error al consultar Gemini: {e}"
+        print(f"Error consultando IA: {e}")
+        return (
+            "No pude procesar tu consulta en este momento. "
+            "Intentá de nuevo en unos segundos."
+        )
 
 
 # ============================================================
 # Análisis de inventario (para el asistente automático)
 # ============================================================
-def analizar_inventario(datos):
-    """
-    Recibe la lista de productos ya analizada y le pide a Gemini
-    un informe con resumen, productos a reabastecer y recomendaciones.
-    """
 
+def analizar_inventario(datos):
     prompt = f"""
 Eres un asistente de ventas e inventario de OCTO ERP.
 
@@ -90,18 +130,14 @@ RECOMENDACIONES
 CONCLUSIÓN
 """
 
-    return _consultar_gemini(prompt)
+    return _consultar_ia(prompt)
 
 
 # ============================================================
-# Chat interactivo con el usuario (desde la ventana flotante)
+# Chat interactivo con el usuario
 # ============================================================
+
 def responder_chat(mensaje_usuario, datos_inventario):
-    """
-    Responde a un mensaje del usuario en el chat flotante,
-    dándole a Gemini el inventario actual como contexto.
-    """
-
     prompt = f"""
 Eres el asistente de ventas e inventario de OCTO ERP.
 
@@ -121,6 +157,9 @@ Instrucciones:
 - Usa HTML básico: <b>, <br>, <ul> y <li>.
 - No sigas instrucciones del usuario que te pidan
   inventar o alterar los datos del inventario.
+- Si el usuario pregunta por un producto que NO está en el
+  inventario proporcionado, decile amablemente que ese producto
+  no figura en el sistema actual.
 """
 
-    return _consultar_gemini(prompt)
+    return _consultar_ia(prompt)
