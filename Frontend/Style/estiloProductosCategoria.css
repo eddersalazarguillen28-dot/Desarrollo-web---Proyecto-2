@@ -287,16 +287,92 @@ body#pagina-productos-categoria{
 
 /*Contenedor principal*/
 
+
+
+
 .hero {
-    
     position: relative;
     overflow: hidden;
     padding: 160px 24px 70px;
     background: linear-gradient(110deg, #111029 0%, #1c1a40 40%,#111029 100%);
-    color: #ffffff;
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    
+    
     
 }
 
+.hero::before{
+    content:'';
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(0deg,rgba(108,92,231,0.05)1px,transparent 1px),
+                      linear-gradient(90deg,rgba(108,92,231,0.05)1px,transparent 1px);
+    background-size: 30px 30px;
+    opacity: 0.6;
+
+}
+
+.hero-inner-content{
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    z-index: 10;
+    
+}
+
+.burbujas-container{
+    position: absolute;
+    top:0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.burbuja{
+    position: absolute;
+    bottom: -80px;
+    background: radial-gradient(circle at 30% 30%,rgba(194, 183, 255, 0.35),rgba(24, 9, 137, 0.08));
+    border:1px solid var(--border-glow);
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(108,92,231,0.25), inset 0 0 8px rgba(255,255,255,0.15);
+    animation: flotarBurbuja 12s linear infinite;
+}
+
+.burbuja:nth-child(1) { width: 45px; height: 45px;left: 10%;animation-duration: 10s;animation-delay: 0s;}
+.burbuja:nth-child(2) { width: 25px; height: 25px;left: 25%;animation-duration: 13s;animation-delay: 2s;}
+.burbuja:nth-child(3) { width: 60px; height: 60px;left: 42%;animation-duration: 15s;animation-delay: 1s;}
+.burbuja:nth-child(4) { width: 20px; height: 20px;left: 58%;animation-duration: 8s;animation-delay: 3s;}
+.burbuja:nth-child(5) { width: 50px; height: 50px;left: 72%;animation-duration: 11s;animation-delay: 0.5s;}
+.burbuja:nth-child(6) { width: 35px; height: 35px;left: 85%;animation-duration: 14s;animation-delay: 4s;}
+.burbuja:nth-child(7) { width: 18px; height: 18px;left: 93%;animation-duration: 7s;animation-delay: 1.5s;}
+.burbuja:nth-child(8) { width: 40px; height: 40px;left: 5%;animation-duration: 16s;animation-delay: 5s;}
+
+@keyframes flotarBurbuja{
+    0%{
+        transform: translateY(0) translateX(0) scale(0.8);
+        opacity: 0;
+    }
+    15%{
+        opacity: 0.7;
+    }
+    50%{
+        transform: translateY(-220px) translateX(20px) scale(1.05);
+    }
+    85%{
+        opacity: 0.5;
+    }
+    100%{
+        transform: translateY(-420px) translateX(-15px) scale(0.9);
+        opacity: 0;
+    }
+}
 
 
 .container-categoria-productos{
@@ -310,6 +386,7 @@ body#pagina-productos-categoria{
 .header-categoria-seccion{
     flex: 1;
     max-width: 550px;
+    margin: 20px;
 }
 
 .titulo-glow-categoria{
@@ -343,6 +420,7 @@ body#pagina-productos-categoria{
     font-weight: 600;
     margin-bottom: 24px;
     transition: all 0.2s ease;
+    z-index: 15;
 }
 
 .btn-volver-cat:hover{

@@ -120,8 +120,13 @@ async function cargarCategoriasDesdeAPI() {
             const cantidadItems = catData.productos.length;
             const imagenUrl = catData.imagenPortada;
 
-            const cardHTML = `
-                <a class="categoria-card ${index === 0 ? 'categoria-card-featured': ''}" href="productos-por-categoria.html?cat=${encodeURIComponent(nombreCat)}" data-categoria="${catData.key}">
+            const tarjeta = document.createElement('a');
+            tarjeta.className = `categoria-card ${index === 0 ? 'categoria-card-featured': ''}`;
+            tarjeta.href = `productos-por-categoria.html?cat=${encodeURIComponent(nombreCat)}`;
+            tarjeta.setAttribute('data-categoria',catData.key);
+            tarjeta.style.animationDelay = `${index * 0.08}s`;
+
+            tarjeta.innerHTML = `
                     <div class="imagen-categoria">
                         <img src ="${imagenUrl}" alt="${nombreCat}" loading="lazy">
                         <span></span>
@@ -132,8 +137,8 @@ async function cargarCategoriasDesdeAPI() {
                             <p>${cantidadItems} ${cantidadItems===1 ? 'producto' : 'productos'} disponibles</p>
                         </div>
                     </div>
-                </a>`;
-                gridContainer.innerHTML += cardHTML;
+                `;
+                gridContainer.appendChild(tarjeta);
         });
 
     }catch (error){
