@@ -96,7 +96,8 @@
             <!-- Cabecera del modal -->
             <div class="carrito-header">
                 <h2>
-                    <svg class="modal-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg class="modal-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
                         <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
                     Tu Carrito de Compras
@@ -140,41 +141,45 @@
                 <svg viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <linearGradient id="tg-1" x1="0" y1="0" x2="1" y2="1">
-                            <stop offset="0%" stop-color="#7168ff" stop-opacity="0.55"/>
-                            <stop offset="100%" stop-color="#00f2fe" stop-opacity="0"/>
+                            <stop offset="0%" stop-color="#7168ff" stop-opacity="0.55" />
+                            <stop offset="100%" stop-color="#00f2fe" stop-opacity="0" />
                         </linearGradient>
                         <linearGradient id="tg-2" x1="0" y1="0" x2="1" y2="1">
-                            <stop offset="0%" stop-color="#00f5a0" stop-opacity="0.45"/>
-                            <stop offset="100%" stop-color="#7168ff" stop-opacity="0"/>
+                            <stop offset="0%" stop-color="#00f5a0" stop-opacity="0.45" />
+                            <stop offset="100%" stop-color="#7168ff" stop-opacity="0" />
                         </linearGradient>
                         <linearGradient id="tg-3" x1="0" y1="0" x2="1" y2="1">
-                            <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.4"/>
-                            <stop offset="100%" stop-color="#00f5a0" stop-opacity="0"/>
+                            <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.4" />
+                            <stop offset="100%" stop-color="#00f5a0" stop-opacity="0" />
                         </linearGradient>
                     </defs>
 
                     <g class="tent-path t-a">
-                        <path d="M -80 120 C 220 60 380 260 620 200 S 980 60 1280 160"
-                              stroke="url(#tg-1)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <path d="M -80 120 C 220 60 380 260 620 200 S 980 60 1280 160" stroke="url(#tg-1)"
+                            stroke-width="3" fill="none" stroke-linecap="round" />
                     </g>
                     <g class="tent-path t-b">
-                        <path d="M -80 320 C 240 260 420 460 700 380 S 1040 240 1280 340"
-                              stroke="url(#tg-2)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                        <path d="M -80 320 C 240 260 420 460 700 380 S 1040 240 1280 340" stroke="url(#tg-2)"
+                            stroke-width="2.5" fill="none" stroke-linecap="round" />
                     </g>
                     <g class="tent-path t-c">
-                        <path d="M -80 520 C 260 460 460 660 740 560 S 1060 420 1280 520"
-                              stroke="url(#tg-3)" stroke-width="2" fill="none" stroke-linecap="round"/>
+                        <path d="M -80 520 C 260 460 460 660 740 560 S 1060 420 1280 520" stroke="url(#tg-3)"
+                            stroke-width="2" fill="none" stroke-linecap="round" />
                     </g>
                     <g class="tent-path t-d">
-                        <path d="M -80 660 C 300 600 520 760 800 640 S 1080 520 1280 620"
-                              stroke="url(#tg-1)" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.7"/>
+                        <path d="M -80 660 C 300 600 520 760 800 640 S 1080 520 1280 620" stroke="url(#tg-1)"
+                            stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.7" />
                     </g>
                 </svg>
 
                 <!-- Burbujas flotantes -->
                 <div class="burbujas" id="burbujas"></div>
             </div>
-
+            <!-- Mensaje de Bienvenida Dinámico -->
+            <section class="welcome-banner">
+    <h1 id="titulo-bienvenida">¡Bienvenido!</h1>
+    <p>Explora nuestro catálogo de hardware y componentes con la mejor tecnología.</p>
+</section>
             <!-- Contenido central del hero -->
             <div class="hero-content hero-content--centered">
 
@@ -186,14 +191,16 @@
 
                 <!-- Subtítulo -->
                 <p class="hero-subtitle">
-                    Componentes, GPUs y Custom PCs con precios y existencias que se actualizan en vivo desde nuestra base de datos.
+                    Componentes, GPUs y Custom PCs con precios y existencias que se actualizan en vivo desde nuestra
+                    base de datos.
                 </p>
 
                 <!-- Botón principal -->
                 <div class="hero-cta-group hero-cta-group--center">
                     <a href="productos.html" class="octo-glow-btn">
                         <span>Explorar Catálogo</span>
-                        <svg class="btn-arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg class="btn-arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                             <polyline points="12 5 19 12 12 19"></polyline>
                         </svg>
@@ -211,7 +218,8 @@
                     <div class="hero-stat-divider"></div>
 
                     <div class="hero-stat-item">
-                        <div class="db-status-badge connecting" id="db-status-indicator" title="Conexión con el servidor">
+                        <div class="db-status-badge connecting" id="db-status-indicator"
+                            title="Conexión con el servidor">
                             <span class="db-dot"></span>
                             <span class="db-text" id="db-text">Conectando</span>
                         </div>
@@ -233,7 +241,8 @@
 
                 <div class="img-octo-container">
                     <div class="octo-aura-ring"></div>
-                    <img src="../Imagenes/Logo.png" alt="Producto destacado" id="hero-featured-img" class="hero-card-img">
+                    <img src="../Imagenes/Logo.png" alt="Producto destacado" id="hero-featured-img"
+                        class="hero-card-img">
                 </div>
 
                 <div class="hero-card-info">
@@ -322,4 +331,5 @@
 
     <script src="../JavaScript/inicioClientes.js"></script>
 </body>
+
 </html>
