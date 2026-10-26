@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OctoERP - Ajustes de Perfil</title>
+    <link rel="stylesheet" href="../Style/estiloInicioClientes.css">
+</head>
+<body id="page-profile">
+
+    <main class="profile-wrapper">
+        <div class="profile-card">
+            
+            <!-- Encabezado con Avatar Clicable -->
+            <div class="profile-header">
+                <div class="profile-avatar-wrapper">
+                    <div id="avatar-container" class="profile-avatar-large">
+                        <span id="avatar-inicial">U</span>
+                    </div>
+                    <label for="input-foto-perfil" class="btn-change-avatar" title="Cambiar foto de perfil">
+                        📷
+                    </label>
+                    <input type="file" id="input-foto-perfil" accept="image/*" style="display: none;">
+                </div>
+                <h2>Perfil de Usuario</h2>
+                <p>Personaliza tu información, foto y seguridad en OctoERP</p>
+            </div>
+
+            <!-- Formulario de Edición -->
+            <form id="form-editar-perfil" class="profile-form">
+                
+                <div class="form-group">
+                    <label for="nombre">Nombre Completo</label>
+                    <input type="text" id="nombre" placeholder="Tu nombre completo" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="correo">Correo Electrónico (No editable)</label>
+                    <input type="email" id="correo" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="perfil-rol">Rol / Rango de Usuario</label>
+                    <input type="text" id="perfil-rol" disabled>
+                </div>
+
+                <!-- SECCIÓN DE CAMBIO DE CONTRASEÑA -->
+                <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 25px 0;">
+                <h3 style="font-size: 15px; color: #a5b4fc; margin-bottom: 15px;">Seguridad y Contraseña</h3>
+
+                <div class="form-group">
+                    <label for="password-nueva">Nueva Contraseña (Opcional)</label>
+                    <input type="password" id="password-nueva" placeholder="Mínimo 4 caracteres">
+                </div>
+
+                <div class="form-group">
+                    <label for="password-confirmar">Confirmar Nueva Contraseña</label>
+                    <input type="password" id="password-confirmar" placeholder="Repite la nueva contraseña">
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="profile-actions">
+                    <a href="inicio.html" id="btn-volver" class="btn-profile-back">Volver</a>
+                    <button type="submit" class="btn-profile-save">Guardar Cambios</button>
+                </div>
+
+                <p id="perfil-mensaje" class="profile-message"></p>
+            </form>
+
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const usuarioGuardado = localStorage.getItem("usuario");
+            const token = localStorage.getItem("token");
+
+            if (!usuarioGuardado) {
+                window.location.href = "inicioSesion.html";
+                return;
+            }
+
+            const usuario = JSON.parse(usuarioGuardado);
+            const nombre = usuario.nombre || usuario.nombres || usuario.name || "Cliente";
+            const rolUsuario = usuario.rol || usuario.rango || usuario.tipo || "Cliente";
+            
+            // Detectar si es administrador
+            const esAdmin = rolUsuario.trim().toLowerCase().includes("admin");
+
+            let fotoBase64 = usuario.foto || usuario.imagen || "";
+
+            // Configurar dinámicamente el botón "Volver" según el rol
+            const btnVolver = document.getElementById("btn-volver");
+            if (btnVolver) {
+                // Si es admin va a inicio.html, si es cliente va a su respectiva página de inicio
+                btnVolver.href = esAdmin ? "inicio.html" : "inicioClientes.html"; 
+            }
+
+            // Cargar datos actuales en los campos
+            document.getElementById("nombre").value = nombre;
+            document.getElementById("correo").value = usuario.correo || usuario.email || "No registrado";
+            document.getElementById("perfil-rol").value = rolUsuario;
+
+            // Función para renderizar la foto o la inicial
+            const avatarContainer = document.getElementById("avatar-container");
+            function renderAvatar(foto, nom) {
+                if (foto) {
+                    avatarContainer.innerHTML = `<img src="${foto}" alt="Avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                } else {
+                    avatarContainer.innerHTML = `<span id="avatar-inicial">${nom.charAt(0).toUpperCase()}</span>`;
+                }
+            }
+
+            renderAvatar(fotoBase64, nombre);
+
+            // Escuchar subida de una nueva foto
+            const inputFoto = document.getElementById("input-foto-perfil");
+            inputFoto.addEventListener("change", (e) => {
+                const archivo = e.target.files[0];
+                if (archivo) {
+                    const reader = new FileReader();
+                    reader.onload = function (evt) {
+                        fotoBase64 = evt.target.result;
+                        renderAvatar(fotoBase64, nombre);
+                    };
+                    reader.readAsDataURL(archivo);
+                }
+            });
+
+            // Evento para guardar todos los cambios
+            document.getElementById("form-editar-perfil").addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const msg = document.getElementById("perfil-mensaje");
+                const nuevoNombre = document.getElementById("nombre").value.trim();
+                const passNueva = document.getElementById("password-nueva").value;
+                const passConfirmar = document.getElementById("password-confirmar").value;
+
+                if (!nuevoNombre) {
+                    msg.style.color = "#f87171";
+                    msg.textContent = "El nombre no puede estar vacío.";
+                    return;
+                }
+
+                if (passNueva || passConfirmar) {
+                    if (passNueva.length < 4) {
+                        msg.style.color = "#f87171";
+                        msg.textContent = "La contraseña debe tener al menos 4 caracteres.";
+                        return;
+                    }
+                    if (passNueva !== passConfirmar) {
+                        msg.style.color = "#f87171";
+                        msg.textContent = "Las nuevas contraseñas no coinciden.";
+                        return;
+                    }
+                }
+
+                const payload = {
+                    nombre: nuevoNombre,
+                    foto: fotoBase64
+                };
+
+                if (passNueva) {
+                    payload.password = passNueva;
+                }
+
+                try {
+                    msg.style.color = "#a5b4fc";
+                    msg.textContent = "Sincronizando con la base de datos...";
+
+                    const respuesta = await fetch("https://octo-erp.onrender.com/api/usuarios/perfil", {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (respuesta.ok) {
+                        msg.style.color = "#34d399";
+                        msg.textContent = "✓ ¡Guardado en la base de datos y en tu perfil!";
+                    } else {
+                        msg.style.color = "#34d399";
+                        msg.textContent = "✓ ¡Perfil actualizado localmente!";
+                    }
+
+                } catch (err) {
+                    console.warn("No se pudo conectar con el servidor:", err);
+                    msg.style.color = "#34d399";
+                    msg.textContent = "✓ ¡Cambios guardados localmente!";
+                }
+
+                usuario.nombre = nuevoNombre;
+                usuario.foto = fotoBase64;
+                if (passNueva) usuario.password = passNueva;
+                localStorage.setItem("usuario", JSON.stringify(usuario));
+
+                // 🟢 Redirección según el rol exacto que me indicas:
+                setTimeout(() => {
+                    if (esAdmin) {
+                        window.location.href = "inicio.html";          // Administrador -> inicio.html
+                    } else {
+                        window.location.href = "inicioClientes.html";  // Usuario normal -> inicioClientes.html (o el nombre de su archivo)
+                    }
+                }, 1200);
+            });
+        });
+    </script>
+</body>
+</html>

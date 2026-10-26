@@ -50,7 +50,6 @@ async function cargarPerfil() {
     const nombreInput = document.getElementById("nombre");
     const correoInput = document.getElementById("correo");
 
-    // Obtenemos el token guardado en el navegador durante el inicio de sesión
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -91,10 +90,24 @@ async function cargarPerfil() {
 
         actualizarResumen(usuario.nombre, usuario.correo);
 
-        // Muestra la foto si el backend devuelve una URL o Base64
-        if (usuario.foto || usuario.foto_url || usuario.imagen_url) {
-            mostrarFoto(usuario.foto || usuario.foto_url || usuario.imagen_url);
+        const fotoServidor = usuario.foto || usuario.foto_url || usuario.imagen_url;
+        if (fotoServidor) {
+            mostrarFoto(fotoServidor);
         }
+
+        // Sincronizamos los datos locales conservando el rol o rango actual
+        const usuarioLocal = JSON.parse(localStorage.getItem("usuario") || "{}");
+        usuarioLocal.nombre = usuario.nombre || usuarioLocal.nombre;
+        usuarioLocal.correo = usuario.correo || usuarioLocal.correo;
+        
+        const rolServidor = usuario.rol || usuario.rango || usuario.tipo || usuario.role || datos.rol || datos.rango;
+        if (rolServidor) {
+            usuarioLocal.rol = rolServidor;
+        }
+        if (fotoServidor) {
+            usuarioLocal.foto = fotoServidor;
+        }
+        localStorage.setItem("usuario", JSON.stringify(usuarioLocal));
 
     } catch (error) {
         console.error("Error al cargar el perfil:", error);
@@ -150,7 +163,7 @@ function manejarFoto(evento) {
         "image/webp"
     ];
 
-    const maximoBytes = 15 * 1024 * 1024; // Ampliado a 15MB para coincidir con el backend
+    const maximoBytes = 15 * 1024 * 1024;
 
     if (!tiposPermitidos.includes(archivo.type)) {
         mostrarMensaje(
@@ -173,7 +186,7 @@ function manejarFoto(evento) {
     const lector = new FileReader();
 
     lector.onload = () => {
-        fotoBase64Temporal = lector.result; // Guardamos el string en Base64
+        fotoBase64Temporal = lector.result;
         mostrarFoto(fotoBase64Temporal);
         limpiarMensaje();
     };
@@ -232,7 +245,6 @@ async function guardarPerfil(evento) {
     const nombre = document.getElementById("nombre")?.value.trim() || "";
     const correo = document.getElementById("correo")?.value.trim() || "";
     
-    // Contraseñas (opcionales)
     const passwordNueva = document.getElementById("password-nueva")?.value || "";
     const passwordConfirmacion = document.getElementById("password-confirmacion")?.value || "";
 
@@ -275,10 +287,9 @@ async function guardarPerfil(evento) {
             botonGuardar.textContent = "Guardando...";
         }
 
-        // Estructura JSON compatible con el endpoint PUT /api/usuarios/perfil del backend
         const cuerpoPeticion = {
             nombre: nombre,
-            foto: fotoBase64Temporal, // Envía la imagen convertida en Base64
+            foto: fotoBase64Temporal,
             password: passwordAEnviar
         };
 
@@ -301,17 +312,22 @@ async function guardarPerfil(evento) {
             );
         }
 
-        // Actualizamos los datos locales del usuario en el navegador
+        // Recuperamos y actualizamos los datos locales del usuario
         const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
         usuarioGuardado.nombre = nombre;
         if (fotoBase64Temporal) {
             usuarioGuardado.foto = fotoBase64Temporal;
         }
+
+        const rolServidor = datos.rol || datos.rango || datos.tipo || (datos.usuario && (datos.usuario.rol || datos.usuario.rango));
+        if (rolServidor) {
+            usuarioGuardado.rol = rolServidor;
+        }
+
         localStorage.setItem("usuario", JSON.stringify(usuarioGuardado));
 
         actualizarResumen(nombre, correo);
 
-        // Limpiar los campos de contraseña después de guardar
         const inputPassNueva = document.getElementById("password-nueva");
         const inputPassConf = document.getElementById("password-confirmacion");
         if (inputPassNueva) inputPassNueva.value = "";
@@ -319,11 +335,25 @@ async function guardarPerfil(evento) {
 
         mostrarMensaje("¡Perfil actualizado correctamente!", "exito");
 
-        // Redirección inteligente y robusta basada en el rol
-        const rolUsuario = (usuarioGuardado.rol || "").trim().toLowerCase();
+        // 🟢 EXTRACCIÓN Y EVALUACIÓN BLINDADA DEL ROL
+        const rolDetectado = (
+            datos.rol || 
+            datos.rango || 
+            datos.tipo || 
+            (datos.usuario && (datos.usuario.rol || datos.usuario.rango)) ||
+            usuarioGuardado.rol || 
+            usuarioGuardado.rango || 
+            usuarioGuardado.tipo || 
+            usuarioGuardado.role || 
+            ""
+        ).trim().toLowerCase();
+
+        console.log("Datos respuesta servidor:", datos);
+        console.log("Usuario guardado en localStorage:", usuarioGuardado);
+        console.log("Rol final detectado para redirección:", rolDetectado);
 
         setTimeout(() => {
-            if (rolUsuario === "administrador") {
+            if (rolDetectado.includes("admin")) {
                 window.location.href = "dashboard.html";
             } else {
                 window.location.href = "inicio.html";

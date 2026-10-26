@@ -1,0 +1,614 @@
+/* ==========================================
+   OCTO ERP — PERFIL DE USUARIO
+   Tema oscuro + diseño adaptable + foto
+   ========================================== */
+
+:root,
+:root[data-theme="dark"] {
+    color-scheme: dark;
+
+    --perfil-fondo: #060b18;
+    --perfil-tarjeta: #0c1630;
+    --perfil-tarjeta-secundaria: #101d39;
+    --perfil-texto: #ffffff;
+    --perfil-texto-secundario: #94a3b8;
+    --perfil-morado: #7168ff;
+    --perfil-morado-hover: #5d53ea;
+    --perfil-cian: #00f2fe;
+    --perfil-verde: #00f5a0;
+    --perfil-borde: rgba(255, 255, 255, 0.09);
+    --perfil-sombra: 0 12px 35px rgba(0, 0, 0, 0.35);
+    --perfil-input: #080f21;
+}
+
+/* ==========================================
+   FONDO GENERAL
+   ========================================== */
+
+html {
+    min-height: 100%;
+    background: var(--perfil-fondo);
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    background: var(--perfil-fondo) !important;
+    color: var(--perfil-texto);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.perfil-page,
+.perfil-page * {
+    box-sizing: border-box;
+}
+
+.perfil-page {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 76px clamp(16px, 5vw, 64px) 40px;
+    background:
+        radial-gradient(
+            ellipse at 15% 0%,
+            rgba(113, 104, 255, 0.13),
+            transparent 42%
+        ),
+        var(--perfil-fondo);
+    color: var(--perfil-texto);
+}
+
+/* ==========================================
+   ENCABEZADO
+   ========================================== */
+
+.perfil-header {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto 28px;
+}
+
+.perfil-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    color: var(--perfil-cian);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.perfil-header h1,
+.perfil-header h2,
+.perfil-header p {
+    color: var(--perfil-texto);
+}
+
+.perfil-header h1 {
+    margin: 0 0 10px;
+    font-size: clamp(1.8rem, 4vw, 2.7rem);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.perfil-header p {
+    margin: 0;
+    color: var(--perfil-texto-secundario);
+    line-height: 1.7;
+}
+
+/* ==========================================
+   MENSAJES DEL PERFIL
+   ========================================== */
+
+#mensaje-perfil {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto 20px;
+    padding: 14px 18px;
+    border: 1px solid var(--perfil-borde);
+    border-radius: 12px;
+    background: var(--perfil-tarjeta);
+    color: var(--perfil-texto);
+    overflow-wrap: anywhere;
+}
+
+#mensaje-perfil[hidden] {
+    display: none !important;
+}
+
+/* ==========================================
+   DISTRIBUCIÓN PRINCIPAL
+   ========================================== */
+
+.perfil-layout {
+    display: grid;
+    grid-template-columns: minmax(250px, 0.8fr) minmax(0, 1.6fr);
+    align-items: start;
+    gap: 24px;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* ==========================================
+   TARJETAS
+   ========================================== */
+
+.perfil-resumen,
+.perfil-panel {
+    min-width: 0;
+    padding: clamp(20px, 3vw, 30px);
+    border: 1px solid var(--perfil-borde);
+    border-radius: 20px;
+    background: var(--perfil-tarjeta);
+    box-shadow: var(--perfil-sombra);
+}
+
+.perfil-resumen {
+    text-align: center;
+}
+
+.perfil-resumen h2,
+.perfil-resumen h3,
+.perfil-panel h2,
+.perfil-panel h3,
+.panel-titulo {
+    color: var(--perfil-texto);
+    overflow-wrap: anywhere;
+}
+
+.perfil-resumen p,
+.perfil-panel p {
+    color: var(--perfil-texto-secundario);
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   FOTO DE PERFIL
+   ========================================== */
+
+.foto-perfil-contenedor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    margin: 0 auto 22px;
+}
+
+.foto-perfil-marco {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 116px;
+    height: 116px;
+    flex-shrink: 0;
+    overflow: hidden;
+    border: 3px solid var(--perfil-morado);
+    border-radius: 50%;
+    background: linear-gradient(
+        135deg,
+        rgba(113, 104, 255, 0.25),
+        rgba(0, 242, 254, 0.12)
+    );
+    box-shadow: 0 0 25px rgba(113, 104, 255, 0.22);
+}
+
+.foto-perfil-imagen {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.foto-perfil-inicial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: var(--perfil-cian);
+    font-size: 2.6rem;
+    font-weight: 800;
+}
+
+.btn-cambiar-foto {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 10px 16px;
+    border: 1px solid rgba(113, 104, 255, 0.55);
+    border-radius: 10px;
+    background: rgba(113, 104, 255, 0.12);
+    color: var(--perfil-texto);
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.btn-cambiar-foto:hover {
+    border-color: var(--perfil-cian);
+    background: rgba(113, 104, 255, 0.23);
+    transform: translateY(-1px);
+}
+
+.btn-cambiar-foto:focus-within {
+    outline: 2px solid var(--perfil-cian);
+    outline-offset: 3px;
+}
+
+#foto-perfil-input {
+    display: none;
+}
+
+.foto-perfil-ayuda {
+    max-width: 230px;
+    margin: 0;
+    color: var(--perfil-texto-secundario);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+/* Compatibilidad con el avatar anterior */
+
+.avatar-perfil {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(76px, 10vw, 104px);
+    height: clamp(76px, 10vw, 104px);
+    margin: 0 auto 18px;
+    border: 2px solid var(--perfil-morado);
+    border-radius: 50%;
+    background: linear-gradient(
+        135deg,
+        rgba(113, 104, 255, 0.25),
+        rgba(0, 242, 254, 0.12)
+    );
+    box-shadow: 0 0 25px rgba(113, 104, 255, 0.2);
+    color: var(--perfil-cian);
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 800;
+}
+
+/* ==========================================
+   NOMBRE Y CORREO
+   ========================================== */
+
+#resumen-nombre {
+    margin: 0 0 8px;
+    color: var(--perfil-texto);
+    font-size: 1.2rem;
+    overflow-wrap: anywhere;
+}
+
+#resumen-correo {
+    margin: 0;
+    color: var(--perfil-texto-secundario);
+    font-size: 0.9rem;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+/* ==========================================
+   ESTADO DE LA CUENTA
+   ========================================== */
+
+.estado-cuenta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    max-width: 100%;
+    margin-top: 22px;
+    padding: 8px 13px;
+    border: 1px solid rgba(0, 245, 160, 0.2);
+    border-radius: 999px;
+    background: rgba(0, 245, 160, 0.07);
+    color: var(--perfil-verde);
+    font-size: 0.82rem;
+}
+
+.estado-indicador {
+    width: 8px;
+    height: 8px;
+    flex: 0 0 8px;
+    border-radius: 50%;
+    background: var(--perfil-verde);
+    box-shadow: 0 0 10px rgba(0, 245, 160, 0.6);
+}
+
+/* ==========================================
+   PANEL Y TÍTULOS
+   ========================================== */
+
+.panel-titulo {
+    margin: 0 0 8px;
+    font-size: clamp(1.15rem, 2vw, 1.45rem);
+}
+
+.perfil-panel > p {
+    margin: 0 0 25px;
+}
+
+.perfil-icono {
+    color: var(--perfil-cian);
+}
+
+/* ==========================================
+   FORMULARIO
+   ========================================== */
+
+#form-perfil {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    min-width: 0;
+}
+
+.campo-perfil {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+}
+
+.campo-perfil label {
+    color: var(--perfil-texto);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.campo-perfil input,
+.campo-perfil select,
+.campo-perfil textarea {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+    padding: 12px 14px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 10px;
+    outline: none;
+    background: var(--perfil-input);
+    color: var(--perfil-texto);
+    font: inherit;
+    font-size: 0.95rem;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.campo-perfil input::placeholder,
+.campo-perfil textarea::placeholder {
+    color: #718096;
+    opacity: 1;
+}
+
+.campo-perfil input:focus,
+.campo-perfil select:focus,
+.campo-perfil textarea:focus {
+    border-color: var(--perfil-morado);
+    box-shadow: 0 0 0 3px rgba(113, 104, 255, 0.15);
+}
+
+.campo-perfil input:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.campo-perfil input:-webkit-autofill,
+.campo-perfil input:-webkit-autofill:hover,
+.campo-perfil input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--perfil-texto);
+    box-shadow: 0 0 0 1000px var(--perfil-input) inset;
+    transition: background-color 9999s ease-in-out 0s;
+}
+
+/* ==========================================
+   SEGURIDAD Y CONTRASEÑA
+   ========================================== */
+
+.seccion-seguridad {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 10px;
+    padding-top: 24px;
+    border-top: 1px solid var(--perfil-borde);
+}
+
+.seccion-seguridad h3 {
+    margin: 0;
+    color: var(--perfil-texto);
+    font-size: 1.05rem;
+}
+
+.texto-seguridad {
+    margin: -8px 0 0;
+    color: var(--perfil-texto-secundario);
+    font-size: 0.86rem;
+    line-height: 1.6;
+}
+
+/* ==========================================
+   BOTONES DEL FORMULARIO
+   ========================================== */
+
+.perfil-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 12px;
+    width: 100%;
+    margin-top: 8px;
+}
+
+.btn-perfil {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    max-width: 100%;
+    padding: 12px 20px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.btn-guardar {
+    background: var(--perfil-morado);
+    color: #ffffff;
+}
+
+.btn-guardar:hover {
+    background: var(--perfil-morado-hover);
+    transform: translateY(-1px);
+}
+
+.btn-secundario {
+    border-color: var(--perfil-borde);
+    background: var(--perfil-tarjeta-secundaria);
+    color: var(--perfil-texto);
+}
+
+.btn-secundario:hover {
+    border-color: var(--perfil-morado);
+}
+
+.btn-perfil:focus-visible {
+    outline: 2px solid var(--perfil-cian);
+    outline-offset: 3px;
+}
+
+.btn-perfil:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+}
+
+/* ==========================================
+   PREVENCIÓN DE DESBORDAMIENTOS
+   ========================================== */
+
+.perfil-page img,
+.perfil-page svg {
+    max-width: 100%;
+}
+
+.perfil-page input,
+.perfil-page button,
+.perfil-page textarea,
+.perfil-page select {
+    font-family: inherit;
+}
+
+/* ==========================================
+   TABLETAS
+   ========================================== */
+
+@media (max-width: 850px) {
+    .perfil-page {
+        padding-right: 22px;
+        padding-left: 22px;
+    }
+
+    .perfil-layout {
+        grid-template-columns: minmax(0, 1fr);
+        max-width: 650px;
+    }
+
+    .perfil-resumen {
+        padding: 24px;
+    }
+}
+
+/* ==========================================
+   CELULARES
+   ========================================== */
+
+@media (max-width: 480px) {
+    .perfil-page {
+        padding: 72px 14px 28px;
+    }
+
+    .perfil-header {
+        margin-bottom: 20px;
+    }
+
+    .perfil-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .perfil-resumen,
+    .perfil-panel {
+        padding: 19px 16px;
+        border-radius: 15px;
+    }
+
+    .perfil-layout {
+        gap: 16px;
+    }
+
+    .foto-perfil-marco {
+        width: 100px;
+        height: 100px;
+    }
+
+    .perfil-acciones {
+        flex-direction: column-reverse;
+    }
+
+    .perfil-acciones .btn-perfil {
+        width: 100%;
+    }
+
+    .campo-perfil input,
+    .campo-perfil select,
+    .campo-perfil textarea {
+        font-size: 16px;
+    }
+}
+
+/* ==========================================
+   ACCESIBILIDAD
+   ========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .perfil-page *,
+    .perfil-page *::before,
+    .perfil-page *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+
