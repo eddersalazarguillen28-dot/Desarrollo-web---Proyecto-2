@@ -1,5 +1,14 @@
-<header class="top-header">
+
+
+<header class="top-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 10px 20px; box-sizing: border-box;">
+    
+    <!-- Izquierda: Botón para abrir/cerrar el menú lateral -->
     <div class="header-left">
         <button id="sidebar-toggle" class="btn-toggle">☰</button>
     </div>
+
+    <!-- 🟢 Derecha: Contenedor donde layout.js pintará el perfil y el rango -->
+    <div class="header-right" id="user-header-right" style="display: flex; align-items: center; gap: 12px;">
+    </div>
+
 </header>
