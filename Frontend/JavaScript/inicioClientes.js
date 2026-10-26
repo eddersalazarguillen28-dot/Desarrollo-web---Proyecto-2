@@ -29,10 +29,121 @@ document.addEventListener("DOMContentLoaded", () => {
     initProductos();
     actualizarCarritoUI();
     cargarProductos();
+    initSesionYPerfilDropdown(); // 🟢 Inicializa la gestión del usuario, menú desplegable y bienvenida
 
     setInterval(() => { if (!document.hidden) cargarProductos(); }, REFRESCO_MS);
     document.addEventListener("visibilitychange", () => { if (!document.hidden) cargarProductos(); });
 });
+
+/* ==========================================================================
+   GESTIÓN DE SESIÓN, PERFIL DROPDOWN Y BIENVENIDA (ESTILO ÉLITE)
+   ========================================================================== */
+function initSesionYPerfilDropdown() {
+    const usuarioGuardado = localStorage.getItem("usuario");
+    const tituloBienvenida = document.getElementById("titulo-bienvenida");
+
+    if (!usuarioGuardado) return;
+
+    try {
+        const usuario = JSON.parse(usuarioGuardado);
+        
+        // Extraer nombre, rol y foto de perfil de forma flexible
+        const nombreUsuario = usuario.nombre || usuario.nombres || usuario.name || "Cliente";
+        const rolUsuario = usuario.rol || usuario.rango || "Cliente";
+        const fotoUsuario = usuario.foto || ""; 
+        const esAdmin = rolUsuario.toLowerCase().includes("admin");
+
+        // 1. Ocultar botones de "Iniciar Sesión" y "Registrarse" (Escritorio y Móvil)
+        const authGuest = document.getElementById("auth-guest");
+        if (authGuest) authGuest.style.display = "none";
+
+        const authMobile = document.querySelector(".auth-buttons-mobile");
+        if (authMobile) authMobile.style.display = "none";
+
+        // 2. Inyectar el menú desplegable del perfil en la barra de navegación
+        const navActions = document.querySelector(".nav-actions");
+        if (navActions && !document.getElementById("user-profile-menu-container")) {
+            
+            const menuContainer = document.createElement("div");
+            menuContainer.id = "user-profile-menu-container";
+            menuContainer.className = "octo-profile-container";
+
+            const iniciales = nombreUsuario.charAt(0).toUpperCase();
+
+            // Si el usuario subió una foto personalizada, se usa la etiqueta <img>, de lo contrario muestra la inicial
+            const avatarContent = fotoUsuario 
+                ? `<img src="${fotoUsuario}" alt="Avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">` 
+                : iniciales;
+
+            menuContainer.innerHTML = `
+                <button type="button" id="btn-perfil-trigger" class="octo-profile-trigger">
+                    <div class="octo-profile-avatar ${esAdmin ? 'admin' : 'client'}">
+                        ${avatarContent}
+                    </div>
+                    <div class="octo-profile-info">
+                        <span class="octo-profile-name">${nombreUsuario}</span>
+                        <span class="octo-profile-role ${esAdmin ? 'admin' : 'client'}">${rolUsuario}</span>
+                    </div>
+                    <span style="font-size: 9px; opacity: 0.5; margin-left: 2px;">▼</span>
+                </button>
+
+                <!-- Menú Desplegable con Estilo Élite y SVGs -->
+                <div id="perfil-dropdown" class="octo-profile-dropdown">
+                    <a href="perfil.html" class="octo-dropdown-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        Ver y Editar Perfil
+                    </a>
+                    
+                    ${esAdmin ? `
+                    <a href="inventario.html" class="octo-dropdown-item admin-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        Panel de Control
+                    </a>` : ''}
+
+                    <div class="octo-dropdown-divider"></div>
+
+                    <button type="button" id="btn-cerrar-sesion" class="octo-dropdown-item logout">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        Cerrar Sesión
+                    </button>
+                </div>
+            `;
+
+            navActions.appendChild(menuContainer);
+
+            // Eventos del dropdown
+            const trigger = document.getElementById("btn-perfil-trigger");
+            const dropdown = document.getElementById("perfil-dropdown");
+
+            trigger.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const visible = dropdown.style.display === "block";
+                dropdown.style.display = visible ? "none" : "block";
+            });
+
+            document.addEventListener("click", (e) => {
+                if (!menuContainer.contains(e.target)) {
+                    dropdown.style.display = "none";
+                }
+            });
+
+            // Evento para cerrar sesión
+            document.getElementById("btn-cerrar-sesion").addEventListener("click", () => {
+                localStorage.removeItem("token");
+                localStorage.removeItem("usuario");
+                window.location.href = "inicioSesion.html";
+            });
+        }
+
+        // 3. Actualizar el mensaje de bienvenida en grande
+        if (tituloBienvenida) {
+            tituloBienvenida.textContent = `¡Bienvenido, ${nombreUsuario}!`;
+        }
+
+    } catch (e) {
+        console.error("Error al procesar los datos del usuario en localStorage:", e);
+    }
+}
 
 /* --- Tema claro / oscuro --- */
 function initTema() {
@@ -87,7 +198,6 @@ function initBurbujas() {
    CONEXIÓN CON LA BASE DE DATOS
    ========================================================================== */
 
-/* Busca todas las listas de objetos dentro de la respuesta */
 function candidatos(data, profundidad = 0, salida = []) {
     if (Array.isArray(data)) {
         if (data.length && typeof data[0] === "object") salida.push(data);
@@ -102,7 +212,6 @@ function candidatos(data, profundidad = 0, salida = []) {
     return salida;
 }
 
-/* Unifica los nombres de campos del backend */
 function normalizar(p, i) {
     const num = (v) => (v === undefined || v === null || v === "" ? NaN : Number(v));
     const stock = num(p.stock ?? p.cantidad ?? p.existencias ?? p.inventario);
@@ -144,7 +253,6 @@ async function cargarProductos(manual = false) {
     if (manual || !productos.length) mostrarSkeleton();
     setEstadoBD("connecting");
 
-    // Aviso si el servidor tarda en responder (arranque en frío)
     const aviso = setTimeout(() => {
         if (!productos.length) $("carga-nota")?.classList.remove("hidden");
     }, 6000);
@@ -195,7 +303,6 @@ function initProductos() {
         if (e.target.closest("[data-reintentar]")) cargarProductos(true);
     });
 
-    // Si la imagen falla, se usa el logo
     cont?.addEventListener("error", (e) => {
         if (e.target.tagName === "IMG" && !e.target.src.endsWith("Logo.png")) e.target.src = LOGO;
     }, true);
@@ -276,7 +383,6 @@ function renderError() {
     if (titulo) titulo.textContent = "Sin conexión";
 }
 
-/* Contador animado de equipos */
 function actualizarStat(total) {
     const el = $("stat-total-productos");
     if (!el) return;
@@ -293,7 +399,7 @@ function actualizarStat(total) {
 }
 
 /* ==========================================================================
-   PRODUCTO DESTACADO (rota entre los disponibles)
+   PRODUCTO DESTACADO
    ========================================================================== */
 function iniciarDestacado() {
     clearInterval(timerDestacado);
@@ -461,7 +567,6 @@ function procesarCompra() {
     toast("¡Gracias por tu compra en OctoERP! Pedido registrado.");
 }
 
-
 /* --- Notificaciones --- */
 function toast(msg, tipo = "ok") {
     let pila = document.querySelector(".toast-stack");
@@ -480,7 +585,3 @@ function toast(msg, tipo = "ok") {
         setTimeout(() => t.remove(), 300);
     }, 2600);
 }
-
-const productosInicio = inventario.filter(prod => 
-    productoPerteneceAUbicacion(prod, "inicio")
-);

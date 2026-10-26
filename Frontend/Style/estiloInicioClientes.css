@@ -1538,3 +1538,558 @@ body#page-inicio {
         transform: none;
     }
 }
+
+.welcome-banner {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #eef0f5 100%);
+    border-radius: 12px;
+    margin: 20px auto;
+    max-width: 1200px;
+}
+
+.welcome-banner h1 {
+    font-size: 38px;
+    font-weight: 800;
+    color: #171d33;
+    margin: 0;
+}
+
+.welcome-banner p {
+    color: #64748b;
+    font-size: 16px;
+    margin-top: 8px;
+}
+
+
+
+/* ============================================================
+   MENÚ DESPLEGABLE DE PERFIL — OCTO ERP
+   ============================================================ */
+
+.octo-profile-container {
+    position: relative;
+    display: inline-block;
+    margin-left: 12px;
+}
+
+.octo-profile-trigger {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 6px 14px 6px 6px;
+    border-radius: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    color: #f8fafc;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.octo-profile-trigger:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(115, 103, 240, 0.5);
+    box-shadow: 0 0 15px rgba(115, 103, 240, 0.2);
+}
+
+.octo-profile-avatar {
+    width: 36px;
+    height: 36px;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.octo-profile-avatar.admin {
+    background: linear-gradient(135deg, #7367f0 0%, #ab54f4 100%);
+}
+
+.octo-profile-avatar.client {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.octo-profile-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.octo-profile-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #f8fafc;
+    line-height: 1.2;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.octo-profile-role {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+.octo-profile-role.admin {
+    color: #a5b4fc;
+}
+
+.octo-profile-role.client {
+    color: #34d399;
+}
+
+.octo-profile-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 220px;
+    background: #13182b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    padding: 8px 0;
+    z-index: 1000;
+    backdrop-filter: blur(16px);
+    animation: dropdownFadeIn 0.2s ease forwards;
+}
+
+@keyframes dropdownFadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.octo-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 18px;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+
+.octo-dropdown-item:hover {
+    background: rgba(115, 103, 240, 0.12);
+    color: #ffffff;
+    padding-left: 22px;
+}
+
+.octo-dropdown-item.admin-link {
+    color: #a5b4fc;
+}
+
+.octo-dropdown-item.admin-link:hover {
+    background: rgba(115, 103, 240, 0.18);
+}
+
+.octo-dropdown-item.logout {
+    color: #f87171;
+}
+
+.octo-dropdown-item.logout:hover {
+    background: rgba(239, 68, 68, 0.12);
+    color: #fca5a5;
+}
+
+.octo-dropdown-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    margin: 6px 0;
+}
+
+
+/* ============================================================
+   PÁGINA DE PERFIL AVANZADA — OCTO ERP TECH
+   ============================================================ */
+
+/* Fondo dinámico con neón y grid cibernética */
+#page-profile {
+    background-color: #0b0f19;
+    background-image: 
+        radial-gradient(circle at 15% 20%, rgba(115, 103, 240, 0.18) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(0, 242, 254, 0.12) 0%, transparent 40%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+    min-height: 100vh;
+}
+
+.profile-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+/* Tarjeta principal Glassmorphism de lujo */
+.profile-card {
+    width: 100%;
+    max-width: 600px;
+    background: rgba(19, 24, 43, 0.75);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 
+                0 0 30px rgba(115, 103, 240, 0.25);
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Encabezado y Foto de Perfil Interactiva */
+.profile-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.profile-avatar-wrapper {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 16px auto;
+}
+
+.profile-avatar-large {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: 800;
+    color: #ffffff;
+    background: linear-gradient(135deg, #7367f0 0%, #ab54f4 100%);
+    box-shadow: 0 0 25px rgba(115, 103, 240, 0.5);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    object-fit: cover;
+    overflow: hidden;
+}
+
+/* Botón flotante para cambiar foto */
+.btn-change-avatar {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 36px;
+    height: 36px;
+    background: #7367f0;
+    border: 2px solid #13182b;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+}
+
+.btn-change-avatar:hover {
+    transform: scale(1.1);
+    background: #8075f1;
+    box-shadow: 0 0 15px rgba(115, 103, 240, 0.6);
+}
+
+.profile-header h2 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 6px 0;
+}
+
+.profile-header p {
+    font-size: 14px;
+    color: #94a3b8;
+    margin: 0;
+}
+
+/* Campos de Formulario */
+.profile-form .form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.profile-form label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #a5b4fc;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.profile-form input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(10, 14, 26, 0.6);
+    color: #f8fafc;
+    font-size: 15px;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: all 0.25s ease;
+}
+
+.profile-form input:not([disabled]):focus {
+    outline: none;
+    border-color: #7367f0;
+    background: rgba(15, 21, 39, 0.85);
+    box-shadow: 0 0 15px rgba(115, 103, 240, 0.35);
+}
+
+.profile-form input[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-style: dashed;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* Botones */
+.profile-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn-profile-save {
+    flex: 2;
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #7367f0 0%, #6355ee 100%);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(115, 103, 240, 0.35);
+    transition: all 0.25s ease;
+}
+
+.btn-profile-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(115, 103, 240, 0.5);
+}
+
+.btn-profile-back {
+    flex: 1;
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+    color: #cbd5e1;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-sizing: border-box;
+}
+
+.btn-profile-back:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.profile-message {
+    margin-top: 18px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    min-height: 20px;
+}
+
+
+/* ============================================================
+   MENÚ DESPLEGABLE DE PERFIL — ESTILO ÉLITE (OCTO ERP)
+   ============================================================ */
+
+.octo-profile-container {
+    position: relative;
+    display: inline-block;
+    margin-left: 14px;
+}
+
+.octo-profile-trigger {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(23, 29, 51, 0.6);
+    padding: 5px 14px 5px 6px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    color: #f8fafc;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(10px);
+}
+
+.octo-profile-trigger:hover {
+    background: rgba(30, 38, 68, 0.85);
+    border-color: rgba(115, 103, 240, 0.4);
+    box-shadow: 0 0 20px rgba(115, 103, 240, 0.15);
+    transform: translateY(-1px);
+}
+
+.octo-profile-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: white;
+    overflow: hidden;
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.octo-profile-avatar.admin {
+    background: linear-gradient(135deg, #7367f0 0%, #ab54f4 100%);
+}
+
+.octo-profile-avatar.client {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.octo-profile-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.octo-profile-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+}
+
+.octo-profile-role {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+.octo-profile-role.admin {
+    color: #a5b4fc;
+}
+
+.octo-profile-role.client {
+    color: #34d399;
+}
+
+/* Menú Desplegable Flotante Elegante */
+.octo-profile-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 230px;
+    background: rgba(18, 23, 41, 0.95);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7),
+                0 0 25px rgba(115, 103, 240, 0.1);
+    padding: 8px;
+    z-index: 1000;
+    animation: menuAppear 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes menuAppear {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.octo-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.octo-dropdown-item svg {
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.octo-dropdown-item:hover {
+    background: rgba(115, 103, 240, 0.15);
+    color: #ffffff;
+    transform: translateX(2px);
+}
+
+.octo-dropdown-item:hover svg {
+    opacity: 1;
+}
+
+.octo-dropdown-item.admin-link {
+    color: #c7d2fe;
+}
+
+.octo-dropdown-item.admin-link:hover {
+    background: rgba(115, 103, 240, 0.22);
+    color: #ffffff;
+}
+
+.octo-dropdown-item.logout {
+    color: #f87171;
+}
+
+.octo-dropdown-item.logout:hover {
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+}
+
+.octo-dropdown-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.06);
+    margin: 6px 4px;
+}
