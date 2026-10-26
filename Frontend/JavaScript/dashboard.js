@@ -137,54 +137,65 @@ function actualizarGraficoVentas(ventasFiltradas) {
     });
 }
 
+function generarColores(cantidad) {
+    return Array.from({length: cantidad}, (_, i) => {
+        const tono = (i * 137.508) % 360;
+        return `hsl(${tono}, 75%, 55%)`;
+    });
+}
+
 // Ordena los productos por unidades vendidas
 function actualizarGraficoProductos(ventasFiltradas) {
     const canvas = document.getElementById("grafico-productos");
     if (!canvas) return;
 
     const ranking = productos.map(producto => {
-        const unidades = ventasFiltradas
-            .filter(venta => venta.productoId === producto.id)
-            .reduce((total, venta) => total + venta.cantidad, 0);
-        return { nombre: producto.nombre, unidades };
+
+        const unidades = ventasFiltradas.filter(venta => Number(venta.productoId) === Number(producto.id)).reduce((total, ventas) => total + Number(ventas.cantidad || 0), 0);
+
+        return {
+            nombre: producto.nombre,
+            unidades: unidades
+        };
     });
 
-    ranking.sort((a, b) => b.unidades - a.unidades);
+    ranking.sort((a, b) => b.unidades + a.unidades);
 
     const etiquetas = ranking.map(p => p.nombre);
     const cantidades = ranking.map(p => p.unidades);
+    const colores = generarColores(ranking.length);
 
     if (graficoProductos) {
         graficoProductos.data.labels = etiquetas;
         graficoProductos.data.datasets[0].data = cantidades;
+        graficoProductos.data.datasets[0].backgroundColor = [...colores];
+        graficoProductos.data.datasets[0].hoverBackgroundColor = [...colores];
         graficoProductos.update();
         return;
     }
 
     graficoProductos = new Chart(canvas, {
         type: "doughnut",
+
         data: {
             labels: etiquetas,
-            datasets: [
-                {
-                    label: "Unidades vendidas",
-                    data: cantidades,
-                    backgroundColor: [
-                        "#245bd7",
-                        "#169b86",
-                        "#8b5cf6",
-                        "#ef4444",
-                        "#06b6d4",
-                    ],
-                    borderColor: "#ffffff",
-                    borderWidth: 3
-                }
-            ]
+            datasets: [{
+                label: "Unidades vendidas",
+                data: cantidades,
+
+                backgroundColor: colores,
+                hoverBackgroundColor: colores,
+                borderColor: "#ffffff",
+                borderWidth: 3,
+                hoverOffset: 6
+            }]
         },
+
         options: {
             responsive: true,
             maintainAspectRatio: false,
             cutout: "60%",
+
             plugins: {
                 legend: {
                     display: true,
