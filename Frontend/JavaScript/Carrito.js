@@ -1,4 +1,5 @@
 const API_URL = "https://octo-erp.onrender.com/api";
+
 const CLAVE_CARRITO = "octo_carrito";
 const CLAVE_USUARIO = "usuario";
 const CLAVE_TOKEN = "token";
@@ -18,7 +19,9 @@ function obtenerCarrito() {
             localStorage.getItem(CLAVE_CARRITO) || "[]"
         );
 
-        if (!Array.isArray(datos)) return [];
+        if (!Array.isArray(datos)) {
+            return [];
+        }
 
         return datos
             .filter(item =>
@@ -37,7 +40,10 @@ function obtenerCarrito() {
                 precio: Number(item.precio),
                 cantidad: Math.floor(Number(item.cantidad))
             }))
-            .filter(item => item.cantidad > 0);
+            .filter(item =>
+                Number.isInteger(item.cantidad) &&
+                item.cantidad > 0
+            );
     } catch (error) {
         console.error("Error leyendo el carrito:", error);
         return [];
@@ -45,6 +51,11 @@ function obtenerCarrito() {
 }
 
 function guardarCarrito(carrito) {
+    if (!Array.isArray(carrito)) {
+        console.error("El carrito debe ser una lista.");
+        return false;
+    }
+
     try {
         localStorage.setItem(
             CLAVE_CARRITO,
@@ -57,6 +68,11 @@ function guardarCarrito(carrito) {
     }
 
     actualizarCarritoUI();
+
+    window.dispatchEvent(
+        new CustomEvent("carritoActualizado")
+    );
+
     return true;
 }
 
@@ -77,7 +93,10 @@ function agregarAlCarrito(idProducto, nombre, precio) {
 
     const precioNumerico = Number(precio);
 
-    if (!Number.isFinite(precioNumerico) || precioNumerico < 0) {
+    if (
+        !Number.isFinite(precioNumerico) ||
+        precioNumerico < 0
+    ) {
         alert("El precio del producto no es válido.");
         return;
     }
@@ -109,7 +128,10 @@ function agregarAlCarrito(idProducto, nombre, precio) {
     }
 
     if (guardarCarrito(carrito)) {
-        console.log("Producto agregado al carrito:", nombreSeguro);
+        console.log(
+            "Producto agregado al carrito:",
+            nombreSeguro
+        );
     }
 }
 
@@ -124,18 +146,25 @@ function cambiarCantidad(idProducto, cambio) {
         String(producto.id_producto) === String(idProducto)
     );
 
-    if (!item) return;
+    if (!item) {
+        return;
+    }
 
-    const nuevaCantidad = item.cantidad + Number(cambio);
+    const cantidadCambio = Number(cambio);
+
+    if (!Number.isInteger(cantidadCambio)) {
+        return;
+    }
+
+    const nuevaCantidad = item.cantidad + cantidadCambio;
 
     if (nuevaCantidad <= 0) {
         eliminarDelCarrito(idProducto);
         return;
     }
 
-    if (!Number.isInteger(nuevaCantidad)) return;
-
     item.cantidad = nuevaCantidad;
+
     guardarCarrito(carrito);
 }
 
@@ -156,21 +185,35 @@ function eliminarDelCarrito(idProducto) {
 // ==================================================
 
 function renderizarListaCarrito() {
-    const contenedor = document.getElementById("carrito-items-lista");
-    const totalEl = document.getElementById("carrito-monto-total");
+    const contenedor = document.getElementById(
+        "carrito-items-lista"
+    );
 
-    if (!contenedor) return;
+    const totalEl = document.getElementById(
+        "carrito-monto-total"
+    );
+
+    if (!contenedor) {
+        return;
+    }
 
     const carrito = obtenerCarrito();
+
     contenedor.replaceChildren();
 
     if (carrito.length === 0) {
         const mensaje = document.createElement("p");
+
         mensaje.className = "carrito-vacio-msg";
-        mensaje.textContent = "Tu carrito está vacío actualmente.";
+        mensaje.textContent =
+            "Tu carrito está vacío actualmente.";
+
         contenedor.appendChild(mensaje);
 
-        if (totalEl) totalEl.textContent = "₡0";
+        if (totalEl) {
+            totalEl.textContent = "₡0";
+        }
+
         return;
     }
 
@@ -178,6 +221,7 @@ function renderizarListaCarrito() {
 
     carrito.forEach(item => {
         const subtotal = item.precio * item.cantidad;
+
         totalMonto += subtotal;
 
         const fila = document.createElement("article");
@@ -190,10 +234,12 @@ function renderizarListaCarrito() {
         titulo.textContent = item.nombre;
 
         const precio = document.createElement("p");
+
         precio.textContent =
             `₡${formatoMoneda.format(item.precio)} por unidad`;
 
         const subtotalEl = document.createElement("p");
+
         subtotalEl.textContent =
             `Subtotal: ₡${formatoMoneda.format(subtotal)}`;
 
@@ -203,54 +249,67 @@ function renderizarListaCarrito() {
         acciones.className = "item-carrito-acciones";
 
         const menos = document.createElement("button");
+
         menos.type = "button";
         menos.textContent = "−";
         menos.className = "btn-cantidad-carrito";
+
         menos.setAttribute(
             "aria-label",
             `Reducir cantidad de ${item.nombre}`
         );
+
         menos.addEventListener("click", () => {
             cambiarCantidad(item.id_producto, -1);
         });
 
         const cantidad = document.createElement("span");
+
         cantidad.className = "cantidad-carrito";
         cantidad.textContent = String(item.cantidad);
         cantidad.setAttribute("aria-label", "Cantidad");
 
         const mas = document.createElement("button");
+
         mas.type = "button";
         mas.textContent = "+";
         mas.className = "btn-cantidad-carrito";
+
         mas.setAttribute(
             "aria-label",
             `Aumentar cantidad de ${item.nombre}`
         );
+
         mas.addEventListener("click", () => {
             cambiarCantidad(item.id_producto, 1);
         });
 
         const eliminar = document.createElement("button");
+
         eliminar.type = "button";
         eliminar.className = "btn-eliminar-item";
         eliminar.textContent = "🗑️";
         eliminar.title = "Eliminar producto";
+
         eliminar.setAttribute(
             "aria-label",
             `Eliminar ${item.nombre}`
         );
+
         eliminar.addEventListener("click", () => {
             eliminarDelCarrito(item.id_producto);
         });
 
         acciones.append(menos, cantidad, mas, eliminar);
+
         fila.append(info, acciones);
+
         contenedor.appendChild(fila);
     });
 
     if (totalEl) {
-        totalEl.textContent = `₡${formatoMoneda.format(totalMonto)}`;
+        totalEl.textContent =
+            `₡${formatoMoneda.format(totalMonto)}`;
     }
 }
 
@@ -270,6 +329,7 @@ function actualizarCarritoUI() {
 
     if (contador) {
         contador.textContent = String(totalItems);
+
         contador.setAttribute(
             "aria-label",
             `${totalItems} productos en el carrito`
@@ -286,25 +346,31 @@ function actualizarCarritoUI() {
 function toggleModalCarrito() {
     const modal = document.getElementById("modal-carrito");
 
-    if (!modal) return;
+    if (!modal) {
+        console.warn("No se encontró el modal del carrito.");
+        return;
+    }
 
     const oculto = modal.classList.contains("hidden");
 
     if (oculto) {
         modal.classList.remove("hidden");
         modal.setAttribute("aria-hidden", "false");
+
         document.body.style.overflow = "hidden";
+
         renderizarListaCarrito();
     } else {
         modal.classList.add("hidden");
         modal.setAttribute("aria-hidden", "true");
+
         document.body.style.overflow = "";
     }
 }
 
 // ==================================================
 // 8. FINALIZAR COMPRA
-// Requiere token válido y ruta de ventas adaptada.
+// Envía la compra a POST /api/ventas/cliente
 // ==================================================
 
 async function procesarCompra() {
@@ -322,7 +388,7 @@ async function procesarCompra() {
         return;
     }
 
-    let usuarioSesion;
+    let usuarioSesion = null;
 
     try {
         usuarioSesion = JSON.parse(
@@ -330,11 +396,12 @@ async function procesarCompra() {
         );
     } catch (error) {
         console.error("No se pudo leer el usuario:", error);
-        usuarioSesion = null;
     }
 
     if (!usuarioSesion || usuarioSesion.id == null) {
-        alert("No se encontró tu sesión. Inicia sesión nuevamente.");
+        alert(
+            "No se encontró tu sesión. Inicia sesión nuevamente."
+        );
         return;
     }
 
@@ -347,11 +414,19 @@ async function procesarCompra() {
     );
 
     if (articulosInvalidos) {
-        alert("Hay productos con datos incorrectos. Revisa el carrito.");
+        alert(
+            "Hay productos con datos incorrectos. Revisa el carrito."
+        );
         return;
     }
 
-    const botonComprar = document.getElementById("btn-finalizar-compra");
+    const botonComprar = document.getElementById(
+        "btn-finalizar-compra"
+    );
+
+    if (botonComprar && botonComprar.disabled) {
+        return;
+    }
 
     if (botonComprar) {
         botonComprar.disabled = true;
@@ -360,8 +435,8 @@ async function procesarCompra() {
 
     try {
         /*
-         * El backend debe identificar al cliente mediante el token.
-         * No enviamos el precio ni el total como datos confiables.
+         * No se envían precios ni totales como datos confiables.
+         * El backend debe calcularlos usando la base de datos.
          */
         const payload = {
             detalles: carrito.map(item => ({
@@ -370,28 +445,46 @@ async function procesarCompra() {
             }))
         };
 
-        const respuesta = await fetch(`${API_URL}/ventas`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify(payload)
-        });
+        const respuesta = await fetch(
+            `${API_URL}/ventas/cliente`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            }
+        );
 
         const texto = await respuesta.text();
+
         let resultado = {};
 
         try {
             resultado = texto ? JSON.parse(texto) : {};
-        } catch {
-            throw new Error("El servidor devolvió una respuesta no válida.");
+        } catch (error) {
+            console.error(
+                "Respuesta recibida del servidor:",
+                texto
+            );
+
+            throw new Error(
+                "El servidor devolvió una respuesta no válida."
+            );
         }
 
         if (!respuesta.ok) {
             if (respuesta.status === 401) {
                 throw new Error(
-                    "Tu sesión venció. Inicia sesión nuevamente."
+                    "Tu sesión venció o no es válida. " +
+                    "Inicia sesión nuevamente."
+                );
+            }
+
+            if (respuesta.status === 403) {
+                throw new Error(
+                    "Tu cuenta no tiene permiso para realizar esta compra."
                 );
             }
 
@@ -399,25 +492,37 @@ async function procesarCompra() {
                 resultado.message ||
                 resultado.mensaje ||
                 resultado.error ||
-                `Error HTTP ${respuesta.status}`
+                `Error del servidor: HTTP ${respuesta.status}`
             );
         }
 
-        if (resultado.status && resultado.status !== "ok") {
+        if (
+            resultado.status &&
+            resultado.status !== "ok"
+        ) {
             throw new Error(
-                resultado.message || "No se pudo registrar la compra."
+                resultado.message ||
+                resultado.mensaje ||
+                "No se pudo registrar la compra."
             );
         }
 
-        const idVenta = resultado.venta_id ?? resultado.id_venta;
+        const idVenta =
+            resultado.venta_id ??
+            resultado.id_venta ??
+            resultado.id;
 
         alert(
-            `¡Compra realizada con éxito!${
-                idVenta != null ? ` Número de orden #${idVenta}` : ""
-            }`
+            "¡Compra realizada con éxito!" +
+            (
+                idVenta != null
+                    ? ` Número de orden #${idVenta}`
+                    : ""
+            )
         );
 
         localStorage.removeItem(CLAVE_CARRITO);
+
         actualizarCarritoUI();
 
         const modal = document.getElementById("modal-carrito");
@@ -425,18 +530,23 @@ async function procesarCompra() {
         if (modal) {
             modal.classList.add("hidden");
             modal.setAttribute("aria-hidden", "true");
+
             document.body.style.overflow = "";
         }
 
-        // Avisar a otros componentes que el carrito cambió.
-        window.dispatchEvent(new CustomEvent("carritoActualizado"));
+        window.dispatchEvent(
+            new CustomEvent("carritoActualizado")
+        );
 
     } catch (error) {
-        console.error("Error procesando la compra:", error);
+        console.error(
+            "Error procesando la compra:",
+            error
+        );
 
         alert(
             "No se pudo procesar la compra: " +
-            error.message
+            (error.message || "Error inesperado.")
         );
     } finally {
         if (botonComprar) {
@@ -447,7 +557,7 @@ async function procesarCompra() {
 }
 
 // ==================================================
-// 9. DISPONER LAS FUNCIONES PARA EL HTML
+// 9. EXPONER FUNCIONES PARA EL HTML
 // ==================================================
 
 window.obtenerCarrito = obtenerCarrito;
@@ -459,6 +569,10 @@ window.renderizarListaCarrito = renderizarListaCarrito;
 window.actualizarCarritoUI = actualizarCarritoUI;
 window.toggleModalCarrito = toggleModalCarrito;
 window.procesarCompra = procesarCompra;
+
+// ==================================================
+// 10. INICIALIZACIÓN Y SINCRONIZACIÓN
+// ==================================================
 
 document.addEventListener("DOMContentLoaded", () => {
     actualizarCarritoUI();
