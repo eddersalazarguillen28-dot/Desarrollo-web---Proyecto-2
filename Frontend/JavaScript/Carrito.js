@@ -1,20 +1,27 @@
-
 const API_URL = "https://octo-erp.onrender.com/api";
+
 const CLAVE_CARRITO = "octo_carrito";
+const CLAVE_USUARIO = "usuario";
+const CLAVE_TOKEN = "token";
 
 const formatoMoneda = new Intl.NumberFormat("es-CR", {
+    minimumFractionDigits: 0,
     maximumFractionDigits: 2
 });
 
-// ================================================
+// ==================================================
 // 1. OBTENER Y GUARDAR EL CARRITO
-// ================================================
+// ==================================================
 
 function obtenerCarrito() {
     try {
-        const datos = JSON.parse(localStorage.getItem(CLAVE_CARRITO));
+        const datos = JSON.parse(
+            localStorage.getItem(CLAVE_CARRITO) || "[]"
+        );
 
-        if (!Array.isArray(datos)) return [];
+        if (!Array.isArray(datos)) {
+            return [];
+        }
 
         return datos
             .filter(item =>
@@ -32,7 +39,11 @@ function obtenerCarrito() {
                 nombre: String(item.nombre || "Producto"),
                 precio: Number(item.precio),
                 cantidad: Math.floor(Number(item.cantidad))
-            }));
+            }))
+            .filter(item =>
+                Number.isInteger(item.cantidad) &&
+                item.cantidad > 0
+            );
     } catch (error) {
         console.error("Error leyendo el carrito:", error);
         return [];
@@ -40,8 +51,16 @@ function obtenerCarrito() {
 }
 
 function guardarCarrito(carrito) {
+    if (!Array.isArray(carrito)) {
+        console.error("El carrito debe ser una lista.");
+        return false;
+    }
+
     try {
-        localStorage.setItem(CLAVE_CARRITO, JSON.stringify(carrito));
+        localStorage.setItem(
+            CLAVE_CARRITO,
+            JSON.stringify(carrito)
+        );
     } catch (error) {
         console.error("No se pudo guardar el carrito:", error);
         alert("No se pudo guardar el carrito en el navegador.");
@@ -49,15 +68,18 @@ function guardarCarrito(carrito) {
     }
 
     actualizarCarritoUI();
+
+    window.dispatchEvent(
+        new CustomEvent("carritoActualizado")
+    );
+
     return true;
 }
 
-// ================================================
+// ==================================================
 // 2. AGREGAR PRODUCTOS
-// ================================================
-
-// IMPORTANTE: el orden de los parámetros es:
-// agregarAlCarrito(idProducto, nombre, precio)
+// Uso: agregarAlCarrito(idProducto, nombre, precio)
+// ==================================================
 
 function agregarAlCarrito(idProducto, nombre, precio) {
     if (
@@ -65,13 +87,16 @@ function agregarAlCarrito(idProducto, nombre, precio) {
         idProducto === undefined ||
         String(idProducto).trim() === ""
     ) {
-        alert("No se puede agregar este producto porque no tiene un ID válido.");
+        alert("El producto no tiene un ID válido.");
         return;
     }
 
     const precioNumerico = Number(precio);
 
-    if (!Number.isFinite(precioNumerico) || precioNumerico < 0) {
+    if (
+        !Number.isFinite(precioNumerico) ||
+        precioNumerico < 0
+    ) {
         alert("El precio del producto no es válido.");
         return;
     }
@@ -85,14 +110,12 @@ function agregarAlCarrito(idProducto, nombre, precio) {
 
     const carrito = obtenerCarrito();
 
-    // Comparar como texto evita diferencias entre IDs numéricos y string.
     const existente = carrito.find(item =>
         String(item.id_producto) === String(idProducto)
     );
 
     if (existente) {
         existente.cantidad += 1;
-        // Actualizar el precio por si la oferta cambió.
         existente.precio = precioNumerico;
         existente.nombre = nombreSeguro;
     } else {
@@ -105,17 +128,16 @@ function agregarAlCarrito(idProducto, nombre, precio) {
     }
 
     if (guardarCarrito(carrito)) {
-        console.log("Producto agregado:", {
-            id_producto: idProducto,
-            nombre: nombreSeguro,
-            precio: precioNumerico
-        });
+        console.log(
+            "Producto agregado al carrito:",
+            nombreSeguro
+        );
     }
 }
 
-// ================================================
+// ==================================================
 // 3. MODIFICAR CANTIDADES
-// ================================================
+// ==================================================
 
 function cambiarCantidad(idProducto, cambio) {
     const carrito = obtenerCarrito();
@@ -124,25 +146,31 @@ function cambiarCantidad(idProducto, cambio) {
         String(producto.id_producto) === String(idProducto)
     );
 
-    if (!item) return;
-
-    item.cantidad += cambio;
-
-    if (item.cantidad <= 0) {
-        const actualizado = carrito.filter(producto =>
-            String(producto.id_producto) !== String(idProducto)
-        );
-
-        guardarCarrito(actualizado);
+    if (!item) {
         return;
     }
+
+    const cantidadCambio = Number(cambio);
+
+    if (!Number.isInteger(cantidadCambio)) {
+        return;
+    }
+
+    const nuevaCantidad = item.cantidad + cantidadCambio;
+
+    if (nuevaCantidad <= 0) {
+        eliminarDelCarrito(idProducto);
+        return;
+    }
+
+    item.cantidad = nuevaCantidad;
 
     guardarCarrito(carrito);
 }
 
-// ================================================
+// ==================================================
 // 4. ELIMINAR PRODUCTOS
-// ================================================
+// ==================================================
 
 function eliminarDelCarrito(idProducto) {
     const carrito = obtenerCarrito().filter(item =>
@@ -152,15 +180,22 @@ function eliminarDelCarrito(idProducto) {
     guardarCarrito(carrito);
 }
 
-// ================================================
-// 5. RENDERIZAR LOS PRODUCTOS DEL MODAL
-// ================================================
+// ==================================================
+// 5. MOSTRAR LOS PRODUCTOS DEL CARRITO
+// ==================================================
 
 function renderizarListaCarrito() {
-    const contenedor = document.getElementById("carrito-items-lista");
-    const totalEl = document.getElementById("carrito-monto-total");
+    const contenedor = document.getElementById(
+        "carrito-items-lista"
+    );
 
-    if (!contenedor) return;
+    const totalEl = document.getElementById(
+        "carrito-monto-total"
+    );
+
+    if (!contenedor) {
+        return;
+    }
 
     const carrito = obtenerCarrito();
 
@@ -168,12 +203,16 @@ function renderizarListaCarrito() {
 
     if (carrito.length === 0) {
         const mensaje = document.createElement("p");
+
         mensaje.className = "carrito-vacio-msg";
-        mensaje.textContent = "Tu carrito está vacío actualmente.";
+        mensaje.textContent =
+            "Tu carrito está vacío actualmente.";
 
         contenedor.appendChild(mensaje);
 
-        if (totalEl) totalEl.textContent = "₡0";
+        if (totalEl) {
+            totalEl.textContent = "₡0";
+        }
 
         return;
     }
@@ -182,6 +221,7 @@ function renderizarListaCarrito() {
 
     carrito.forEach(item => {
         const subtotal = item.precio * item.cantidad;
+
         totalMonto += subtotal;
 
         const fila = document.createElement("article");
@@ -194,10 +234,12 @@ function renderizarListaCarrito() {
         titulo.textContent = item.nombre;
 
         const precio = document.createElement("p");
+
         precio.textContent =
             `₡${formatoMoneda.format(item.precio)} por unidad`;
 
         const subtotalEl = document.createElement("p");
+
         subtotalEl.textContent =
             `Subtotal: ₡${formatoMoneda.format(subtotal)}`;
 
@@ -207,54 +249,73 @@ function renderizarListaCarrito() {
         acciones.className = "item-carrito-acciones";
 
         const menos = document.createElement("button");
+
         menos.type = "button";
         menos.textContent = "−";
         menos.className = "btn-cantidad-carrito";
-        menos.setAttribute("aria-label", `Reducir cantidad de ${item.nombre}`);
+
+        menos.setAttribute(
+            "aria-label",
+            `Reducir cantidad de ${item.nombre}`
+        );
 
         menos.addEventListener("click", () => {
             cambiarCantidad(item.id_producto, -1);
         });
 
         const cantidad = document.createElement("span");
+
         cantidad.className = "cantidad-carrito";
         cantidad.textContent = String(item.cantidad);
         cantidad.setAttribute("aria-label", "Cantidad");
 
         const mas = document.createElement("button");
+
         mas.type = "button";
         mas.textContent = "+";
         mas.className = "btn-cantidad-carrito";
-        mas.setAttribute("aria-label", `Aumentar cantidad de ${item.nombre}`);
+
+        mas.setAttribute(
+            "aria-label",
+            `Aumentar cantidad de ${item.nombre}`
+        );
 
         mas.addEventListener("click", () => {
             cambiarCantidad(item.id_producto, 1);
         });
 
         const eliminar = document.createElement("button");
+
         eliminar.type = "button";
         eliminar.className = "btn-eliminar-item";
         eliminar.textContent = "🗑️";
         eliminar.title = "Eliminar producto";
-        eliminar.setAttribute("aria-label", `Eliminar ${item.nombre}`);
+
+        eliminar.setAttribute(
+            "aria-label",
+            `Eliminar ${item.nombre}`
+        );
 
         eliminar.addEventListener("click", () => {
             eliminarDelCarrito(item.id_producto);
         });
 
         acciones.append(menos, cantidad, mas, eliminar);
+
         fila.append(info, acciones);
+
         contenedor.appendChild(fila);
     });
 
     if (totalEl) {
-        totalEl.textContent = `₡${formatoMoneda.format(totalMonto)}`;
+        totalEl.textContent =
+            `₡${formatoMoneda.format(totalMonto)}`;
     }
 }
 
-// ================================================
-// 6. ACTUALIZAR EL CONTADOR DE LA NAVEGACIÓN
-// ================================================
+// ==================================================
+// 6. ACTUALIZAR EL CONTADOR DEL CARRITO
+// ==================================================
 
 function actualizarCarritoUI() {
     const carrito = obtenerCarrito();
@@ -268,6 +329,7 @@ function actualizarCarritoUI() {
 
     if (contador) {
         contador.textContent = String(totalItems);
+
         contador.setAttribute(
             "aria-label",
             `${totalItems} productos en el carrito`
@@ -277,32 +339,39 @@ function actualizarCarritoUI() {
     renderizarListaCarrito();
 }
 
-// ================================================
-// 7. MOSTRAR Y OCULTAR EL MODAL
-// ================================================
+// ==================================================
+// 7. ABRIR Y CERRAR EL MODAL
+// ==================================================
 
 function toggleModalCarrito() {
     const modal = document.getElementById("modal-carrito");
 
-    if (!modal) return;
+    if (!modal) {
+        console.warn("No se encontró el modal del carrito.");
+        return;
+    }
 
     const oculto = modal.classList.contains("hidden");
 
     if (oculto) {
         modal.classList.remove("hidden");
         modal.setAttribute("aria-hidden", "false");
+
         document.body.style.overflow = "hidden";
+
         renderizarListaCarrito();
     } else {
         modal.classList.add("hidden");
         modal.setAttribute("aria-hidden", "true");
+
         document.body.style.overflow = "";
     }
 }
 
-// ================================================
-// 8. FINALIZAR LA COMPRA EN RENDER
-// ================================================
+// ==================================================
+// 8. FINALIZAR COMPRA
+// Envía la compra a POST /api/ventas/cliente
+// ==================================================
 
 async function procesarCompra() {
     const carrito = obtenerCarrito();
@@ -312,51 +381,52 @@ async function procesarCompra() {
         return;
     }
 
-    // Validar todos los artículos antes de enviar la venta.
-    const articulosInvalidos = carrito.some(item =>
-        item.id_producto === null ||
-        item.id_producto === undefined ||
-        !Number.isFinite(item.precio) ||
-        item.precio < 0 ||
-        !Number.isInteger(item.cantidad) ||
-        item.cantidad < 1
-    );
+    const token = localStorage.getItem(CLAVE_TOKEN);
 
-    if (articulosInvalidos) {
-        alert("Hay productos con datos incorrectos. Revisa el carrito.");
+    if (!token) {
+        alert("Inicia sesión antes de finalizar la compra.");
         return;
     }
 
     let usuarioSesion = null;
 
     try {
-        usuarioSesion = JSON.parse(localStorage.getItem("octo_usuario"));
+        usuarioSesion = JSON.parse(
+            localStorage.getItem(CLAVE_USUARIO) || "null"
+        );
     } catch (error) {
-        console.error("No se pudo leer la sesión:", error);
+        console.error("No se pudo leer el usuario:", error);
     }
 
-    if (!usuarioSesion || usuarioSesion.id_usuario == null) {
-        alert("Inicia sesión antes de finalizar la compra.");
+    if (!usuarioSesion || usuarioSesion.id == null) {
+        alert(
+            "No se encontró tu sesión. Inicia sesión nuevamente."
+        );
         return;
     }
 
-    const totalMonto = carrito.reduce(
-        (suma, item) => suma + item.precio * item.cantidad,
-        0
+    const articulosInvalidos = carrito.some(item =>
+        item.id_producto === null ||
+        item.id_producto === undefined ||
+        String(item.id_producto).trim() === "" ||
+        !Number.isInteger(item.cantidad) ||
+        item.cantidad < 1
     );
 
-    const payload = {
-        id_usuario: usuarioSesion.id_usuario,
-        items: carrito.map(item => ({
-            id_producto: item.id_producto,
-            nombre: item.nombre,
-            precio: item.precio,
-            cantidad: item.cantidad
-        })),
-        total: totalMonto
-    };
+    if (articulosInvalidos) {
+        alert(
+            "Hay productos con datos incorrectos. Revisa el carrito."
+        );
+        return;
+    }
 
-    const botonComprar = document.getElementById("btn-finalizar-compra");
+    const botonComprar = document.getElementById(
+        "btn-finalizar-compra"
+    );
+
+    if (botonComprar && botonComprar.disabled) {
+        return;
+    }
 
     if (botonComprar) {
         botonComprar.disabled = true;
@@ -364,13 +434,28 @@ async function procesarCompra() {
     }
 
     try {
-        const respuesta = await fetch(`${API_URL}/ventas`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(payload)
-        });
+        /*
+         * No se envían precios ni totales como datos confiables.
+         * El backend debe calcularlos usando la base de datos.
+         */
+        const payload = {
+            detalles: carrito.map(item => ({
+                producto_id: item.id_producto,
+                cantidad: item.cantidad
+            }))
+        };
+
+        const respuesta = await fetch(
+            `${API_URL}/ventas/cliente`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            }
+        );
 
         const texto = await respuesta.text();
 
@@ -378,27 +463,66 @@ async function procesarCompra() {
 
         try {
             resultado = texto ? JSON.parse(texto) : {};
-        } catch {
-            resultado = {};
+        } catch (error) {
+            console.error(
+                "Respuesta recibida del servidor:",
+                texto
+            );
+
+            throw new Error(
+                "El servidor devolvió una respuesta no válida."
+            );
         }
 
         if (!respuesta.ok) {
-            const mensaje = resultado.error ||
-                resultado.mensaje ||
-                `Error HTTP ${respuesta.status}`;
+            if (respuesta.status === 401) {
+                throw new Error(
+                    "Tu sesión venció o no es válida. " +
+                    "Inicia sesión nuevamente."
+                );
+            }
 
-            throw new Error(mensaje);
+            if (respuesta.status === 403) {
+                throw new Error(
+                    "Tu cuenta no tiene permiso para realizar esta compra."
+                );
+            }
+
+            throw new Error(
+                resultado.message ||
+                resultado.mensaje ||
+                resultado.error ||
+                `Error del servidor: HTTP ${respuesta.status}`
+            );
         }
 
+        if (
+            resultado.status &&
+            resultado.status !== "ok"
+        ) {
+            throw new Error(
+                resultado.message ||
+                resultado.mensaje ||
+                "No se pudo registrar la compra."
+            );
+        }
+
+        const idVenta =
+            resultado.venta_id ??
+            resultado.id_venta ??
+            resultado.id;
+
         alert(
-            `¡Compra realizada con éxito!${
-                resultado.id_venta != null
-                    ? ` Número de orden #${resultado.id_venta}`
+            "¡Compra realizada con éxito!" +
+            (
+                idVenta != null
+                    ? ` Número de orden #${idVenta}`
                     : ""
-            }`
+            )
         );
 
         localStorage.removeItem(CLAVE_CARRITO);
+
         actualizarCarritoUI();
 
         const modal = document.getElementById("modal-carrito");
@@ -406,16 +530,23 @@ async function procesarCompra() {
         if (modal) {
             modal.classList.add("hidden");
             modal.setAttribute("aria-hidden", "true");
+
             document.body.style.overflow = "";
         }
 
+        window.dispatchEvent(
+            new CustomEvent("carritoActualizado")
+        );
+
     } catch (error) {
-        console.error("Error procesando la compra:", error);
+        console.error(
+            "Error procesando la compra:",
+            error
+        );
 
         alert(
             "No se pudo procesar la compra: " +
-            error.message +
-            ". Revisa la API de Render."
+            (error.message || "Error inesperado.")
         );
     } finally {
         if (botonComprar) {
@@ -425,11 +556,12 @@ async function procesarCompra() {
     }
 }
 
-// ================================================
-// 9. DISPONER LAS FUNCIONES PARA EL HTML
-// ================================================
+// ==================================================
+// 9. EXPONER FUNCIONES PARA EL HTML
+// ==================================================
 
 window.obtenerCarrito = obtenerCarrito;
+window.guardarCarrito = guardarCarrito;
 window.agregarAlCarrito = agregarAlCarrito;
 window.cambiarCantidad = cambiarCantidad;
 window.eliminarDelCarrito = eliminarDelCarrito;
@@ -438,6 +570,16 @@ window.actualizarCarritoUI = actualizarCarritoUI;
 window.toggleModalCarrito = toggleModalCarrito;
 window.procesarCompra = procesarCompra;
 
+// ==================================================
+// 10. INICIALIZACIÓN Y SINCRONIZACIÓN
+// ==================================================
+
 document.addEventListener("DOMContentLoaded", () => {
     actualizarCarritoUI();
+});
+
+window.addEventListener("storage", event => {
+    if (event.key === CLAVE_CARRITO) {
+        actualizarCarritoUI();
+    }
 });

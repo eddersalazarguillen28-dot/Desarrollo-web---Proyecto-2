@@ -58,15 +58,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         mainContent.classList.add("fade-in-up");
     }
 
-    // 6. Cargar datos del usuario en la interfaz (Sidebar)
+    // 6. Cargar datos del usuario en la interfaz
     procesarDatosUsuarioEnSidebar();
 });
 
 
-/**
- * Función encargada de pintar la información del usuario (Foto, Nombre, Rango)
- * exclusivamente en el menú lateral (Sidebar).
- */
 function procesarDatosUsuarioEnSidebar() {
     const usuarioGuardado = localStorage.getItem("usuario");
     if (!usuarioGuardado) return;
@@ -76,21 +72,19 @@ function procesarDatosUsuarioEnSidebar() {
         const nombreUsuario = usuario.nombre || "Usuario";
         const rolUsuario = usuario.rol || usuario.rango || "Cliente";
         const esAdmin = rolUsuario.toLowerCase() === "administrador";
+        const esVendedor = rolUsuario.toLowerCase() === "vendedor";
         
-        // Obtener la foto de perfil (Soporta .foto, .imagen, .foto_url, .imagen_url)
         const fotoUsuario = usuario.foto || usuario.imagen || usuario.foto_url || usuario.imagen_url;
 
-        // --- ACTUALIZAR MENÚ LATERAL (SIDEBAR) ---
         const nombreSpan = document.getElementById("sidebar-user-name");
         if (nombreSpan) {
             nombreSpan.textContent = nombreUsuario;
         }
 
-        // Asignar el rango/rol debajo del nombre
         const rolSpan = document.getElementById("sidebar-user-role");
         if (rolSpan) {
             rolSpan.textContent = rolUsuario;
-            rolSpan.style.color = esAdmin ? '#a5b4fc' : '#10b981'; // Color morado claro si es admin, verde si es cliente
+            rolSpan.style.color = esAdmin ? '#a5b4fc' : (esVendedor ? '#fbbf24' : '#10b981'); // Morado admin, amarillo vendedor, verde cliente
         }
 
         const fotoImg = document.getElementById("sidebar-user-img");
@@ -98,10 +92,28 @@ function procesarDatosUsuarioEnSidebar() {
             fotoImg.src = fotoUsuario;
         }
 
-        // Ocultar botones de invitado si existieran en alguna barra auxiliar
         const authGuest = document.getElementById("auth-guest") || document.querySelector(".auth-buttons");
         if (authGuest) {
             authGuest.style.display = "none";
+        }
+
+        // =====================================================
+        // NUEVO: OCULTAR OPCIONES AL VENDEDOR
+        // =====================================================
+        if (esVendedor) {
+            // Ocultar en el Sidebar
+            const linkDashboard = document.querySelector('.nav-link[data-pages="Dashboard"]');
+            if (linkDashboard) linkDashboard.style.display = "none";
+
+            const linkInventario = document.querySelector('.nav-link[data-pages="inventario"]');
+            if (linkInventario) linkInventario.style.display = "none";
+
+            // Ocultar en la página de Inicio (index)
+            const btnDashboard = document.querySelector('.grid-menu a[href="dashboard.html"]');
+            if (btnDashboard) btnDashboard.style.display = "none";
+
+            const btnReportes = document.querySelector('.grid-menu a[href="reportes.html"]');
+            if (btnReportes) btnReportes.style.display = "none"; // Reportes también suele ser de admin
         }
 
     } catch (e) {
