@@ -659,50 +659,185 @@ def api_reportes_ventas():
             conexion.close()
 
 
+
 # =========================================================
-# VENTAS
+# VENTAS — COMPRA DESDE LA TIENDA
 # =========================================================
 
 @app.route("/api/ventas", methods=["POST"])
 def crear_venta():
+    conexion = None
+
     try:
+        # 1. Verificar que el cliente haya iniciado sesión.
+        autorizacion = request.headers.get("Authorization", "")
+
+        if not autorizacion.startswith("Bearer "):
+            return jsonify({
+                "status": "error",
+                "message": "Debes iniciar sesión para comprar."
+            }), 401
+
+        token = autorizacion[7:].strip()
+
+        if not token:
+            return jsonify({
+                "status": "error",
+                "message": "Token de sesión no proporcionado."
+            }), 401
+
+        try:
+            datos_token = firmador.loads(token, max_age=3600)
+            usuario_id = datos_token.get("id")
+
+            if usuario_id is None:
+                raise BadSignature("El token no contiene el ID del usuario.")
+
+        except SignatureExpired:
+            return jsonify({
+                "status": "error",
+                "message": "Tu sesión venció. Inicia sesión nuevamente."
+            }), 401
+
+        except BadSignature:
+            return jsonify({
+                "status": "error",
+                "message": "La sesión no es válida. Inicia sesión nuevamente."
+            }), 401
+
+        # 2. Validar los productos enviados por el carrito.
         datos = request.get_json(silent=True) or {}
-        cliente_id = datos.get("cliente_id")
         detalles = datos.get("detalles")
 
         if not isinstance(detalles, list) or not detalles:
-            return jsonify({"status": "error", "message": "La venta debe incluir al menos un producto."}), 400
+            return jsonify({
+                "status": "error",
+                "message": "La compra debe incluir al menos un producto."
+            }), 400
 
-        if cliente_id in ("", 0, "0"):
-            cliente_id = None
+        # Solo aceptar ID y cantidad. Los precios y el total
+        # siempre se calculan en el backend desde PostgreSQL.
+        detalles_limpios = []
 
-        if cliente_id is not None:
+        for item in detalles:
+            if not isinstance(item, dict):
+                return jsonify({
+                    "status": "error",
+                    "message": "Hay un producto con datos incorrectos."
+                }), 400
+
+            producto_id = item.get("producto_id")
+            cantidad = item.get("cantidad")
+
+            # Evitar aceptar valores booleanos como enteros.
+            if (
+                isinstance(producto_id, bool)
+                or isinstance(cantidad, bool)
+            ):
+                return jsonify({
+                    "status": "error",
+                    "message": "El producto o la cantidad no son válidos."
+                }), 400
+
             try:
-                cliente_id = int(cliente_id)
-            except (TypeError, ValueError):
-                return jsonify({"status": "error", "message": "Cliente no válido."}), 400
+                producto_id = int(producto_id)
+                cantidad = int(cantidad)
+            except (TypeError, ValueError, OverflowError):
+                return jsonify({
+                    "status": "error",
+                    "message": "El producto o la cantidad no son válidos."
+                }), 400
 
-        venta_id = db.registrar_venta(cliente_id=cliente_id, detalles=detalles)
-        return jsonify({"status": "ok", "message": "Venta registrada.", "venta_id": venta_id}), 201
+            if producto_id <= 0 or cantidad <= 0:
+                return jsonify({
+                    "status": "error",
+                    "message": "El producto y la cantidad deben ser válidos."
+                }), 400
 
-    except ValueError as e:
-        return jsonify({"status": "error", "message": str(e)}), 400
-    except Exception:
-        app.logger.exception("Error al registrar venta.")
-        return jsonify({"status": "error", "message": "No se pudo registrar la venta."}), 500
+            detalles_limpios.append({
+                "producto_id": producto_id,
+                "cantidad": cantidad
+            })
 
+        # 3. Consultar el usuario autenticado y encontrar su cliente.
+        conexion = db.obtener_conexion()
 
-@app.route("/api/ventas/<int:venta_id>", methods=["DELETE"])
-@solo_administrador
-def borrar_venta(venta_id):
-    try:
-        db.eliminar_venta(venta_id)
-        return jsonify({"status": "ok", "message": "Venta eliminada correctamente"}), 200
+        with conexion.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute("""
+                SELECT id, nombre, correo, rol
+                FROM usuarios
+                WHERE id = %s
+            """, (usuario_id,))
+
+            usuario = cursor.fetchone()
+
+            if not usuario:
+                return jsonify({
+                    "status": "error",
+                    "message": "El usuario de la sesión ya no existe."
+                }), 401
+
+            if usuario["rol"] != "cliente":
+                return jsonify({
+                    "status": "error",
+                    "message": "Esta compra está disponible para cuentas de cliente."
+                }), 403
+
+            cursor.execute("""
+                SELECT id
+                FROM clientes
+                WHERE LOWER(correo) = LOWER(%s)
+                ORDER BY id
+                LIMIT 1
+            """, (usuario["correo"],))
+
+            cliente = cursor.fetchone()
+
+            if not cliente:
+                return jsonify({
+                    "status": "error",
+                    "message": (
+                        "No encontramos el registro de cliente asociado "
+                        "a tu cuenta. Contacta con soporte."
+                    )
+                }), 409
+
+            cliente_id = cliente["id"]
+
+        # Cerrar esta conexión antes de usar la función de db_manager.
+        # registrar_venta abre su propia conexión y gestiona su transacción.
+        conexion.close()
+        conexion = None
+
+        # 4. Registrar venta, detalles y descuento de stock.
+        # db.registrar_venta utiliza los precios almacenados en PostgreSQL.
+        venta_id = db.registrar_venta(
+            cliente_id=cliente_id,
+            detalles=detalles_limpios
+        )
+
+        return jsonify({
+            "status": "ok",
+            "message": "Compra registrada correctamente.",
+            "venta_id": venta_id
+        }), 201
+
     except ValueError as error:
-        return jsonify({"status": "error", "message": str(error)}), 400
+        return jsonify({
+            "status": "error",
+            "message": str(error)
+        }), 400
+
     except Exception:
-        app.logger.exception("Error al eliminar la venta %s", venta_id)
-        return jsonify({"status": "error", "message": "No se pudo eliminar la venta"}), 500
+        app.logger.exception("Error al procesar la compra del cliente.")
+        return jsonify({
+            "status": "error",
+            "message": "No se pudo registrar la compra. Intenta nuevamente."
+        }), 500
+
+    finally:
+        if conexion:
+            conexion.close()
 
 
 # =========================================================
