@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../Style/estiloInicioClientes.css">
     <link rel="stylesheet" href="../Style/estiloProductosCategoria.css">
     <title>Productos por categoria - OctoERP Tech Store</title>
 </head>
@@ -114,29 +115,69 @@
     </div>
 
     <section class="hero">
-            <a href="categorias.html" class="btn-volver-cat">Volver a categorias</a>
+
+        <div class="burbujas-container">
+            <span class="burbuja"></span>
+            <span class="burbuja"></span>
+            <span class="burbuja"></span>
+            <span class="burbuja"></span>
+            <span class="burbuja"></span>
+            <span class="burbuja"></span>
+            <span class="burbuja"></span>
+            <span class="burbuja"></span>
+
+        </div>
+        
+        <div class="hero-inner-content">
             <div class="header-categoria-seccion">
+                <a href="categorias.html" class="btn-volver-cat">Volver a categorias</a>
                 <h1 id="titulo-categoria" class="titulo-glow-categoria">Cargando categoría...</h1>
                 <p id="subtitulo-categoria" class="subtitulo-categoria">Mostrando productos disponibles en tiempo real</p>
 
             </div>
 
-            <div class="hero-visual">
-                <img src="" alt="">
-
-
-            </div>
+        </div>    
+        
     </section>
 
     <main class="container-categoria-productos">
-        
-        
 
         <div class="grid-productos-categoria" id="grid-productos-categoria">
             <!--JS-->
         </div>
 
     </main>
+
+    <!--Modal detalles del producto-->
+    <div id="modal-detalle-producto" class="producto-modal-overlay hidden">
+        <div class="producto-modal-content">
+            <button class="btn-cerrar-modal-prod" id="btn-cerrar-modal-prod" aria-label="Cerrar">&times;</button>
+
+            <div class="modal-prod-body">
+                <div class="modal-prod-container">
+                    <img id="modal-prod-img" src="" alt="Imagen del producto" class="modal-prod-img">
+                </div>
+
+                <h3 id="modal-prod-titulo">Nombre del Producto</h3>
+                <span id="modal-prod-categoria" class="modal-badge-cat">Categorías</span>
+
+                <div class="modal-especificaciones-box">
+                    <h4>Especificaciones</h4>
+                    <p id="modal-prod-descripcion">Sin descripción disponible</p>
+
+                </div>
+
+                <div class="modal-precio-box">
+                    <span>Precio de venta:</span>
+                    <span id="modal-prod-precio">₡0</span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
     <footer class="footer-categoria">
         <p>&copy; 2026 OctoERP Hardware &amp; Tech Store. Todos los derechos reservados. Proyecto CTP.</p>

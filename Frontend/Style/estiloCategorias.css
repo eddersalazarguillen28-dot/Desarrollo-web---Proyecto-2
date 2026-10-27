@@ -724,3 +724,50 @@ body {
 .container-categoria-productos[data-categoria="general"].img-producto-item{
     content:url('../Imagenes/general.png');
 }
+
+body{
+    animation:fadeInPagina 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+
+@keyframes fadeInPagina{
+    from{
+        opacity:0;
+        transform: translateY(8px);
+    }
+    to{
+        opacity:1;
+        transform: translateY(0);
+    }
+}
+
+.categoria-card{
+    opacity: 0;
+    animation: aparecerTarjeta 0.65s cubic-bezier(0.16,1,0.3,1) forwards;
+    will-change: transform, opacity;
+}
+
+@keyframes aparecerTarjeta{
+    from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.97);
+    }
+    to{
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.hero-contenido{
+    animation:aparecerHero 0.8s cubic-bezier(0.16,1,0.3,1)forwards;
+}
+
+@keyframes aparecerHero {
+    from{
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform: translateY(0);
+    }
+}

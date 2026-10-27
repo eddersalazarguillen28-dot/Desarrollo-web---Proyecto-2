@@ -23,7 +23,6 @@ body {
     overflow-x: hidden;
 }
 
-
 /* ============================================================
    Contenedores: todos al 100% para que no se desalineen
    ============================================================ */
@@ -54,7 +53,6 @@ body.sidebar-collapsed .main-wrapper {
     margin-left: 0;
     width: 100%;
 }
-
 
 /* ============================================================
    Barra lateral (sidebar)

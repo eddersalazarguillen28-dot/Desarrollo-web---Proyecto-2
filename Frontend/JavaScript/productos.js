@@ -5,6 +5,12 @@ document.addEventListener("DOMContentLoaded", () => {
 const API_BASE = "https://octo-erp.onrender.com";
 const IMAGEN_POR_DEFECTO = "../Imagenes/Logo.png";
 
+function formatearPrecio(precio) {
+    return `₡${Number(precio || 0).toLocaleString("fr-FR", {
+        maximumFractionDigits: 2
+    })}`;
+}
+
 // 1. Consultar la API de la base de datos
 async function cargarProductos() {
     const contenedor = document.getElementById("grid-productos");
@@ -42,7 +48,7 @@ function renderizarProductos(inventario, contenedor, contador) {
 
     inventario.forEach(prod => {
         // Ajustamos los campos para que coincidan con lo que devuelve tu API
-        const precio = prod.precio ? `₡${prod.precio}` : '₡0';
+        const precio = formatearPrecio(prod.precio);
         const descripcion = prod.descripcion || 'Sin descripción disponible.';
         const imagen = prod.imagen_url || IMAGEN_POR_DEFECTO;
 

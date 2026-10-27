@@ -117,3 +117,20 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+const campoContrasena = document.getElementById("contrasena");
+const botonMostrarConstrasena = document.getElementById("mostrarContrasena");
+
+if (campoContrasena && botonMostrarConstrasena) {
+    botonMostrarConstrasena.addEventListener("click", () => {
+        const mostrar = campoContrasena.type === "password";
+        campoContrasena.type = mostrar ? "text" : "password";
+        botonMostrarConstrasena.textContent = mostrar ? "👁" : "👁";
+
+        botonMostrarConstrasena.setAttribute("aria-label", mostrar ? "Ocultar contraseña" : "Mostrar contraseña");
+
+        botonMostrarConstrasena.setAttribute("aria-pressed",
+            String(mostrar)
+        );
+    });
+}
