@@ -11,6 +11,14 @@
     <link rel="stylesheet" href="../Style/estiloInventario.css">
 
     <title>Inventario - OctoERP Tech Store</title>
+    <style>
+        /* Ocultar botones de acción si el usuario es vendedor */
+        body.rol-vendedor .btnNuevoProducto,
+        body.rol-vendedor .actions .edit,
+        body.rol-vendedor .actions .delete {
+            display: none !important;
+        }
+    </style>
 </head>
 
 <body id="page-inventario">
@@ -703,6 +711,12 @@
             // Mantener el precio de oferta actualizado.
             actualizarPrecioOferta();
 
+        });
+        document.addEventListener("DOMContentLoaded", () => {
+            const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
+            if (usuario.rol && usuario.rol.toLowerCase() === "vendedor") {
+                document.body.classList.add("rol-vendedor");
+            }
         });
     </script>
 

@@ -103,7 +103,7 @@ def cloudinary_configurado():
 # MODELO DE IA
 # =========================================================
 
-MODELO_IA = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+MODELO_IA = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
 
 
 # =========================================================
@@ -200,6 +200,48 @@ def solo_administrador(funcion):
         return funcion(*args, **kwargs)
     return protegida
 
+#=========================================================
+#DECORADOR DE VENDEDOR (Y ADMIN)
+#=========================================================
+
+def solo_vendedor_o_admin(funcion):
+    @wraps(funcion)
+    def protegida(args, **kwargs):
+        autorizacion = request.headers.get("Authorization", "")
+
+        if not autorizacion.startswith("Bearer"):
+            return jsonify({"status": "error", "message": "Debes iniciar sesión"}), 401
+
+        token = autorizacion[7:]
+
+        try:
+            datos = firmador.loads(token, max_age=3600)
+        except SignatureExpired:
+            return jsonify({"status": "error", "message": "Sesion vencida"}), 401
+        except BadSignature:
+            return jsonify({"status": "error", "message": "Firma del token invalida"}), 401
+
+        conexion = None
+        try:
+            conexion = db.obtener_conexion()
+            with conexion.cursor() as cursor:
+                cursor.execute("SELECT rol FROM usuarios WHERE id = %s", (datos["id"],))
+                usuario = cursor.fetchone()
+
+                if not usuario or usuario["rol"] not in ("vendedor", "administrador"):
+                    return jsonify({
+                        "status": "error",
+                        "message": "No tienes permisos para realizar esta acción"
+                    }), 403
+        except Exception:
+            app.logger.exception("Error al verificar permisos")
+            return jsonify({"status": "error", "message": "No se pudieron verificar los permisos"}), 500
+        finally:
+            if conexion:
+                conexion.close()
+
+        return funcion(args, **kwargs)
+    return protegida
 
 # =========================================================
 # REGISTRO DE USUARIOS
@@ -409,6 +451,7 @@ def listar_productos():
 
 
 @app.route("/api/productos", methods=["POST"])
+@solo_administrador
 def crear_producto():
     imagen_url = None
     try:
@@ -653,6 +696,7 @@ def actualizar_producto(p_id):
 
                 
 @app.route("/api/productos/<int:p_id>", methods=["DELETE"])
+@solo_administrador
 def borrar_producto(p_id):
     try:
         resultado = db.eliminar_producto(p_id)
@@ -733,6 +777,7 @@ def borrar_cliente(cliente_id):
 # =========================================================
 
 @app.route("/api/dashboard", methods=["GET"])
+@solo_administrador
 def dashboard():
     try:
         productos = db.obtener_productos()
@@ -796,50 +841,271 @@ def api_reportes_ventas():
             conexion.close()
 
 
+
+
 # =========================================================
-# VENTAS
+# AUTENTICACIÓN Y VALIDACIÓN DE VENTAS
+# =========================================================
+
+def obtener_usuario_autenticado():
+    """Valida el token y devuelve el usuario de PostgreSQL."""
+    autorizacion = request.headers.get("Authorization", "")
+
+    if not autorizacion.startswith("Bearer "):
+        return None, (jsonify({
+            "status": "error",
+            "message": "Debes iniciar sesión."
+        }), 401)
+
+    token = autorizacion[7:].strip()
+
+    if not token:
+        return None, (jsonify({
+            "status": "error",
+            "message": "Token no proporcionado."
+        }), 401)
+
+    try:
+        datos_token = firmador.loads(token, max_age=3600)
+        usuario_id = datos_token.get("id")
+
+        if usuario_id is None:
+            raise BadSignature("El token no contiene un ID.")
+
+    except SignatureExpired:
+        return None, (jsonify({
+            "status": "error",
+            "message": "Tu sesión venció. Inicia sesión nuevamente."
+        }), 401)
+
+    except BadSignature:
+        return None, (jsonify({
+            "status": "error",
+            "message": "La sesión no es válida."
+        }), 401)
+
+    conexion = None
+
+    try:
+        conexion = db.obtener_conexion()
+
+        with conexion.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute("""
+                SELECT id, nombre, correo, rol
+                FROM usuarios
+                WHERE id = %s;
+            """, (usuario_id,))
+
+            usuario = cursor.fetchone()
+
+        if not usuario:
+            return None, (jsonify({
+                "status": "error",
+                "message": "El usuario ya no existe."
+            }), 401)
+
+        return dict(usuario), None
+
+    except Exception:
+        app.logger.exception("Error verificando usuario autenticado.")
+
+        return None, (jsonify({
+            "status": "error",
+            "message": "No se pudo verificar la sesión."
+        }), 500)
+
+    finally:
+        if conexion:
+            conexion.close()
+
+
+def validar_detalles_venta(detalles):
+    """Valida IDs y cantidades sin confiar en precios enviados por el cliente."""
+    if not isinstance(detalles, list) or not detalles:
+        raise ValueError(
+            "La venta debe incluir al menos un producto."
+        )
+
+    if len(detalles) > 100:
+        raise ValueError(
+            "La venta no puede incluir más de 100 líneas de productos."
+        )
+
+    detalles_limpios = []
+
+    for item in detalles:
+        if not isinstance(item, dict):
+            raise ValueError("Hay un producto con datos incorrectos.")
+
+        producto_id = item.get("producto_id")
+        cantidad = item.get("cantidad")
+
+        if isinstance(producto_id, bool) or isinstance(cantidad, bool):
+            raise ValueError("El producto o la cantidad no son válidos.")
+
+        try:
+            producto_id = int(producto_id)
+            cantidad = int(cantidad)
+        except (TypeError, ValueError, OverflowError):
+            raise ValueError("El producto o la cantidad no son válidos.")
+
+        if producto_id <= 0 or cantidad <= 0:
+            raise ValueError(
+                "El producto y la cantidad deben ser mayores que cero."
+            )
+
+        detalles_limpios.append({
+            "producto_id": producto_id,
+            "cantidad": cantidad
+        })
+
+    return detalles_limpios
+
+
+# =========================================================
+# VENTAS ADMINISTRATIVAS
+# POST /api/ventas
 # =========================================================
 
 @app.route("/api/ventas", methods=["POST"])
 def crear_venta():
     try:
+        usuario, error = obtener_usuario_autenticado()
+
+        if error:
+            return error
+
+        # Solo personal autorizado puede registrar ventas desde el panel.
+        if usuario["rol"] not in ("administrador", "vendedor"):
+            return jsonify({
+                "status": "error",
+                "message": "No tienes permisos para registrar ventas desde el panel."
+            }), 403
+
         datos = request.get_json(silent=True) or {}
+
         cliente_id = datos.get("cliente_id")
-        detalles = datos.get("detalles")
+        detalles = validar_detalles_venta(datos.get("detalles"))
 
-        if not isinstance(detalles, list) or not detalles:
-            return jsonify({"status": "error", "message": "La venta debe incluir al menos un producto."}), 400
+        if isinstance(cliente_id, bool):
+            return jsonify({
+                "status": "error",
+                "message": "El cliente indicado no es válido."
+            }), 400
 
-        if cliente_id in ("", 0, "0"):
-            cliente_id = None
+        try:
+            cliente_id = int(cliente_id)
+        except (TypeError, ValueError, OverflowError):
+            return jsonify({
+                "status": "error",
+                "message": "Debes seleccionar un cliente válido."
+            }), 400
 
-        if cliente_id is not None:
-            try:
-                cliente_id = int(cliente_id)
-            except (TypeError, ValueError):
-                return jsonify({"status": "error", "message": "Cliente no válido."}), 400
+        if cliente_id <= 0:
+            return jsonify({
+                "status": "error",
+                "message": "Debes seleccionar un cliente válido."
+            }), 400
 
-        venta_id = db.registrar_venta(cliente_id=cliente_id, detalles=detalles)
-        return jsonify({"status": "ok", "message": "Venta registrada.", "venta_id": venta_id}), 201
+        venta_id = db.registrar_venta(
+            cliente_id=cliente_id,
+            detalles=detalles
+        )
 
-    except ValueError as e:
-        return jsonify({"status": "error", "message": str(e)}), 400
-    except Exception:
-        app.logger.exception("Error al registrar venta.")
-        return jsonify({"status": "error", "message": "No se pudo registrar la venta."}), 500
+        return jsonify({
+            "status": "ok",
+            "message": "Venta registrada correctamente.",
+            "venta_id": venta_id
+        }), 201
 
-
-@app.route("/api/ventas/<int:venta_id>", methods=["DELETE"])
-@solo_administrador
-def borrar_venta(venta_id):
-    try:
-        db.eliminar_venta(venta_id)
-        return jsonify({"status": "ok", "message": "Venta eliminada correctamente"}), 200
     except ValueError as error:
-        return jsonify({"status": "error", "message": str(error)}), 400
+        return jsonify({
+            "status": "error",
+            "message": str(error)
+        }), 400
+
     except Exception:
-        app.logger.exception("Error al eliminar la venta %s", venta_id)
-        return jsonify({"status": "error", "message": "No se pudo eliminar la venta"}), 500
+        app.logger.exception("Error al registrar venta administrativa.")
+
+        return jsonify({
+            "status": "error",
+            "message": "No se pudo registrar la venta."
+        }), 500
+
+
+# =========================================================
+# COMPRAS DESDE LA TIENDA
+# POST /api/ventas/cliente
+# =========================================================
+
+@app.route("/api/ventas/cliente", methods=["POST"])
+def crear_venta_cliente():
+    try:
+        usuario, error = obtener_usuario_autenticado()
+
+        if error:
+            return error
+
+        if usuario["rol"] != "cliente":
+            return jsonify({
+                "status": "error",
+                "message": "Esta ruta es exclusiva para cuentas de cliente."
+            }), 403
+
+        datos = request.get_json(silent=True) or {}
+        detalles = validar_detalles_venta(datos.get("detalles"))
+
+        # Obtener el cliente vinculado al correo de la cuenta autenticada.
+        conexion = db.obtener_conexion()
+
+        try:
+            with conexion.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute("""
+                    SELECT id
+                    FROM clientes
+                    WHERE LOWER(correo) = LOWER(%s)
+                    ORDER BY id
+                    LIMIT 1;
+                """, (usuario["correo"],))
+
+                cliente = cursor.fetchone()
+        finally:
+            conexion.close()
+
+        if not cliente:
+            return jsonify({
+                "status": "error",
+                "message": (
+                    "No encontramos un cliente asociado a tu cuenta. "
+                    "Contacta con soporte."
+                )
+            }), 409
+
+        venta_id = db.registrar_venta(
+            cliente_id=cliente["id"],
+            detalles=detalles
+        )
+
+        return jsonify({
+            "status": "ok",
+            "message": "Compra registrada correctamente.",
+            "venta_id": venta_id
+        }), 201
+
+    except ValueError as error:
+        return jsonify({
+            "status": "error",
+            "message": str(error)
+        }), 400
+
+    except Exception:
+        app.logger.exception("Error al procesar compra de cliente.")
+
+        return jsonify({
+            "status": "error",
+            "message": "No se pudo registrar la compra. Intenta nuevamente."
+        }), 500
+
 
 
 # =========================================================
