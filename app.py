@@ -103,7 +103,7 @@ def cloudinary_configurado():
 # MODELO DE IA
 # =========================================================
 
-MODELO_IA = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+MODELO_IA = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
 
 
 # =========================================================
@@ -200,6 +200,48 @@ def solo_administrador(funcion):
         return funcion(*args, **kwargs)
     return protegida
 
+#=========================================================
+#DECORADOR DE VENDEDOR (Y ADMIN)
+#=========================================================
+
+def solo_vendedor_o_admin(funcion):
+    @wraps(funcion)
+    def protegida(args, **kwargs):
+        autorizacion = request.headers.get("Authorization", "")
+
+        if not autorizacion.startswith("Bearer"):
+            return jsonify({"status": "error", "message": "Debes iniciar sesión"}), 401
+
+        token = autorizacion[7:]
+
+        try:
+            datos = firmador.loads(token, max_age=3600)
+        except SignatureExpired:
+            return jsonify({"status": "error", "message": "Sesion vencida"}), 401
+        except BadSignature:
+            return jsonify({"status": "error", "message": "Firma del token invalida"}), 401
+
+        conexion = None
+        try:
+            conexion = db.obtener_conexion()
+            with conexion.cursor() as cursor:
+                cursor.execute("SELECT rol FROM usuarios WHERE id = %s", (datos["id"],))
+                usuario = cursor.fetchone()
+
+                if not usuario or usuario["rol"] not in ("vendedor", "administrador"):
+                    return jsonify({
+                        "status": "error",
+                        "message": "No tienes permisos para realizar esta acción"
+                    }), 403
+        except Exception:
+            app.logger.exception("Error al verificar permisos")
+            return jsonify({"status": "error", "message": "No se pudieron verificar los permisos"}), 500
+        finally:
+            if conexion:
+                conexion.close()
+
+        return funcion(args, **kwargs)
+    return protegida
 
 # =========================================================
 # REGISTRO DE USUARIOS
@@ -409,6 +451,7 @@ def listar_productos():
 
 
 @app.route("/api/productos", methods=["POST"])
+@solo_administrador
 def crear_producto():
     imagen_url = None
     try:
@@ -516,6 +559,7 @@ def crear_producto():
 
 
 @app.route("/api/productos/<int:p_id>", methods=["DELETE"])
+@solo_administrador
 def borrar_producto(p_id):
     try:
         resultado = db.eliminar_producto(p_id)
@@ -596,6 +640,7 @@ def borrar_cliente(cliente_id):
 # =========================================================
 
 @app.route("/api/dashboard", methods=["GET"])
+@solo_administrador
 def dashboard():
     try:
         productos = db.obtener_productos()
