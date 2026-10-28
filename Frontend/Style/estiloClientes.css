@@ -609,3 +609,17 @@ footer-tabla {
 .btn-modal-eliminar:hover {
     background: #d43c57;
 }
+
+ofertas-section {
+    margin: 40px 0;
+}
+
+.ofertas-section .product-card {
+    border: 2px solid #fecaca;
+    transition: all 0.3s ease;
+}
+
+.ofertas-section .product-card:hover {
+    border-color: #ef4444;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2);
+}
