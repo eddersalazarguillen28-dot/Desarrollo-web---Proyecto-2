@@ -28,5 +28,34 @@
     </main>
 
     <script src="../JavaScript/layout.js"></script>
+    
+    <!-- Script para ocultar opciones al vendedor -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const usuarioGuardado = localStorage.getItem("usuario");
+            if (!usuarioGuardado) return;
+
+            try {
+                const usuario = JSON.parse(usuarioGuardado);
+                const rol = (usuario.rol || usuario.rango || "").toLowerCase();
+
+                if (rol === "vendedor") {
+                    // Ocultar la tarjeta de Dashboard
+                    const btnDashboard = document.querySelector('.grid-menu a[href="dashboard.html"]');
+                    if (btnDashboard) btnDashboard.style.display = "none";
+
+                    // Ocultar la tarjeta de Inventario
+                    const btnInventario = document.querySelector('.grid-menu a[href="inventario.html"]');
+                    if (btnInventario) btnInventario.style.display = "none";
+                    
+                    // Ocultar la tarjeta de Reportes (si el vendedor no debe verla)
+                    const btnReportes = document.querySelector('.grid-menu a[href="reportes.html"]');
+                    if (btnReportes) btnReportes.style.display = "none";
+                }
+            } catch (e) {
+                console.error("Error al leer los datos del usuario:", e);
+            }
+        });
+    </script>
 </body>
 </html>

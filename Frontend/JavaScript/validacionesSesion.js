@@ -94,11 +94,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     localStorage.setItem("token", datos.token);
                     localStorage.setItem("usuario", JSON.stringify(datos.usuario));
 
-                    // 🟢 Validación segura del rol o rango del usuario
+                    // Validación segura del rol o rango del usuario
                     setTimeout(() => {
                         const rol = (datos.usuario.rol || datos.usuario.rango || "").toLowerCase();
 
-                        if (rol === "administrador" || rol === "admin") {
+                        if (rol === "administrador" || rol === "admin" || rol === "vendedor") {
                             window.location.href = "inventario.html"; // Panel de administrador
                         } else {
                             window.location.href = "inicioClientes.html"; // Vista de cliente
