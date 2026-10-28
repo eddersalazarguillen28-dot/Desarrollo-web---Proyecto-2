@@ -565,7 +565,7 @@ def actualizar_producto(p_id):
             nombre = datos.get("nombre")
             precio = datos.get("precio")
             stock = datos.get("stock")
-            stoc_minimo = datos.get("stockMinimo", datos.get("stock_minimo", 5))
+            stock_minimo = datos.get("stockMinimo", datos.get("stock_minimo", 5))
             categoria = datos.get("categoria", "General")
             ubicaciones = datos.get("ubicaciones")
             ubicacion = datos.get("ubicacion", "productos")
@@ -576,7 +576,7 @@ def actualizar_producto(p_id):
             nombre = datos.get("nombre")
             precio = datos.get("precio")
             stock = datos.get("stock")
-            stoc_minimo = datos.get("stockMinimo", datos.get("stock_minimo", 5))
+            stock_minimo = datos.get("stockMinimo", datos.get("stock_minimo", 5))
             categoria = datos.get("categoria", "General")
             ubicaciones = datos.get("ubicaciones")
             ubicacion = datos.get("ubicacion", "productos")
@@ -611,7 +611,7 @@ def actualizar_producto(p_id):
                     allowed_formats=["jpg", "jpeg", "png", "webp", "gif"]
                 )
 
-                imagen_url = resultado("secure_url")
+                imagen_url = resultado.get("secure_url")
 
                 if not imagen_url:
                     raise RuntimeError("Cloudinary no devolvió la URL de la imagen")
@@ -664,17 +664,17 @@ def actualizar_producto(p_id):
         elif isinstance(ubicaciones, list) and ubicaciones:
             ubicacion = ubicaciones[0]
 
-            actualizado = db.actualizar_producto(
-                producto_id=p_id,
-                nombre= nombre,
-                precio= precio,
-                stock= stock,
-                stoc_minimo= stock_minimo,
-                categoria= categoria,
-                imagen_url=imagen_url,
-                ubicacion= ubicacion,
-                precio_oferta= precio_oferta
-            )
+        actualizado = db.actualizar_producto(
+            producto_id=p_id,
+            nombre= nombre,
+            precio= precio,
+            stock= stock,
+            stock_minimo= stock_minimo,
+            categoria= categoria,
+            imagen_url=imagen_url,
+            ubicacion= ubicacion,
+            precio_oferta= precio_oferta
+        )
 
         if not actualizado:
                 return jsonify({

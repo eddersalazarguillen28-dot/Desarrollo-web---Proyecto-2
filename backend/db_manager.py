@@ -480,7 +480,7 @@ def agregar_stock_productos(producto_id, cantidad):
                 UPDATE productos 
                 SET stock = stock + %s
                 WHERE id = %s
-                RETURNING id, nombrem stock;
+                RETURNING id, nombre, stock;
                 """, (cantidad, producto_id))
             
             producto  = cursor.fetchone()
