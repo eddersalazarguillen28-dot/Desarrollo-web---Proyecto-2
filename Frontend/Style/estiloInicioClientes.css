@@ -2093,3 +2093,37 @@ body#page-inicio {
     background: rgba(255, 255, 255, 0.06);
     margin: 6px 4px;
 }
+
+#boton-musica-secreto {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+
+    width: 30px;
+    height: 30px;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 50%;
+
+    background: rgba(124, 58, 237, 0.35);
+    color: white;
+    font-size: 15px;
+
+    cursor: pointer;
+    opacity: 0.35;
+    z-index: 9999;
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
+}
+
+#boton-musica-secreto:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}

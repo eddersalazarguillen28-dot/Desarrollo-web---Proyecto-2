@@ -585,3 +585,44 @@ function toast(msg, tipo = "ok") {
         setTimeout(() => t.remove(), 300);
     }, 2600);
 }
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const boton = document.getElementById("boton-musica-secreto");
+    const musica = document.getElementById("musica-secreta");
+
+    if (!boton || !musica) return;
+
+    // Combinación secreta: Ctrl + Shift + M
+    document.addEventListener("keydown", (evento) => {
+        if (
+            evento.ctrlKey &&
+            evento.shiftKey &&
+            evento.key.toLowerCase() === "m"
+        ) {
+            boton.classList.toggle("visible");
+        }
+    });
+
+    boton.addEventListener("click", async () => {
+        try {
+            if (musica.paused) {
+                await musica.play();
+                boton.textContent = "⏸️";
+                boton.title = "Pausar música";
+            } else {
+                musica.pause();
+                boton.textContent = "🎵";
+                boton.title = "Reproducir música";
+            }
+        } catch (error) {
+            console.error("No se pudo reproducir la música:", error);
+            alert("No se pudo reproducir la canción. Comprueba el archivo de audio.");
+        }
+    });
+
+    musica.addEventListener("ended", () => {
+        boton.textContent = "🎵";
+        boton.title = "Reproducir música";
+    });
+});

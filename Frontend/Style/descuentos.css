@@ -469,7 +469,7 @@ button {
     align-items: stretch;
     gap: 22px;
     width: max-content;
-    animation: marqueeSlide 38s linear infinite;
+    animation: marqueeSlide 25s linear infinite;
     will-change: transform;
 }
 
@@ -2163,3 +2163,602 @@ button {
     }
 }
 
+
+
+
+/* ==========================================
+   OFERTAS DESTACADAS - OCTO ERP
+   Tres tarjetas en una sola fila
+========================================== */
+
+.contenedor-ofertas-destacadas {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0;
+    align-items: stretch;
+}
+
+/* ==========================================
+   TARJETAS
+========================================== */
+
+.contenedor-ofertas-destacadas .hero-card-featured {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    min-width: 0;
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 18px;
+    background: var(--card-bg, #171923);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.contenedor-ofertas-destacadas .hero-card-featured:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.24);
+}
+
+/* La oferta principal tiene el mismo tamaño que las demás */
+.contenedor-ofertas-destacadas #oferta-principal {
+    grid-column: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    border: 1px solid rgba(255, 120, 50, 0.35);
+    background:
+        radial-gradient(
+            ellipse at top,
+            rgba(255, 111, 45, 0.10),
+            transparent 65%
+        ),
+        var(--card-bg, #171923);
+}
+
+/* ==========================================
+   ETIQUETAS
+========================================== */
+
+.contenedor-ofertas-destacadas .oferta-etiqueta {
+    padding: 18px 18px 0;
+}
+
+.contenedor-ofertas-destacadas #oferta-principal .oferta-etiqueta {
+    padding: 18px 18px 0;
+}
+
+.contenedor-ofertas-destacadas .badge-discount {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
+    padding: 8px 11px;
+    border: 1px solid rgba(255, 111, 45, 0.30);
+    border-radius: 30px;
+    background: rgba(255, 111, 45, 0.13);
+    color: #ffad80;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   IMÁGENES
+========================================== */
+
+.contenedor-ofertas-destacadas .img-octo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 200px;
+    padding: 18px;
+    overflow: hidden;
+}
+
+.contenedor-ofertas-destacadas .hero-card-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: 180px;
+    object-fit: contain;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.contenedor-ofertas-destacadas
+.hero-card-featured:hover .hero-card-img {
+    transform: scale(1.04);
+}
+
+/* Todas las imágenes tienen las mismas dimensiones */
+.contenedor-ofertas-destacadas
+#oferta-principal .img-octo-container {
+    height: 200px;
+    padding: 18px;
+}
+
+.contenedor-ofertas-destacadas
+#oferta-principal .hero-card-img {
+    max-height: 180px;
+}
+
+/* ==========================================
+   INFORMACIÓN DE LOS PRODUCTOS
+========================================== */
+
+.contenedor-ofertas-destacadas .hero-card-info {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+    padding: 0 18px 20px;
+}
+
+.contenedor-ofertas-destacadas #oferta-principal .hero-card-info {
+    padding: 0 18px 20px;
+}
+
+.contenedor-ofertas-destacadas .product-category {
+    color: #ff9b64;
+    font-size: 0.70rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    line-height: 1.6;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   TÍTULOS
+========================================== */
+
+.contenedor-ofertas-destacadas .hero-card-info h2 {
+    margin: 0;
+    color: var(--text-color, #ffffff);
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1.35;
+    letter-spacing: -0.3px;
+    overflow-wrap: anywhere;
+}
+
+.contenedor-ofertas-destacadas
+#oferta-principal .hero-card-info h2 {
+    font-size: 1.25rem;
+    line-height: 1.35;
+}
+
+/* ==========================================
+   DESCRIPCIONES
+========================================== */
+
+.contenedor-ofertas-destacadas
+.hero-card-info > p:not(.destacada-ahorro) {
+    margin: 0;
+    color: var(--text-muted, #b7bac7);
+    font-size: 0.88rem;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   PRECIOS
+========================================== */
+
+.contenedor-ofertas-destacadas .destacada-precios {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 48px;
+    margin-top: 4px;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.045);
+    box-sizing: border-box;
+}
+
+.contenedor-ofertas-destacadas .destacada-precios span {
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.contenedor-ofertas-destacadas .price-sale {
+    color: #ffab79;
+    font-size: 1.05rem;
+    font-weight: 800;
+}
+
+/* ==========================================
+   AHORRO
+========================================== */
+
+.contenedor-ofertas-destacadas .destacada-ahorro {
+    margin: 0;
+    color: #69dfa2;
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1.6;
+}
+
+/* ==========================================
+   BOTONES ALINEADOS ABAJO
+========================================== */
+
+.contenedor-ofertas-destacadas .btn-ofertas-elegante {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 46px;
+    margin-top: auto;
+    padding: 11px 12px;
+    border: none;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #ff873f, #f05232);
+    color: #ffffff;
+    font-size: 0.88rem;
+    font-weight: 800;
+    line-height: 1.5;
+    text-align: center;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.contenedor-ofertas-destacadas
+.btn-ofertas-elegante:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.contenedor-ofertas-destacadas
+.btn-ofertas-elegante:focus-visible {
+    outline: 3px solid #ffb18a;
+    outline-offset: 3px;
+}
+
+.contenedor-ofertas-destacadas .oferta-flecha {
+    font-size: 1.1rem;
+    transition: transform 0.2s ease;
+}
+
+.contenedor-ofertas-destacadas
+.btn-ofertas-elegante:hover .oferta-flecha {
+    transform: translateX(3px);
+}
+
+/* ==========================================
+   TEMA CLARO
+========================================== */
+
+html[data-theme="light"]
+.contenedor-ofertas-destacadas .hero-card-featured {
+    --card-bg: #ffffff;
+    --text-color: #202432;
+    --text-muted: #626a79;
+    border-color: #e7e9ef;
+    box-shadow: 0 8px 24px rgba(20, 25, 40, 0.08);
+}
+
+html[data-theme="light"]
+.contenedor-ofertas-destacadas .destacada-precios {
+    background: #f6f7fa;
+    border-color: #e6e8ee;
+}
+
+html[data-theme="light"]
+.contenedor-ofertas-destacadas .badge-discount {
+    background: #fff1e9;
+    color: #bd4c20;
+    border-color: #ffd4c0;
+}
+
+/* ==========================================
+   TABLETS: DOS TARJETAS POR FILA
+========================================== */
+
+@media (max-width: 900px) {
+    .contenedor-ofertas-destacadas {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .contenedor-ofertas-destacadas #oferta-principal {
+        grid-column: auto;
+    }
+}
+
+/* ==========================================
+   CELULARES: UNA TARJETA POR FILA
+========================================== */
+
+@media (max-width: 560px) {
+    .contenedor-ofertas-destacadas {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px;
+        padding: 12px 0;
+    }
+
+    .contenedor-ofertas-destacadas .hero-card-featured {
+        border-radius: 16px;
+    }
+
+    .contenedor-ofertas-destacadas .img-octo-container,
+    .contenedor-ofertas-destacadas
+    #oferta-principal .img-octo-container {
+        height: 210px;
+    }
+
+    .contenedor-ofertas-destacadas .hero-card-img,
+    .contenedor-ofertas-destacadas
+    #oferta-principal .hero-card-img {
+        max-height: 190px;
+    }
+
+    .contenedor-ofertas-destacadas .hero-card-info h2,
+    .contenedor-ofertas-destacadas
+    #oferta-principal .hero-card-info h2 {
+        font-size: 1.35rem;
+    }
+}
+
+/* ==========================================
+   ACCESIBILIDAD
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .contenedor-ofertas-destacadas *,
+    .contenedor-ofertas-destacadas *::before,
+    .contenedor-ofertas-destacadas *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+
+
+/* ==========================================
+   CORRECCIÓN DE OFERTAS DESTACADAS
+   Igualar las tres tarjetas
+========================================== */
+
+/* Contenedor general */
+.contenedor-ofertas-destacadas {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 28px;
+}
+
+/* Todas las tarjetas con la misma estructura */
+.contenedor-ofertas-destacadas .hero-card-featured,
+.contenedor-ofertas-destacadas #oferta-principal {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    min-height: 620px;
+    height: 100%;
+
+    box-sizing: border-box;
+    padding: 0;
+    gap: 0;
+
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+/* Eliminar diferencias de tamaño de la oferta principal */
+.contenedor-ofertas-destacadas #oferta-principal {
+    grid-column: auto;
+}
+
+/* Etiquetas superiores */
+.contenedor-ofertas-destacadas .oferta-etiqueta,
+.contenedor-ofertas-destacadas #oferta-principal .oferta-etiqueta {
+    min-height: 48px;
+    padding: 14px 16px 0;
+    box-sizing: border-box;
+}
+
+/* Contenedores de imágenes uniformes */
+.contenedor-ofertas-destacadas .img-octo-container,
+.contenedor-ofertas-destacadas #oferta-principal .img-octo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 200px;
+    min-height: 200px;
+
+    padding: 16px;
+    margin: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Imágenes de productos */
+.contenedor-ofertas-destacadas .hero-card-img,
+.contenedor-ofertas-destacadas #oferta-principal .hero-card-img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 168px;
+
+    object-fit: contain;
+    object-position: center;
+    margin: 0;
+
+    border-radius: 10px;
+}
+
+/* Información del producto */
+.contenedor-ofertas-destacadas .hero-card-info,
+.contenedor-ofertas-destacadas #oferta-principal .hero-card-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    min-width: 0;
+    padding: 18px;
+    gap: 12px;
+    box-sizing: border-box;
+}
+
+/* Categoría o etiqueta del producto */
+.contenedor-ofertas-destacadas .hero-card-info .oferta-categoria {
+    min-height: 18px;
+    margin: 0;
+}
+
+/* Títulos: reservar espacio para dos líneas */
+.contenedor-ofertas-destacadas .hero-card-info h2,
+.contenedor-ofertas-destacadas .hero-card-info h3 {
+    min-height: 52px;
+    margin: 0;
+
+    display: flex;
+    align-items: flex-start;
+
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+/* Descripción uniforme */
+.contenedor-ofertas-destacadas .hero-card-info p {
+    line-height: 1.6;
+    margin-top: 0;
+}
+
+/* Caja de precios */
+.contenedor-ofertas-destacadas .destacada-precios {
+    width: 100%;
+    min-height: 56px;
+
+    margin-top: 4px;
+    padding: 14px 12px;
+
+    box-sizing: border-box;
+    border-radius: 12px;
+}
+
+/* Precio anterior y actual */
+.contenedor-ofertas-destacadas .destacada-precios,
+.contenedor-ofertas-destacadas .destacada-precio-final {
+    overflow-wrap: anywhere;
+}
+
+/* Ahorro */
+.contenedor-ofertas-destacadas .destacada-ahorro {
+    min-height: 20px;
+    margin: 0;
+}
+
+/* Botones siempre al fondo */
+.contenedor-ofertas-destacadas .btn-ofertas-elegante,
+.contenedor-ofertas-destacadas #btn-agregar-destacada {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    width: 100%;
+    min-height: 48px;
+    margin-top: auto;
+    padding: 12px;
+
+    box-sizing: border-box;
+    border-radius: 12px;
+
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+/* Espacio consistente antes del botón */
+.contenedor-ofertas-destacadas .hero-card-info > .btn-ofertas-elegante,
+.contenedor-ofertas-destacadas .hero-card-info > #btn-agregar-destacada {
+    margin-top: auto;
+}
+
+/* Efectos al pasar el cursor */
+.contenedor-ofertas-destacadas .hero-card-featured:hover {
+    transform: translateY(-4px);
+}
+
+/* ==========================================
+   TABLETAS
+========================================== */
+@media (max-width: 900px) {
+    .contenedor-ofertas-destacadas {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .contenedor-ofertas-destacadas .hero-card-featured,
+    .contenedor-ofertas-destacadas #oferta-principal {
+        min-height: 600px;
+    }
+}
+
+/* ==========================================
+   CELULARES
+========================================== */
+@media (max-width: 560px) {
+    .contenedor-ofertas-destacadas {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 20px;
+    }
+
+    .contenedor-ofertas-destacadas .hero-card-featured,
+    .contenedor-ofertas-destacadas #oferta-principal {
+        width: 100%;
+        min-height: 0;
+        height: auto;
+    }
+
+    .contenedor-ofertas-destacadas .img-octo-container,
+    .contenedor-ofertas-destacadas #oferta-principal .img-octo-container {
+        height: 190px;
+        min-height: 190px;
+    }
+
+    .contenedor-ofertas-destacadas .hero-card-info h2,
+    .contenedor-ofertas-destacadas .hero-card-info h3 {
+        min-height: 0;
+    }
+
+    .contenedor-ofertas-destacadas .hero-card-info {
+        flex: 1;
+    }
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+    .contenedor-ofertas-destacadas .hero-card-featured {
+        transition: none;
+    }
+}

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es" data-theme="dark">
 
@@ -18,6 +19,61 @@
 
     <link rel="stylesheet" href="../Style/estiloInicioClientes.css">
     <link rel="stylesheet" href="../Style/descuentos.css">
+
+    <style>
+        /* Precios del carrusel */
+        .marquee-prices {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .marquee-price-old {
+            color: #9ca3af;
+            font-size: 0.88rem;
+            text-decoration: line-through;
+        }
+
+        .marquee-price {
+            color: #ef4444;
+            font-weight: 800;
+            font-size: 1.08rem;
+        }
+
+        /* Precios del catálogo */
+        .product-prices {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 7px;
+        }
+
+        .price-old {
+            color: #9ca3af;
+            text-decoration: line-through;
+        }
+
+        .price-sale-discount {
+            color: #ef4444;
+            font-weight: 800;
+        }
+
+        /* Precios de las ofertas destacadas */
+        .destacada-precio-anterior {
+            color: #9ca3af;
+            text-decoration: line-through;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .destacada-precio-final {
+            color: #ef4444;
+            font-weight: 800;
+            display: block;
+        }
+    </style>
 </head>
 
 <body id="page-inicio">
@@ -26,55 +82,79 @@
     <header class="navbar-octo">
         <div class="nav-container">
 
-            <a href="inicioClientes.html" class="nav-logo" aria-label="OctoERP, ir al inicio">
+            <a href="inicioClientes.html" class="nav-logo"
+                aria-label="OctoERP, ir al inicio">
                 <img src="../Imagenes/Logo.png" alt="Logotipo de OctoERP">
                 <span>Octo<span>ERP</span></span>
             </a>
 
-            <nav class="nav-links" id="nav-links" aria-label="Navegación principal">
+            <nav class="nav-links" id="nav-links"
+                aria-label="Navegación principal">
+
                 <a href="inicioClientes.html" class="nav-item">Inicio</a>
-                <a href="productos.html" class="nav-item">Productos</a>
+                
                 <a href="categorias.html" class="nav-item">Categorias</a>
                 <a href="descuentos.html" class="nav-item active">Descuentos</a>
                 <a href="QuienesSomos.html" class="nav-item">Sobre Nosotros</a>
                 <a href="soporte.html" class="nav-item">Soporte</a>
 
                 <div class="auth-buttons-mobile">
-                    <a href="inicioSesion.html" class="btn-nav btn-login">Iniciar sesión</a>
-                    <a href="crearCuenta.html" class="btn-nav btn-register">Registrarse</a>
+                    <a href="inicioSesion.html" class="btn-nav btn-login">
+                        Iniciar sesión
+                    </a>
+                    <a href="crearCuenta.html" class="btn-nav btn-register">
+                        Registrarse
+                    </a>
                 </div>
             </nav>
 
             <div class="nav-actions">
 
-                <button type="button" id="btn-toggle-theme" class="btn-theme-toggle" title="Cambiar tema"
+                <button type="button" id="btn-toggle-theme"
+                    class="btn-theme-toggle" title="Cambiar tema"
                     aria-label="Cambiar tema de la página">
-                    <svg class="nav-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+
+                    <svg class="nav-svg-icon" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2"
                         aria-hidden="true">
                         <circle cx="12" cy="12" r="5"></circle>
                         <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42
                             m12.72 12.72 1.42 1.42M1 12h2m18 0h2
-                            M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+                            M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42">
+                        </path>
                     </svg>
                 </button>
 
-                <button type="button" class="btn-cart" id="btn-cart" title="Ver carrito"
-                    aria-label="Ver carrito de compras" aria-controls="modal-carrito">
-                    <svg class="nav-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                <button type="button" class="btn-cart" id="btn-cart"
+                    title="Ver carrito" aria-label="Ver carrito de compras"
+                    aria-controls="modal-carrito">
+
+                    <svg class="nav-svg-icon" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2"
                         aria-hidden="true">
-                        <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                        <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z">
+                        </path>
                     </svg>
-                    <span class="cart-count" id="cart-count" aria-live="polite">0</span>
+
+                    <span class="cart-count" id="cart-count"
+                        aria-live="polite">0</span>
                 </button>
 
                 <div class="auth-buttons" id="auth-guest">
-                    <a href="inicioSesion.html" class="btn-nav btn-login">Iniciar sesión</a>
-                    <a href="crearCuenta.html" class="btn-nav btn-register">Registrarse</a>
+                    <a href="inicioSesion.html" class="btn-nav btn-login">
+                        Iniciar sesión
+                    </a>
+                    <a href="crearCuenta.html" class="btn-nav btn-register">
+                        Registrarse
+                    </a>
                 </div>
 
-                <button type="button" class="btn-mobile-menu" id="btn-mobile-menu" aria-label="Abrir menú"
+                <button type="button" class="btn-mobile-menu"
+                    id="btn-mobile-menu" aria-label="Abrir menú"
                     aria-expanded="false" aria-controls="nav-links">
-                    <svg class="nav-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+
+                    <svg class="nav-svg-icon" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2"
                         aria-hidden="true">
                         <line x1="3" y1="12" x2="21" y2="12"></line>
                         <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -87,24 +167,35 @@
     </header>
 
     <!-- MODAL DEL CARRITO -->
-    <div id="modal-carrito" class="carrito-modal-overlay hidden" aria-hidden="true">
-        <section class="carrito-modal-content" role="dialog" aria-modal="true" aria-labelledby="titulo-carrito">
+    <div id="modal-carrito" class="carrito-modal-overlay hidden"
+        aria-hidden="true">
+
+        <section class="carrito-modal-content" role="dialog"
+            aria-modal="true" aria-labelledby="titulo-carrito">
 
             <header class="carrito-header">
                 <h2 id="titulo-carrito">
-                    <svg class="modal-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+
+                    <svg class="modal-title-icon" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2"
                         aria-hidden="true">
-                        <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                        <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z">
+                        </path>
                     </svg>
+
                     Tu carrito de compras
                 </h2>
 
-                <button type="button" class="btn-cerrar-carrito" id="btn-cerrar-carrito"
+                <button type="button" class="btn-cerrar-carrito"
+                    id="btn-cerrar-carrito"
                     aria-label="Cerrar carrito">&times;</button>
             </header>
 
-            <div class="carrito-body" id="carrito-items-lista" aria-live="polite">
-                <p class="carrito-vacio-msg">Tu carrito está vacío actualmente.</p>
+            <div class="carrito-body" id="carrito-items-lista"
+                aria-live="polite">
+                <p class="carrito-vacio-msg">
+                    Tu carrito está vacío actualmente.
+                </p>
             </div>
 
             <footer class="carrito-footer">
@@ -113,7 +204,8 @@
                     <span id="carrito-monto-total">₡0</span>
                 </div>
 
-                <button type="button" class="btn-procesar-compra" id="btn-finalizar-compra">
+                <button type="button" class="btn-procesar-compra"
+                    id="btn-finalizar-compra">
                     Finalizar compra
                 </button>
             </footer>
@@ -125,9 +217,11 @@
     <main class="container-inicio">
 
         <!-- HERO DE OFERTAS -->
-        <section class="hero-section hero-octo-theme hero-halloween" aria-labelledby="titulo-ofertas">
+        <section class="hero-section hero-octo-theme hero-halloween"
+            aria-labelledby="titulo-ofertas">
 
-            <div class="hero-bg-glow-octo hero-glow-halloween" aria-hidden="true"></div>
+            <div class="hero-bg-glow-octo hero-glow-halloween"
+                aria-hidden="true"></div>
 
             <div class="hero-content fade-in-up">
 
@@ -148,7 +242,9 @@
                     Aprovecha las ofertas disponibles antes de que se agoten.
                 </p>
 
-                <div class="countdown-container" aria-label="Cuenta regresiva visual">
+                <div class="countdown-container"
+                    aria-label="Cuenta regresiva visual">
+
                     <div class="countdown-box box-halloween">
                         <span class="countdown-number" id="cd-hours">14</span>
                         <span class="countdown-label">Horas</span>
@@ -166,16 +262,19 @@
                 </div>
 
                 <div class="hero-cta-group">
-                    <a href="#catalogo-ofertas" class="btn-ofertas-elegante btn-ofertas-halloween">
+                    <a href="#catalogo-ofertas"
+                        class="btn-ofertas-elegante btn-ofertas-halloween">
+
                         Explorar ofertas 🎃
-                        <svg class="btn-arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+
+                        <svg class="btn-arrow-icon" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor"
                             stroke-width="2" aria-hidden="true">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                             <polyline points="12 5 19 12 12 19"></polyline>
                         </svg>
                     </a>
                 </div>
-
             </div>
 
             <!-- OFERTAS DESTACADAS -->
@@ -183,74 +282,90 @@
                 <div class="octo-visual-wrapper">
                     <div class="contenedor-ofertas-destacadas">
 
-
-                        <!-- OFERTA PRINCIPAL: MEJOR DESCUENTO -->
-                        <article class="hero-card-featured octo-card-3d card-halloween oferta-top"
+                        <!-- OFERTA PRINCIPAL -->
+                        <article
+                            class="hero-card-featured octo-card-3d card-halloween oferta-top"
                             id="oferta-principal">
 
-                            <!-- Etiqueta de mejor oferta -->
-                            <span class="badge-discount badge-halloween-tag" id="etiqueta-oferta-principal">
-                                🔥 OFERTA #1 · PRECIO ESPECIAL
-                            </span>
+                            <div class="oferta-etiqueta">
+                                <span class="badge-discount badge-halloween-tag"
+                                    id="etiqueta-oferta-principal">
+                                    🔥 OFERTA DESTACADA
+                                </span>
+                            </div>
 
                             <div class="img-octo-container oferta-top-imagen">
-                                <img src="../Imagenes/71iuYk2VRnL.jpg" alt="Producto destacado con el mejor descuento"
-                                    class="hero-card-img" id="foto-oferta-principal" loading="lazy">
+                                <img src="../Imagenes/71iuYk2VRnL.jpg"
+                                    alt="Producto destacado con descuento especial"
+                                    class="hero-card-img"
+                                    id="foto-oferta-principal"
+                                    loading="lazy">
                             </div>
 
                             <div class="hero-card-info oferta-top-info">
 
-                                <span class="product-category" id="categoria-oferta-principal">
-                                    Oferta destacada
+                                <span class="product-category"
+                                    id="categoria-oferta-principal">
+                                    OFERTA EXCLUSIVA
                                 </span>
 
                                 <h2 id="nombre-oferta-principal">
-                                    La mejor oferta te espera
+                                    La tecnología que buscas, al mejor precio
                                 </h2>
 
                                 <p id="descripcion-oferta-principal">
-                                    Aprovecha nuestro descuento más destacado y lleva
-                                    tu tecnología favorita al mejor precio.
+                                    Descubre nuestra oferta más destacada y
+                                    aprovecha una oportunidad especial para
+                                    renovar tu tecnología.
                                 </p>
 
-                                <!-- Precios: el JavaScript puede insertar aquí el precio original
-             y el precio de oferta -->
-                                <div class="destacada-precios" id="precios-oferta-principal">
+                                <div class="destacada-precios"
+                                    id="precios-oferta-principal">
                                     <span class="price-sale price-halloween">
                                         Descubre el precio especial
                                     </span>
                                 </div>
 
-                                <!-- Porcentaje o monto de ahorro calculado por JavaScript -->
-                                <p class="destacada-ahorro" id="ahorro-oferta-principal">
-                                </p>
+                                <p class="destacada-ahorro"
+                                    id="ahorro-oferta-principal"></p>
 
-                                <button type="button" class="btn-ofertas-elegante btn-ofertas-halloween"
+                                <button type="button"
+                                    class="btn-ofertas-elegante btn-ofertas-halloween"
                                     id="btn-oferta-principal"
                                     onclick="document.getElementById('catalogo-ofertas').scrollIntoView({behavior:'smooth'})">
-                                    🛒 Aprovechar oferta
-                                </button>
 
+                                    <span>🛒</span>
+                                    Aprovechar oferta
+                                    <span class="oferta-flecha">→</span>
+                                </button>
                             </div>
                         </article>
 
                         <!-- OFERTA ADICIONAL 3 -->
-                        <article class="hero-card-featured octo-card-3d card-halloween" id="oferta-adicional-3">
+                        <article
+                            class="hero-card-featured octo-card-3d card-halloween"
+                            id="oferta-adicional-3">
 
-                            <span class="badge-discount badge-halloween-tag" id="etiqueta-oferta-3">
-                                📱 Tecnología en promoción
-                            </span>
+                            <div class="oferta-etiqueta">
+                                <span class="badge-discount badge-halloween-tag"
+                                    id="etiqueta-oferta-3">
+                                    📱 TECNOLOGÍA EN OFERTA
+                                </span>
+                            </div>
 
                             <div class="img-octo-container">
                                 <img src="../Imagenes/71iuYk2VRnL.jpg"
-                                    alt="Celulares y dispositivos inteligentes en oferta" class="hero-card-img"
-                                    id="foto-oferta-3" loading="lazy">
+                                    alt="Dispositivos tecnológicos en promoción"
+                                    class="hero-card-img"
+                                    id="foto-oferta-3"
+                                    loading="lazy">
                             </div>
 
                             <div class="hero-card-info">
 
-                                <span class="product-category" id="categoria-oferta-3">
-                                    Móviles y dispositivos inteligentes
+                                <span class="product-category"
+                                    id="categoria-oferta-3">
+                                    DISPOSITIVOS Y ACCESORIOS
                                 </span>
 
                                 <h2 id="nombre-oferta-3">
@@ -258,43 +373,57 @@
                                 </h2>
 
                                 <p id="descripcion-oferta-3">
-                                    Descubre dispositivos diseñados para acompañarte en cada momento,
-                                    mantenerte conectado y facilitar tus actividades diarias.
+                                    Encuentra dispositivos y accesorios ideales
+                                    para trabajar, estudiar, jugar y disfrutar
+                                    cada momento.
                                 </p>
 
-                                <div class="destacada-precios" id="precios-oferta-3">
+                                <div class="destacada-precios"
+                                    id="precios-oferta-3">
                                     <span class="price-sale price-halloween">
-                                        Explora el catálogo para descubrir precios.
+                                        Consulta el precio de oferta
                                     </span>
                                 </div>
 
-                                <p class="destacada-ahorro" id="ahorro-oferta-3"></p>
+                                <p class="destacada-ahorro"
+                                    id="ahorro-oferta-3"></p>
 
-                                <button type="button" class="btn-ofertas-elegante btn-ofertas-halloween"
+                                <button type="button"
+                                    class="btn-ofertas-elegante btn-ofertas-halloween"
                                     id="btn-agregar-oferta-3"
                                     onclick="document.getElementById('catalogo-ofertas').scrollIntoView({behavior:'smooth'})">
-                                    Explorar dispositivos
-                                </button>
 
+                                    Explorar dispositivos
+                                    <span class="oferta-flecha">→</span>
+                                </button>
                             </div>
                         </article>
 
                         <!-- OFERTA ADICIONAL 4 -->
-                        <article class="hero-card-featured octo-card-3d card-halloween" id="oferta-adicional-4">
+                        <article
+                            class="hero-card-featured octo-card-3d card-halloween"
+                            id="oferta-adicional-4">
 
-                            <span class="badge-discount badge-halloween-tag" id="etiqueta-oferta-4">
-                                💎 Selección especial
-                            </span>
+                            <div class="oferta-etiqueta">
+                                <span class="badge-discount badge-halloween-tag"
+                                    id="etiqueta-oferta-4">
+                                    💎 SELECCIÓN ESPECIAL
+                                </span>
+                            </div>
 
                             <div class="img-octo-container">
-                                <img src="../Imagenes/71iuYk2VRnL.jpg" alt="Producto seleccionado de OCTO ERP"
-                                    class="hero-card-img" id="foto-oferta-4" loading="lazy">
+                                <img src="../Imagenes/71iuYk2VRnL.jpg"
+                                    alt="Selección especial de productos OCTO ERP"
+                                    class="hero-card-img"
+                                    id="foto-oferta-4"
+                                    loading="lazy">
                             </div>
 
                             <div class="hero-card-info">
 
-                                <span class="product-category" id="categoria-oferta-4">
-                                    Recomendados para ti
+                                <span class="product-category"
+                                    id="categoria-oferta-4">
+                                    RECOMENDADOS PARA TI
                                 </span>
 
                                 <h2 id="nombre-oferta-4">
@@ -302,61 +431,76 @@
                                 </h2>
 
                                 <p id="descripcion-oferta-4">
-                                    Explora nuestra selección de productos y encuentra
-                                    una excelente combinación de calidad y precio.
+                                    Explora productos seleccionados para
+                                    encontrar el equilibrio perfecto entre
+                                    calidad, rendimiento y precio.
                                 </p>
 
-                                <div class="destacada-precios" id="precios-oferta-4">
+                                <div class="destacada-precios"
+                                    id="precios-oferta-4">
                                     <span class="price-sale price-halloween">
-                                        Consulta los productos disponibles.
+                                        Descubre los productos disponibles
                                     </span>
                                 </div>
 
-                                <p class="destacada-ahorro" id="ahorro-oferta-4"></p>
+                                <p class="destacada-ahorro"
+                                    id="ahorro-oferta-4"></p>
 
-                                <button type="button" class="btn-ofertas-elegante btn-ofertas-halloween"
+                                <button type="button"
+                                    class="btn-ofertas-elegante btn-ofertas-halloween"
                                     id="btn-agregar-oferta-4"
                                     onclick="document.getElementById('catalogo-ofertas').scrollIntoView({behavior:'smooth'})">
-                                    Explorar oferta
-                                </button>
 
+                                    Explorar oferta
+                                    <span class="oferta-flecha">→</span>
+                                </button>
                             </div>
                         </article>
 
                     </div>
                 </div>
             </div>
-
         </section>
 
         <!-- CARRUSEL -->
-        <section class="marquee-container" aria-label="Productos destacados en oferta">
-            <div class="marquee-track" id="marquee-track-container" aria-live="polite">
+        <section class="marquee-container"
+            aria-label="Productos destacados en oferta">
+
+            <div class="marquee-track" id="marquee-track-container"
+                aria-live="polite">
                 <p class="mensaje-carga-ofertas">Cargando ofertas...</p>
             </div>
         </section>
 
         <!-- CATÁLOGO -->
-        <section class="products-preview-section" id="catalogo-ofertas" aria-labelledby="titulo-catalogo">
+        <section class="products-preview-section"
+            id="catalogo-ofertas" aria-labelledby="titulo-catalogo">
 
             <header class="section-header">
-                <h2 id="titulo-catalogo">🔥 Catálogo de productos rebajados</h2>
+                <h2 id="titulo-catalogo">
+                    🔥 Catálogo de productos rebajados
+                </h2>
+
                 <p>
                     Consulta los precios, descuentos y existencias
                     de los productos disponibles en OctoERP.
                 </p>
             </header>
 
-            <div class="products-grid" id="productos-descuentos-grid" aria-live="polite" aria-busy="true">
+            <div class="products-grid"
+                id="productos-descuentos-grid"
+                aria-live="polite" aria-busy="true">
+
                 <p class="mensaje-carga-ofertas">
                     Cargando ofertas desde la base de datos...
                 </p>
             </div>
 
             <div class="view-more-container">
-                <a href="productos.html" class="btn-view-all">Ver todos los productos</a>
+                <a href="productos.html" class="btn-view-all">
+                    Ver todos los productos
+                </a>
             </div>
-
         </section>
     </main>
 
@@ -371,16 +515,22 @@
     <!-- JAVASCRIPT GENERAL -->
     <script src="../JavaScript/inicioClientes.js"></script>
 
-    <!-- LÓGICA DE DESCUENTOS DINÁMICA POR UBICACIÓN -->
+    <!-- LÓGICA DE DESCUENTOS -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             "use strict";
 
-            const API_PRODUCTOS = "https://octo-erp.onrender.com/api/productos";
-            const IMAGEN_POR_DEFECTO = "../Imagenes/71iuYk2VRnL.jpg";
+            const API_PRODUCTOS =
+                "https://octo-erp.onrender.com/api/productos";
 
-            const gridProductos = document.getElementById("productos-descuentos-grid");
-            const carruselOfertas = document.getElementById("marquee-track-container");
+            const IMAGEN_POR_DEFECTO =
+                "../Imagenes/71iuYk2VRnL.jpg";
+
+            const gridProductos =
+                document.getElementById("productos-descuentos-grid");
+
+            const carruselOfertas =
+                document.getElementById("marquee-track-container");
 
             const formatoMoneda = new Intl.NumberFormat("es-CR", {
                 minimumFractionDigits: 0,
@@ -393,143 +543,304 @@
 
             function mostrarMensaje(contenedor, mensaje, esError = false) {
                 if (!contenedor) return;
+
                 const parrafo = document.createElement("p");
-                parrafo.className = esError ? "mensaje-ofertas-error" : "mensaje-carga-ofertas";
+                parrafo.className = esError
+                    ? "mensaje-ofertas-error"
+                    : "mensaje-carga-ofertas";
+
                 parrafo.textContent = mensaje;
                 contenedor.replaceChildren(parrafo);
             }
 
             function obtenerIdProducto(producto) {
-                return producto.id_producto ?? producto.id ?? producto.producto_id ?? producto.idProducto ?? null;
+                return producto.id_producto
+                    ?? producto.id
+                    ?? producto.producto_id
+                    ?? producto.idProducto
+                    ?? null;
+            }
+
+            /*
+             * Elimina productos repetidos.
+             * Prioriza el ID y utiliza el nombre como alternativa.
+             */
+            function eliminarDuplicados(lista) {
+                const vistos = new Set();
+
+                return lista.filter(producto => {
+                    const id = obtenerIdProducto(producto);
+
+                    const clave =
+                        id !== null && id !== undefined && id !== ""
+                            ? `id:${String(id)}`
+                            : `nombre:${String(producto.nombre ?? "")
+                                .trim()
+                                .toLocaleLowerCase("es")}`;
+
+                    if (clave === "nombre:") return false;
+                    if (vistos.has(clave)) return false;
+
+                    vistos.add(clave);
+                    return true;
+                });
             }
 
             function obtenerStock(producto) {
-                const stock = Number(producto.stock ?? producto.stock_actual ?? 0);
-                return Number.isFinite(stock) ? Math.max(0, stock) : 0;
+                const stock = Number(
+                    producto.stock ?? producto.stock_actual ?? 0
+                );
+
+                return Number.isFinite(stock)
+                    ? Math.max(0, stock)
+                    : 0;
             }
 
+            /*
+             * precio = precio normal
+             * precio_oferta = precio rebajado
+             *
+             * No se inventa una rebaja cuando la API no proporciona
+             * un precio de oferta válido.
+             */
             function obtenerPrecios(producto) {
-                if (producto.precio === null || producto.precio === undefined || producto.precio === "") {
+                if (
+                    producto.precio === null ||
+                    producto.precio === undefined ||
+                    producto.precio === ""
+                ) {
                     return null;
                 }
+
                 const precioBase = Number(producto.precio);
-                if (!Number.isFinite(precioBase) || precioBase <= 0) return null;
+
+                if (!Number.isFinite(precioBase) || precioBase <= 0) {
+                    return null;
+                }
 
                 const precioOfertaOriginal = producto.precio_oferta;
+
                 const tienePrecioOferta =
                     precioOfertaOriginal !== null &&
                     precioOfertaOriginal !== undefined &&
                     precioOfertaOriginal !== "" &&
                     Number.isFinite(Number(precioOfertaOriginal));
 
-                const precioOferta = tienePrecioOferta ? Number(precioOfertaOriginal) : null;
-                const tieneOferta = precioOferta !== null && precioOferta >= 0 && precioOferta < precioBase;
-                const precioFinal = tieneOferta ? precioOferta : precioBase;
+                const precioOferta = tienePrecioOferta
+                    ? Number(precioOfertaOriginal)
+                    : null;
+
+                const tieneOferta =
+                    precioOferta !== null &&
+                    precioOferta >= 0 &&
+                    precioOferta < precioBase;
+
+                const precioFinal = tieneOferta
+                    ? precioOferta
+                    : precioBase;
 
                 return {
                     base: precioBase,
                     final: precioFinal,
                     tieneOferta,
-                    porcentaje: tieneOferta ? Math.round(((precioBase - precioFinal) / precioBase) * 100) : 0,
-                    ahorro: tieneOferta ? precioBase - precioFinal : 0
+                    porcentaje: tieneOferta
+                        ? Math.round(
+                            ((precioBase - precioFinal) / precioBase) * 100
+                        )
+                        : 0,
+                    ahorro: tieneOferta
+                        ? precioBase - precioFinal
+                        : 0
                 };
             }
 
             function crearImagen(src, nombre, clase = "") {
                 const imagen = document.createElement("img");
+
                 imagen.src = src || IMAGEN_POR_DEFECTO;
-                imagen.alt = nombre;
+                imagen.alt = nombre || "Producto";
                 imagen.loading = "lazy";
                 imagen.decoding = "async";
                 imagen.className = clase;
 
                 imagen.addEventListener("error", () => {
                     if (imagen.dataset.fallbackUsado === "true") return;
+
                     imagen.dataset.fallbackUsado = "true";
                     imagen.src = IMAGEN_POR_DEFECTO;
                 });
+
                 return imagen;
             }
 
             function crearEtiquetaDescuento(precios) {
                 if (!precios.tieneOferta) return null;
+
                 const etiqueta = document.createElement("span");
                 etiqueta.className = "badge-discount";
                 etiqueta.textContent = `-${precios.porcentaje}%`;
+
                 return etiqueta;
             }
 
-            // Lector robusto de ubicaciones múltiples (JSON o texto plano)
-            function productoPerteneceAUbicacion(producto, ubicacionBuscada) {
+            /*
+             * Admite ubicaciones guardadas como JSON o texto separado
+             * por comas.
+             */
+            function productoPerteneceAUbicacion(
+                producto,
+                ubicacionBuscada
+            ) {
                 if (!producto || !producto.ubicacion) return false;
+
                 let ubicaciones = [];
+
                 try {
-                    ubicaciones = JSON.parse(producto.ubicacion);
+                    const datos = JSON.parse(producto.ubicacion);
+
+                    ubicaciones = Array.isArray(datos)
+                        ? datos
+                        : [datos];
                 } catch {
-                    ubicaciones = String(producto.ubicacion).split(",").map(u => u.trim());
+                    ubicaciones = String(producto.ubicacion)
+                        .split(",")
+                        .map(u => u.trim());
                 }
+
                 return ubicaciones.includes(ubicacionBuscada);
             }
 
-            // Rellenar una tarjeta destacada específica (Principal, Oferta 3 u Oferta 4)
-            function poblarTarjetaDestacada(prefijoId, producto, precios) {
-                const imgElem = document.getElementById(`foto-${prefijoId}`);
-                const catElem = document.getElementById(`categoria-${prefijoId}`);
-                const nomElem = document.getElementById(`nombre-${prefijoId}`);
-                const descElem = document.getElementById(`descripcion-${prefijoId}`);
-                const precElem = document.getElementById(`precios-${prefijoId}`);
-                const ahorElem = document.getElementById(`ahorro-${prefijoId}`);
-                const btnElem = document.getElementById(`btn-${prefijoId}`);
+            /*
+             * Actualiza las tarjetas destacadas.
+             */
+            function poblarTarjetaDestacada(
+                prefijoId,
+                producto,
+                precios
+            ) {
+                const imgElem =
+                    document.getElementById(`foto-${prefijoId}`);
+
+                const catElem =
+                    document.getElementById(`categoria-${prefijoId}`);
+
+                const nomElem =
+                    document.getElementById(`nombre-${prefijoId}`);
+
+                const descElem =
+                    document.getElementById(`descripcion-${prefijoId}`);
+
+                const precElem =
+                    document.getElementById(`precios-${prefijoId}`);
+
+                const ahorElem =
+                    document.getElementById(`ahorro-${prefijoId}`);
+
+                const btnElem =
+                    document.getElementById(`btn-${prefijoId}`);
 
                 if (!nomElem) return;
 
                 if (!producto || !precios) {
                     nomElem.textContent = "Espacio disponible";
-                    descElem.textContent = "Asigna un producto a esta ubicación desde tu inventario.";
-                    if (precElem) precElem.innerHTML = '<span class="price-sale">Sin producto</span>';
+
+                    if (descElem) {
+                        descElem.textContent =
+                            "Asigna un producto a esta ubicación desde tu inventario.";
+                    }
+
+                    if (precElem) {
+                        precElem.replaceChildren();
+
+                        const mensaje = document.createElement("span");
+                        mensaje.className = "price-sale";
+                        mensaje.textContent = "Sin producto";
+
+                        precElem.appendChild(mensaje);
+                    }
+
                     if (ahorElem) ahorElem.textContent = "";
                     if (btnElem) btnElem.disabled = true;
+
                     return;
                 }
 
                 nomElem.textContent = producto.nombre || "Producto";
-                if (catElem) catElem.textContent = producto.categoria || "Promoción";
-                if (descElem) descElem.textContent = producto.descripcion || "Aprovecha esta oferta especial.";
+
+                if (catElem) {
+                    catElem.textContent =
+                        producto.categoria || "Promoción";
+                }
+
+                if (descElem) {
+                    descElem.textContent =
+                        producto.descripcion ||
+                        "Aprovecha esta oferta especial.";
+                }
+
                 if (imgElem) {
-                    imgElem.src = producto.imagen_url || producto.imagen || IMAGEN_POR_DEFECTO;
-                    imgElem.alt = producto.nombre;
+                    imgElem.src =
+                        producto.imagen_url ||
+                        producto.imagen ||
+                        IMAGEN_POR_DEFECTO;
+
+                    imgElem.alt = producto.nombre || "Producto destacado";
                 }
 
                 if (precElem) {
                     precElem.replaceChildren();
-                    const ant = document.createElement("span");
-                    ant.className = "destacada-precio-anterior";
-                    ant.textContent = `Antes: ₡${formatearDinero(precios.base)}`;
 
-                    const fin = document.createElement("strong");
-                    fin.className = "destacada-precio-final";
-                    fin.textContent = `Ahora: ₡${formatearDinero(precios.final)}`;
-                    precElem.append(ant, fin);
+                    const anterior = document.createElement("span");
+                    anterior.className = "destacada-precio-anterior";
+                    anterior.textContent =
+                        `Antes: ₡${formatearDinero(precios.base)}`;
+
+                    const final = document.createElement("strong");
+                    final.className = "destacada-precio-final";
+
+                    final.textContent = precios.tieneOferta
+                        ? `Ahora: ₡${formatearDinero(precios.final)}`
+                        : `Precio: ₡${formatearDinero(precios.final)}`;
+
+                    if (precios.tieneOferta) {
+                        precElem.append(anterior, final);
+                    } else {
+                        precElem.appendChild(final);
+                    }
                 }
 
                 if (ahorElem) {
-                    ahorElem.textContent = precios.tieneOferta ? `¡Ahorras ₡${formatearDinero(precios.ahorro)}!` : "";
+                    ahorElem.textContent = precios.tieneOferta
+                        ? `¡Ahorras ₡${formatearDinero(precios.ahorro)}!`
+                        : "";
                 }
 
                 if (btnElem) {
                     btnElem.disabled = false;
+
                     const idProd = obtenerIdProducto(producto);
+
                     btnElem.onclick = () => {
-                        if (typeof window.agregarAlCarrito === "function" && idProd) {
-                            window.agregarAlCarrito(idProd, producto.nombre, precios.final);
+                        if (
+                            typeof window.agregarAlCarrito === "function" &&
+                            idProd !== null
+                        ) {
+                            window.agregarAlCarrito(
+                                idProd,
+                                producto.nombre,
+                                precios.final
+                            );
                         } else {
-                            document.getElementById('catalogo-ofertas').scrollIntoView({ behavior: 'smooth' });
+                            document.getElementById("catalogo-ofertas")
+                                .scrollIntoView({ behavior: "smooth" });
                         }
                     };
                 }
             }
 
-            // CREAR TARJETA PARA EL CATÁLOGO INFERIOR
+            /*
+             * CREA LAS TARJETAS DEL CATÁLOGO.
+             */
             function crearTarjetaProducto(producto) {
                 const nombre = String(producto.nombre ?? "Producto");
                 const precios = obtenerPrecios(producto);
@@ -542,25 +853,37 @@
                 tarjeta.className = "product-card relative-card";
 
                 const etiqueta = crearEtiquetaDescuento(precios);
-                if (etiqueta) tarjeta.appendChild(etiqueta);
+
+                if (etiqueta) {
+                    tarjeta.appendChild(etiqueta);
+                }
 
                 const cajaImagen = document.createElement("div");
                 cajaImagen.className = "product-img-box";
-                cajaImagen.appendChild(crearImagen(producto.imagen_url || producto.imagen, nombre));
+
+                cajaImagen.appendChild(
+                    crearImagen(
+                        producto.imagen_url || producto.imagen,
+                        nombre
+                    )
+                );
 
                 const informacion = document.createElement("div");
                 informacion.className = "product-info";
 
                 const categoria = document.createElement("span");
                 categoria.className = "product-category";
-                categoria.textContent = producto.categoria || "Componentes";
+                categoria.textContent =
+                    producto.categoria || "Componentes";
 
                 const titulo = document.createElement("h3");
                 titulo.textContent = nombre;
 
                 const descripcion = document.createElement("p");
                 descripcion.className = "product-desc";
-                descripcion.textContent = stock > 0 ? "Producto disponible para entrega inmediata." : "Agotado temporalmente.";
+                descripcion.textContent = stock > 0
+                    ? "Producto disponible para entrega inmediata."
+                    : "Agotado temporalmente.";
 
                 const acciones = document.createElement("div");
                 acciones.className = "product-action-row margin-top-15";
@@ -570,126 +893,308 @@
 
                 if (precios.tieneOferta) {
                     const precioAnterior = document.createElement("span");
+
                     precioAnterior.className = "price-old";
-                    precioAnterior.textContent = `₡${formatearDinero(precios.base)}`;
+                    precioAnterior.textContent =
+                        `₡${formatearDinero(precios.base)}`;
+
                     contenedorPrecios.appendChild(precioAnterior);
                 }
 
                 const precioFinal = document.createElement("span");
-                precioFinal.className = precios.tieneOferta ? "price-sale price-sale-discount" : "price-sale";
-                precioFinal.textContent = `₡${formatearDinero(precios.final)}`;
+
+                precioFinal.className = precios.tieneOferta
+                    ? "price-sale price-sale-discount"
+                    : "price-sale";
+
+                precioFinal.textContent =
+                    `₡${formatearDinero(precios.final)}`;
+
                 contenedorPrecios.appendChild(precioFinal);
 
                 const botonCarrito = document.createElement("button");
+
                 botonCarrito.type = "button";
                 botonCarrito.className = "btn-add-product";
-                botonCarrito.textContent = stock > 0 ? "Agregar al carrito" : "Agotado";
+                botonCarrito.textContent =
+                    stock > 0 ? "Agregar al carrito" : "Agotado";
 
-                if (stock <= 0) botonCarrito.disabled = true;
+                if (stock <= 0) {
+                    botonCarrito.disabled = true;
+                }
 
                 botonCarrito.addEventListener("click", () => {
                     if (stock <= 0) return;
-                    if (typeof window.agregarAlCarrito === "function") {
-                        window.agregarAlCarrito(idProducto, nombre, precios.final);
+
+                    if (
+                        typeof window.agregarAlCarrito === "function" &&
+                        idProducto !== null
+                    ) {
+                        window.agregarAlCarrito(
+                            idProducto,
+                            nombre,
+                            precios.final
+                        );
                     }
                 });
 
                 acciones.append(contenedorPrecios, botonCarrito);
-                informacion.append(categoria, titulo, descripcion, acciones);
+
+                informacion.append(
+                    categoria,
+                    titulo,
+                    descripcion,
+                    acciones
+                );
+
                 tarjeta.append(cajaImagen, informacion);
 
                 return tarjeta;
             }
 
-            // CREAR ELEMENTO PARA EL CARRUSEL
+            /*
+             * CREA LOS ELEMENTOS DEL CARRUSEL.
+             * Cada producto muestra el precio anterior y el actual.
+             */
             function crearElementoCarrusel(producto) {
                 const precios = obtenerPrecios(producto);
+
                 if (!precios) return null;
 
                 const elemento = document.createElement("div");
                 elemento.className = "marquee-item";
 
                 const etiqueta = crearEtiquetaDescuento(precios);
-                if (etiqueta) elemento.appendChild(etiqueta);
+
+                if (etiqueta) {
+                    elemento.appendChild(etiqueta);
+                }
 
                 const cajaImagen = document.createElement("div");
                 cajaImagen.className = "marquee-img-box";
-                cajaImagen.appendChild(crearImagen(producto.imagen_url || producto.imagen, producto.nombre));
+
+                cajaImagen.appendChild(
+                    crearImagen(
+                        producto.imagen_url || producto.imagen,
+                        producto.nombre || "Producto"
+                    )
+                );
 
                 const informacion = document.createElement("div");
                 informacion.className = "marquee-info";
 
                 const titulo = document.createElement("span");
                 titulo.className = "marquee-title";
-                titulo.textContent = producto.nombre;
+                titulo.textContent = producto.nombre || "Producto";
 
                 const contenedorPrecios = document.createElement("div");
                 contenedorPrecios.className = "marquee-prices";
+
+                if (precios.tieneOferta) {
+                    const precioAnterior =
+                        document.createElement("span");
+
+                    precioAnterior.className = "marquee-price-old";
+                    precioAnterior.textContent =
+                        `₡${formatearDinero(precios.base)}`;
+
+                    contenedorPrecios.appendChild(precioAnterior);
+                }
+
                 const precioFinal = document.createElement("strong");
                 precioFinal.className = "marquee-price";
-                precioFinal.textContent = `₡${formatearDinero(precios.final)}`;
+                precioFinal.textContent =
+                    `₡${formatearDinero(precios.final)}`;
+
                 contenedorPrecios.appendChild(precioFinal);
 
                 informacion.append(titulo, contenedorPrecios);
                 elemento.append(cajaImagen, informacion);
+
                 return elemento;
             }
 
-            // CARGAR Y DISTRIBUIR OFERTAS DESDE LA BASE DE DATOS
+            /*
+             * CARGA LAS OFERTAS DESDE LA API.
+             */
             async function cargarOfertas() {
                 if (!gridProductos) return;
 
                 gridProductos.setAttribute("aria-busy", "true");
-                mostrarMensaje(gridProductos, "Cargando ofertas desde la base de datos...");
+
+                mostrarMensaje(
+                    gridProductos,
+                    "Cargando ofertas desde la base de datos..."
+                );
 
                 try {
                     const respuesta = await fetch(API_PRODUCTOS);
-                    if (!respuesta.ok) throw new Error("Error al conectar con la API");
 
-                    const datos = await respuesta.json();
-                    const productos = Array.isArray(datos) ? datos : (datos.productos || []);
-
-                    // 1. Buscar producto asignado específicamente a la "Oferta Principal" (oferta_principal)
-                    const prodPrincipal = productos.find(p => productoPerteneceAUbicacion(p, "oferta_principal"));
-                    poblarTarjetaDestacada("oferta-principal", prodPrincipal, prodPrincipal ? obtenerPrecios(prodPrincipal) : null);
-
-                    // 2. Buscar producto asignado a la "Segunda Oferta" (oferta_2) -> Tarjeta adicional 3
-                    const prodOferta3 = productos.find(p => productoPerteneceAUbicacion(p, "oferta_2"));
-                    poblarTarjetaDestacada("oferta-3", prodOferta3, prodOferta3 ? obtenerPrecios(prodOferta3) : null);
-
-                    // 3. Buscar producto asignado a la "Tercera Oferta" (oferta_3) -> Tarjeta adicional 4
-                    const prodOferta4 = productos.find(p => productoPerteneceAUbicacion(p, "oferta_3"));
-                    poblarTarjetaDestacada("oferta-4", prodOferta4, prodOferta4 ? obtenerPrecios(prodOferta4) : null);
-
-                    // 4. Filtrar productos para el catálogo inferior y el carrusel
-                    const ofertasCatalogo = productos.filter(p => productoPerteneceAUbicacion(p, "descuentos") || obtenerPrecios(p)?.tieneOferta);
-                    const carruselItems = productos.filter(p => productoPerteneceAUbicacion(p, "carrusel"));
-
-                    const tarjetas = ofertasCatalogo.map(crearTarjetaProducto).filter(Boolean);
-                    const elementosCarrusel = carruselItems.map(crearElementoCarrusel).filter(Boolean);
-
-                    gridProductos.replaceChildren();
-                    if (carruselOfertas) carruselOfertas.replaceChildren();
-
-                    if (tarjetas.length === 0) {
-                        mostrarMensaje(gridProductos, "No hay productos en el catálogo de descuentos.");
-                    } else {
-                        const frag = document.createDocumentFragment();
-                        tarjetas.forEach(t => frag.appendChild(t));
-                        gridProductos.appendChild(frag);
+                    if (!respuesta.ok) {
+                        throw new Error(
+                            `Error al conectar con la API: ${respuesta.status}`
+                        );
                     }
 
-                    if (carruselOfertas && elementosCarrusel.length > 0) {
-                        const fragC = document.createDocumentFragment();
-                        for (let i = 0; i < 2; i++) {
-                            elementosCarrusel.forEach(e => fragC.appendChild(e.cloneNode(true)));
-                        }
-                        carruselOfertas.appendChild(fragC);
+                    const datos = await respuesta.json();
+
+                    const productosOriginales = Array.isArray(datos)
+                        ? datos
+                        : (datos.productos || []);
+
+                    /*
+                     * Elimina registros repetidos de la respuesta
+                     * antes de distribuirlos en las secciones.
+                     */
+                    const productos = eliminarDuplicados(
+                        productosOriginales
+                    );
+
+                    // Oferta principal.
+                    const prodPrincipal = productos.find(p =>
+                        productoPerteneceAUbicacion(
+                            p,
+                            "oferta_principal"
+                        )
+                    );
+
+                    poblarTarjetaDestacada(
+                        "oferta-principal",
+                        prodPrincipal,
+                        prodPrincipal
+                            ? obtenerPrecios(prodPrincipal)
+                            : null
+                    );
+
+                    // Segunda oferta.
+                    const prodOferta3 = productos.find(p =>
+                        productoPerteneceAUbicacion(p, "oferta_2")
+                    );
+
+                    poblarTarjetaDestacada(
+                        "oferta-3",
+                        prodOferta3,
+                        prodOferta3
+                            ? obtenerPrecios(prodOferta3)
+                            : null
+                    );
+
+                    // Tercera oferta.
+                    const prodOferta4 = productos.find(p =>
+                        productoPerteneceAUbicacion(p, "oferta_3")
+                    );
+
+                    poblarTarjetaDestacada(
+                        "oferta-4",
+                        prodOferta4,
+                        prodOferta4
+                            ? obtenerPrecios(prodOferta4)
+                            : null
+                    );
+
+                    /*
+                     * Catálogo:
+                     * muestra los productos asignados a descuentos
+                     * o que tengan un precio de oferta válido.
+                     */
+                    const ofertasCatalogo = eliminarDuplicados(
+                        productos.filter(producto =>
+                            productoPerteneceAUbicacion(
+                                producto,
+                                "descuentos"
+                            ) ||
+                            obtenerPrecios(producto)?.tieneOferta
+                        )
+                    );
+
+                    /*
+                     * Carrusel:
+                     * conserva solamente los productos asignados
+                     * a la ubicación "carrusel".
+                     */
+                    const carruselItems = eliminarDuplicados(
+                        productos.filter(producto =>
+                            productoPerteneceAUbicacion(
+                                producto,
+                                "carrusel"
+                            )
+                        )
+                    );
+
+                    const tarjetas = ofertasCatalogo
+                        .map(crearTarjetaProducto)
+                        .filter(Boolean);
+
+                    const elementosCarrusel = carruselItems
+                        .map(crearElementoCarrusel)
+                        .filter(Boolean);
+
+                    gridProductos.replaceChildren();
+
+                    if (carruselOfertas) {
+                        carruselOfertas.replaceChildren();
+                    }
+
+                    // Mostrar el catálogo.
+                    if (tarjetas.length === 0) {
+                        mostrarMensaje(
+                            gridProductos,
+                            "No hay productos en el catálogo de descuentos."
+                        );
+                    } else {
+                        const fragmento =
+                            document.createDocumentFragment();
+
+                        tarjetas.forEach(tarjeta => {
+                            fragmento.appendChild(tarjeta);
+                        });
+
+                        gridProductos.appendChild(fragmento);
+                    }
+
+                    /*
+                     * Mostrar cada producto una sola vez.
+                     * Ya no se clonan los elementos dos veces.
+                     */
+                    if (
+                        carruselOfertas &&
+                        elementosCarrusel.length > 0
+                    ) {
+                        const fragmentoCarrusel =
+                            document.createDocumentFragment();
+
+                        elementosCarrusel.forEach(elemento => {
+                            fragmentoCarrusel.appendChild(elemento);
+                        });
+
+                        carruselOfertas.appendChild(fragmentoCarrusel);
+                    } else if (carruselOfertas) {
+                        mostrarMensaje(
+                            carruselOfertas,
+                            "No hay productos asignados al carrusel."
+                        );
                     }
 
                 } catch (error) {
-                    console.error("Error al cargar ofertas:", error);
-                    mostrarMensaje(gridProductos, "No se pudieron cargar las ofertas.", true);
+                    console.error(
+                        "Error al cargar ofertas:",
+                        error
+                    );
+
+                    mostrarMensaje(
+                        gridProductos,
+                        "No se pudieron cargar las ofertas. Intenta nuevamente.",
+                        true
+                    );
+
+                    if (carruselOfertas) {
+                        mostrarMensaje(
+                            carruselOfertas,
+                            "No se pudieron cargar los productos del carrusel.",
+                            true
+                        );
+                    }
+
                 } finally {
                     gridProductos.removeAttribute("aria-busy");
                 }
@@ -698,6 +1203,6 @@
             cargarOfertas();
         });
     </script>
-</body>
 
+</body>
 </html>
