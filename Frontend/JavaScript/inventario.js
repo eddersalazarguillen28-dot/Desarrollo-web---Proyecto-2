@@ -269,6 +269,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const headers = { ...(opciones.headers || {}) };
         const esFormData = opciones.body instanceof FormData;
 
+        const token = localStorage.getItem("token");
+
+        if (token) {
+            headers["authorization"] = `Bearer ${token}`;
+        }
+
         if (!esFormData && opciones.body !== undefined) {
             headers["Content-Type"] = "application/json";
         }

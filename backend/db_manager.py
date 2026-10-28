@@ -1003,11 +1003,13 @@ def obtener_datos_inventario():
     finally:
         conn.close()
 
+
 # =========================================================
 # DETALLES DE VENTAS PARA EL DASHBOARD
 # =========================================================
 
 def obtener_detalles_dashboard():
+    """Obtiene las líneas de venta con sus importes reales."""
     conn = obtener_conexion()
 
     try:
@@ -1018,13 +1020,16 @@ def obtener_detalles_dashboard():
                     dv.id AS "detalleId",
                     TO_CHAR(v.fecha, 'DD/MM/YYYY') AS fecha,
                     dv.producto_id AS "productoId",
+                    p.nombre AS "productoNombre",
                     dv.cantidad AS cantidad,
                     dv.subtotal AS subtotal,
                     dv.precio_unitario AS "precioUnitario"
                 FROM ventas AS v
-                INNER JOIN detalle_ventas AS dv
+                LEFT JOIN detalle_ventas AS dv
                     ON dv.venta_id = v.id
-                ORDER BY v.fecha, v.id, dv.id;
+                LEFT JOIN productos AS p
+                    ON p.id = dv.producto_id
+                ORDER BY v.fecha DESC, v.id DESC, dv.id;
             """)
 
             filas = cursor.fetchall()
@@ -1035,15 +1040,25 @@ def obtener_detalles_dashboard():
                     "detalleId": v["detalleId"],
                     "fecha": v["fecha"],
                     "productoId": v["productoId"],
+                    "productoNombre": v["productoNombre"],
                     "cantidad": v["cantidad"],
-                    "subtotal": float(v["subtotal"]),
-                    "precioUnitario": float(v["precioUnitario"])
+                    "subtotal": (
+                        float(v["subtotal"])
+                        if v["subtotal"] is not None
+                        else 0.0
+                    ),
+                    "precioUnitario": (
+                        float(v["precioUnitario"])
+                        if v["precioUnitario"] is not None
+                        else 0.0
+                    )
                 }
                 for v in filas
             ]
 
     finally:
         conn.close()
+
 
 # =========================================================
 # USUARIOS Y PERFIL

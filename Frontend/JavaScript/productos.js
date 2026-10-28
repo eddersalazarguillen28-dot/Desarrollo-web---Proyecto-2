@@ -1,104 +1,652 @@
-document.addEventListener("DOMContentLoaded", () => {
-    cargarProductos();
-});
+
+"use strict";
 
 const API_BASE = "https://octo-erp.onrender.com";
 const IMAGEN_POR_DEFECTO = "../Imagenes/Logo.png";
 
-function formatearPrecio(precio) {
-    return `₡${Number(precio || 0).toLocaleString("fr-FR", {
-        maximumFractionDigits: 2
-    })}`;
-}
+let inventarioProductos = [];
+let productosFiltrados = [];
 
-// 1. Consultar la API de la base de datos
-async function cargarProductos() {
-    const contenedor = document.getElementById("grid-productos");
-    const contador = document.getElementById("contador-productos");
+// ======================================================
+// INICIALIZACIÓN
+// ======================================================
 
-    if (!contenedor) return;
+document.addEventListener("DOMContentLoaded", () => {
+    configurarBuscador();
+    configurarModal();
+    cargarProductos();
+});
 
-    // Mensaje de carga mientras responde el servidor
-    contenedor.innerHTML = "<p style='grid-column: 1/-1; text-align: center; color: #4a5568;'>Cargando catálogo de productos...</p>";
+// ======================================================
+// BUSCADOR
+// ======================================================
 
-    try {
-        const respuesta = await fetch(`${API_BASE}/api/productos`);
-        if (!respuesta.ok) throw new Error("Error al obtener los productos del servidor");
-        
-        const datos = await respuesta.json();
-        const inventario = Array.isArray(datos) ? datos : datos.productos || [];
+function configurarBuscador() {
+    const campo = document.getElementById("buscador-productos");
 
-        renderizarProductos(inventario, contenedor, contador);
-    } catch (error) {
-        console.error("Error:", error);
-        contenedor.innerHTML = "<p style='grid-column: 1/-1; text-align: center; color: #dc3545;'>Error al cargar los productos. Verifica tu conexión con la base de datos en Render.</p>";
-        if (contador) contador.innerText = "Error de conexión";
-    }
-}
-
-// 2. Dibujar las tarjetas en la página
-function renderizarProductos(inventario, contenedor, contador) {
-    contenedor.innerHTML = ""; // Limpiar el grid
-    
-    if (inventario.length === 0) {
-        contenedor.innerHTML = "<p style='grid-column: 1/-1; text-align: center; color: #4a5568;'>No hay productos en el catálogo. Ve a la pestaña Inventario para agregar stock.</p>";
-        if (contador) contador.innerText = "Mostrando 0 productos";
+    if (!campo) {
+        console.warn("No se encontró el buscador de productos.");
         return;
     }
 
-    inventario.forEach(prod => {
-        // Ajustamos los campos para que coincidan con lo que devuelve tu API
-        const precio = formatearPrecio(prod.precio);
-        const descripcion = prod.descripcion || 'Sin descripción disponible.';
-        const imagen = prod.imagen_url || IMAGEN_POR_DEFECTO;
+    campo.addEventListener("input", buscarProductos);
 
-        const card = document.createElement("div");
-        card.className = "producto-card";
-        
-        // Al hacer clic, enviamos los datos dinámicos a la función del modal
-        card.onclick = () => abrirModal(prod.nombre, prod.categoria || "General", precio, descripcion, imagen);
-        
-        card.innerHTML = `
-            <img src="${imagen}" alt="${prod.nombre}" class="card-img" style="object-fit: contain; width: 100%; height: 150px; margin-bottom: 15px;" onerror="this.src='${IMAGEN_POR_DEFECTO}'">
-            <h3 class="card-titulo">${prod.nombre || "Producto sin nombre"}</h3>
-            <span class="card-categoria">${prod.categoria || "General"}</span>
-            <p class="card-precio">${precio}</p>
-        `;
-        
-        contenedor.appendChild(card);
+    campo.addEventListener("keydown", evento => {
+        if (evento.key === "Enter") {
+            evento.preventDefault();
+            buscarProductos();
+        }
+    });
+}
+
+function normalizarTexto(valor) {
+    return String(valor ?? "")
+        .trim()
+        .toLocaleLowerCase("es")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+}
+
+function buscarProductos() {
+    const campo = document.getElementById("buscador-productos");
+    const contenedor = document.getElementById("grid-productos");
+
+    if (!campo || !contenedor) {
+        console.error(
+            "No se encontró el buscador o el contenedor del catálogo."
+        );
+        return;
+    }
+
+    const termino = normalizarTexto(campo.value);
+
+    productosFiltrados = inventarioProductos.filter(producto => {
+        const nombre = normalizarTexto(producto.nombre);
+        const categoria = normalizarTexto(
+            producto.categoria || "General"
+        );
+        const descripcion = normalizarTexto(producto.descripcion);
+
+        return (
+            nombre.includes(termino) ||
+            categoria.includes(termino) ||
+            descripcion.includes(termino)
+        );
     });
 
-    if (contador) {
-        contador.innerText = `Mostrando ${inventario.length} de ${inventario.length} productos`;
+    renderizarProductos(productosFiltrados);
+}
+
+// ======================================================
+// FUNCIONES AUXILIARES
+// ======================================================
+
+function obtenerTexto(valor, alternativo = "") {
+    if (valor === null || valor === undefined) {
+        return alternativo;
+    }
+
+    const texto = String(valor).trim();
+
+    return texto || alternativo;
+}
+
+function formatearPrecio(precio) {
+    const numero = Number(precio);
+
+    return `₡${(Number.isFinite(numero) ? numero : 0).toLocaleString(
+        "es-CR",
+        {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        }
+    )}`;
+}
+
+function obtenerPrimerValor(producto, campos) {
+    for (const campo of campos) {
+        const valor = producto[campo];
+
+        if (
+            valor !== null &&
+            valor !== undefined &&
+            valor !== ""
+        ) {
+            const numero = Number(valor);
+
+            if (Number.isFinite(numero) && numero >= 0) {
+                return numero;
+            }
+        }
+    }
+
+    return null;
+}
+
+// ======================================================
+// PRECIOS Y DESCUENTOS
+// ======================================================
+
+// Obtiene el precio normal del producto.
+// "precio" es el campo utilizado por el inventario.
+
+function obtenerPrecioOriginal(producto) {
+    const precio = obtenerPrimerValor(producto, [
+        "precio",
+        "precio_original",
+        "precioOriginal",
+        "precio_anterior",
+        "precioAnterior",
+        "precio_regular",
+        "precioRegular"
+    ]);
+
+    return precio !== null && precio > 0 ? precio : null;
+}
+
+// Reconoce los nombres de campos utilizados para las ofertas.
+
+function obtenerPrecioDescuento(producto) {
+    return obtenerPrimerValor(producto, [
+        "precio_oferta",
+        "precioOferta",
+        "precio_descuento",
+        "precioDescuento",
+        "precio_rebajado",
+        "precioRebajado",
+        "precio_final",
+        "precioFinal"
+    ]);
+}
+
+// Solo considera que existe una oferta cuando el precio
+// de oferta es menor que el precio normal.
+
+function tieneDescuento(producto) {
+    const precioNormal = obtenerPrecioOriginal(producto);
+    const precioOferta = obtenerPrecioDescuento(producto);
+
+    return (
+        precioNormal !== null &&
+        precioOferta !== null &&
+        precioOferta > 0 &&
+        precioOferta < precioNormal
+    );
+}
+
+// Calcula el precio final y el porcentaje de descuento.
+
+function calcularPrecios(producto) {
+    const precioNormal = obtenerPrecioOriginal(producto) ?? 0;
+    const precioOferta = obtenerPrecioDescuento(producto);
+
+    const descuentoValido =
+        precioNormal > 0 &&
+        precioOferta !== null &&
+        precioOferta > 0 &&
+        precioOferta < precioNormal;
+
+    const precioActual = descuentoValido
+        ? precioOferta
+        : precioNormal;
+
+    const porcentaje = descuentoValido
+        ? Math.round(
+            ((precioNormal - precioOferta) / precioNormal) * 100
+        )
+        : 0;
+
+    return {
+        original: descuentoValido ? precioNormal : null,
+        actual: precioActual,
+        porcentaje,
+        tieneDescuento: descuentoValido
+    };
+}
+
+// ======================================================
+// UBICACIONES DE LOS PRODUCTOS
+// ======================================================
+
+function obtenerUbicacionesCatalogo(producto) {
+    let ubicaciones = producto.ubicaciones;
+
+    // El backend puede devolver las ubicaciones como JSON
+    // o como una cadena de texto.
+
+    if (typeof ubicaciones === "string") {
+        try {
+            const resultado = JSON.parse(ubicaciones);
+
+            ubicaciones = Array.isArray(resultado)
+                ? resultado
+                : [resultado];
+        } catch {
+            ubicaciones = [ubicaciones];
+        }
+    }
+
+    if (!Array.isArray(ubicaciones)) {
+        ubicaciones = producto.ubicacion
+            ? [producto.ubicacion]
+            : ["productos"];
+    }
+
+    return ubicaciones
+        .filter(Boolean)
+        .map(ubicacion =>
+            normalizarTexto(ubicacion).replace(/\s+/g, "_")
+        );
+}
+
+function filtrarProductosPorUbicacion(ubicacion) {
+    const ubicacionBuscada = normalizarTexto(ubicacion)
+        .replace(/\s+/g, "_");
+
+    return inventarioProductos.filter(producto => {
+        const ubicaciones = obtenerUbicacionesCatalogo(producto);
+
+        if (!ubicaciones.includes(ubicacionBuscada)) {
+            return false;
+        }
+
+        // Las ubicaciones de ofertas solo muestran productos
+        // que tienen una rebaja válida.
+
+        const ubicacionesDeOferta = [
+            "oferta_principal",
+            "oferta_2",
+            "oferta_3",
+            "carrusel"
+        ];
+
+        if (ubicacionesDeOferta.includes(ubicacionBuscada)) {
+            return tieneDescuento(producto);
+        }
+
+        return true;
+    });
+}
+
+// ======================================================
+// CARGAR PRODUCTOS DESDE RENDER
+// ======================================================
+
+async function cargarProductos() {
+    const contenedor = document.getElementById("grid-productos");
+
+    if (contenedor) {
+        contenedor.innerHTML = `
+            <p class="mensaje-cargando">
+                Cargando productos...
+            </p>
+        `;
+    }
+
+    try {
+        const respuesta = await fetch(`${API_BASE}/api/productos`, {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+
+        if (!respuesta.ok) {
+            throw new Error(
+                `Error HTTP ${respuesta.status} al consultar productos.`
+            );
+        }
+
+        const datos = await respuesta.json();
+
+        let productos = Array.isArray(datos)
+            ? datos
+            : Array.isArray(datos.productos)
+                ? datos.productos
+                : null;
+
+        if (!productos) {
+            throw new Error(
+                "La API no devolvió una lista válida de productos."
+            );
+        }
+
+        inventarioProductos = productos;
+        productosFiltrados = [...inventarioProductos];
+
+        console.log(
+            "Productos recibidos desde Render:",
+            inventarioProductos
+        );
+
+        buscarProductos();
+
+    } catch (error) {
+        console.error("Error al cargar productos:", error);
+
+        if (contenedor) {
+            contenedor.innerHTML = `
+                <p class="mensaje-error">
+                    No se pudieron cargar los productos.
+                    Intenta nuevamente más tarde.
+                </p>
+                <button type="button" id="btn-reintentar-productos">
+                    Reintentar
+                </button>
+            `;
+
+            const boton = document.getElementById(
+                "btn-reintentar-productos"
+            );
+
+            if (boton) {
+                boton.addEventListener("click", cargarProductos);
+            }
+        }
     }
 }
 
-// FUNCIONES GLOBALES PARA EL MODAL
+// ======================================================
+// IMÁGENES
+// ======================================================
 
-window.abrirModal = function(titulo, categoria, precio, descripcion, imagen) {
-    document.getElementById('modal-titulo').innerText = titulo;
-    document.getElementById('modal-categoria').innerText = categoria;
-    document.getElementById('modal-precio').innerText = precio;
-    document.getElementById('modal-desc').innerText = descripcion;
-    
-    // Asignar imagen y prever un error si el enlace está roto
-    const modalImg = document.getElementById('modal-img');
-    modalImg.src = imagen;
-    modalImg.onerror = function() { 
-        this.src = IMAGEN_POR_DEFECTO; 
-    };
+function obtenerImagenProducto(producto) {
+    return obtenerTexto(
+        producto.imagen_url ||
+        producto.imagen ||
+        producto.url_imagen ||
+        producto.image_url,
+        IMAGEN_POR_DEFECTO
+    );
+}
 
-    document.getElementById('modal-producto').classList.add('activo');
-};
+// ======================================================
+// RENDERIZAR CATÁLOGO
+// ======================================================
 
-window.cerrarModal = function() {
-    document.getElementById('modal-producto').classList.remove('activo');
-};
+function renderizarProductos(productos) {
+    const contenedor = document.getElementById("grid-productos");
 
-// Cerrar el modal al hacer clic en el fondo oscuro
-window.onclick = function(event) {
-    const modal = document.getElementById('modal-producto');
-    if (event.target === modal) {
-        cerrarModal();
+    if (!contenedor) {
+        console.error(
+            "No se encontró el elemento #grid-productos."
+        );
+        return;
     }
-};
+
+    actualizarContadores(productos.length);
+
+    if (!productos.length) {
+        contenedor.innerHTML = `
+            <p class="mensaje-vacio">
+                No se encontraron productos.
+            </p>
+        `;
+        return;
+    }
+
+    contenedor.innerHTML = productos.map(producto => {
+        const id = producto.id;
+        const nombre = obtenerTexto(
+            producto.nombre,
+            "Producto sin nombre"
+        );
+        const categoria = obtenerTexto(
+            producto.categoria,
+            "General"
+        );
+        const descripcion = obtenerTexto(
+            producto.descripcion,
+            "Consulta los detalles de este producto."
+        );
+
+        const imagen = obtenerImagenProducto(producto);
+        const precios = calcularPrecios(producto);
+
+        const etiquetaDescuento = precios.tieneDescuento
+            ? `
+                <span class="card-descuento">
+                    -${precios.porcentaje}%
+                </span>
+            `
+            : "";
+
+        const precioAnterior = precios.tieneDescuento
+            ? `
+                <span class="card-precio-anterior">
+                    ${formatearPrecio(precios.original)}
+                </span>
+            `
+            : "";
+
+        const precioActual = `
+            <span class="card-precio">
+                ${formatearPrecio(precios.actual)}
+            </span>
+        `;
+
+        return `
+            <article class="card-producto"
+                data-producto-id="${escaparHTML(id)}">
+
+                <div class="card-imagen-contenedor">
+                    ${etiquetaDescuento}
+
+                    <img
+                        class="card-imagen"
+                        src="${escaparHTML(imagen)}"
+                        alt="${escaparHTML(nombre)}"
+                        loading="lazy"
+                        onerror="this.onerror=null;this.src='${escaparHTML(IMAGEN_POR_DEFECTO)}';"
+                    >
+                </div>
+
+                <div class="card-contenido">
+                    <span class="card-categoria">
+                        ${escaparHTML(categoria)}
+                    </span>
+
+                    <h3 class="card-titulo">
+                        ${escaparHTML(nombre)}
+                    </h3>
+
+                    <p class="card-descripcion">
+                        ${escaparHTML(descripcion)}
+                    </p>
+
+                    <div class="card-precios">
+                        ${precioAnterior}
+                        ${precioActual}
+                    </div>
+
+                    <button
+                        type="button"
+                        class="btn-ver-detalle"
+                        data-producto-id="${escaparHTML(id)}">
+                        Ver detalles
+                    </button>
+                </div>
+            </article>
+        `;
+    }).join("");
+
+    configurarBotonesDetalle();
+}
+
+// ======================================================
+// CONTADORES
+// ======================================================
+
+function actualizarContadores(cantidad) {
+    const contadorSuperior = document.getElementById(
+        "contador-productos"
+    );
+
+    const contadorInferior = document.getElementById(
+        "contador-productos-pie"
+    );
+
+    if (contadorSuperior) {
+        contadorSuperior.textContent = cantidad;
+    }
+
+    if (contadorInferior) {
+        contadorInferior.textContent = cantidad;
+    }
+}
+
+// ======================================================
+// MODAL DE DETALLES
+// ======================================================
+
+function configurarModal() {
+    const modal = document.getElementById("modal-producto");
+
+    if (!modal) {
+        console.warn("No se encontró #modal-producto.");
+        return;
+    }
+
+    const botonesCerrar = modal.querySelectorAll(
+        ".cerrar-modal, .btn-cerrar-modal, [data-cerrar-modal]"
+    );
+
+    botonesCerrar.forEach(boton => {
+        boton.addEventListener("click", cerrarModalProducto);
+    });
+
+    modal.addEventListener("click", evento => {
+        if (evento.target === modal) {
+            cerrarModalProducto();
+        }
+    });
+
+    document.addEventListener("keydown", evento => {
+        if (evento.key === "Escape") {
+            cerrarModalProducto();
+        }
+    });
+}
+
+function configurarBotonesDetalle() {
+    const botones = document.querySelectorAll(".btn-ver-detalle");
+
+    botones.forEach(boton => {
+        boton.addEventListener("click", () => {
+            const id = boton.dataset.productoId;
+
+            const producto = inventarioProductos.find(
+                elemento => String(elemento.id) === String(id)
+            );
+
+            if (producto) {
+                abrirModalProducto(producto);
+            }
+        });
+    });
+}
+
+function abrirModalProducto(producto) {
+    const modal = document.getElementById("modal-producto");
+
+    if (!modal) {
+        console.error("No se encontró el modal de productos.");
+        return;
+    }
+
+    const titulo = document.getElementById("modal-titulo");
+    const categoria = document.getElementById("modal-categoria");
+    const descripcion = document.getElementById("modal-desc");
+    const precio = document.getElementById("modal-precio");
+    const imagen = document.getElementById("modal-img");
+
+    const precios = calcularPrecios(producto);
+
+    if (titulo) {
+        titulo.textContent = obtenerTexto(
+            producto.nombre,
+            "Producto sin nombre"
+        );
+    }
+
+    if (categoria) {
+        categoria.textContent = obtenerTexto(
+            producto.categoria,
+            "General"
+        );
+    }
+
+    if (descripcion) {
+        descripcion.textContent = obtenerTexto(
+            producto.descripcion,
+            "Consulta los detalles de este producto."
+        );
+    }
+
+    if (precio) {
+        if (precios.tieneDescuento) {
+            precio.innerHTML = `
+                <span class="modal-precio-anterior">
+                    ${formatearPrecio(precios.original)}
+                </span>
+                <span class="modal-precio-oferta">
+                    ${formatearPrecio(precios.actual)}
+                </span>
+                <span class="modal-etiqueta-descuento">
+                    Ahorras ${precios.porcentaje}%
+                </span>
+            `;
+        } else {
+            precio.textContent = formatearPrecio(precios.actual);
+        }
+    }
+
+    if (imagen) {
+        imagen.src = obtenerImagenProducto(producto);
+        imagen.alt = obtenerTexto(
+            producto.nombre,
+            "Imagen del producto"
+        );
+
+        imagen.onerror = () => {
+            imagen.onerror = null;
+            imagen.src = IMAGEN_POR_DEFECTO;
+        };
+    }
+
+    modal.classList.add("activo");
+    modal.classList.add("mostrar");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("modal-abierto");
+}
+
+function cerrarModalProducto() {
+    const modal = document.getElementById("modal-producto");
+
+    if (!modal) {
+        return;
+    }
+
+    modal.classList.remove("activo");
+    modal.classList.remove("mostrar");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("modal-abierto");
+}
+
+// ======================================================
+// SEGURIDAD: ESCAPAR TEXTO INSERTADO EN HTML
+// ======================================================
+
+function escaparHTML(valor) {
+    return String(valor ?? "").replace(/[&<>"']/g, caracter => {
+        const entidades = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        };
+
+        return entidades[caracter];
+    });
+}
