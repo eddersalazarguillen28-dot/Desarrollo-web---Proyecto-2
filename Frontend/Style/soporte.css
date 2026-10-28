@@ -589,10 +589,12 @@ body {
 .soporte-hero {
     position: relative;
     z-index: 1;
-    margin-top: 20px;
+    margin-top: 20px; 
+    margin-top: 20px; 
 }
 
 .navbar-octo {
     position: relative;
     z-index: 100;
 }
+
