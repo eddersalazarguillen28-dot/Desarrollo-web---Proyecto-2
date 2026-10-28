@@ -69,6 +69,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+            // 1. LIMPIAR SESIÓN ANTERIOR (Para evitar conflictos de caché)
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+
             contrasenaError.style.color = "blue";
             contrasenaError.textContent = "Iniciando sesión...";
 
@@ -90,20 +94,24 @@ document.addEventListener("DOMContentLoaded", () => {
                     contrasenaError.style.color = "green";
                     contrasenaError.textContent = "¡Inicio de sesión exitoso!";
 
-                    // Guardar credenciales y token en el navegador
+                    // 2. GUARDAR LOS DATOS NUEVOS
                     localStorage.setItem("token", datos.token);
                     localStorage.setItem("usuario", JSON.stringify(datos.usuario));
 
-                    // Validación segura del rol o rango del usuario
+                    // 3. FORZAR LA REDIRECCIÓN SEGÚN EL ROL
                     setTimeout(() => {
                         const rol = (datos.usuario.rol || datos.usuario.rango || "").toLowerCase();
+                        
+                        console.log("Rol detectado por el sistema:", rol); // Para depurar en consola
 
                         if (rol === "administrador" || rol === "admin" || rol === "vendedor") {
-                            window.location.href = "inventario.html"; // Panel de administrador
+                            // Admin y Vendedor van al panel administrativo
+                            window.location.replace("inicio.html"); 
                         } else {
-                            window.location.href = "inicioClientes.html"; // Vista de cliente
+                            // Clientes van a la tienda
+                            window.location.replace("inicioClientes.html");
                         }
-                    }, 1000);
+                    }, 800); // 0.8 segundos para que se vea el mensaje verde
 
                 } else {
                     contrasenaError.style.color = "red";
@@ -118,6 +126,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+// =========================================================
+// MOSTRAR / OCULTAR CONTRASEÑA
+// =========================================================
 const campoContrasena = document.getElementById("contrasena");
 const botonMostrarConstrasena = document.getElementById("mostrarContrasena");
 
@@ -125,12 +136,10 @@ if (campoContrasena && botonMostrarConstrasena) {
     botonMostrarConstrasena.addEventListener("click", () => {
         const mostrar = campoContrasena.type === "password";
         campoContrasena.type = mostrar ? "text" : "password";
-        botonMostrarConstrasena.textContent = mostrar ? "👁" : "👁";
+        
+        botonMostrarConstrasena.textContent = mostrar ? "°" : "|"; 
 
         botonMostrarConstrasena.setAttribute("aria-label", mostrar ? "Ocultar contraseña" : "Mostrar contraseña");
-
-        botonMostrarConstrasena.setAttribute("aria-pressed",
-            String(mostrar)
-        );
+        botonMostrarConstrasena.setAttribute("aria-pressed", String(mostrar));
     });
 }
