@@ -388,7 +388,7 @@ function abrirModalDetalle(id){
     if (producto.enDescuento){
         precioModalElem.innerHTML = `
             <span style="font-size:13px;color:var(--text-muted);text-decoration:line-through;display:block;">Antes: ${producto.precioOriginal.toLocaleString()}</span>
-            <span style = "color:#e74c3c;font-weight:bold;">Ahora: ${producto.precio.toLocaleString()}</span>
+            <span style = "color:var(--price-green);font-weight:bold;">Ahora: ${producto.precio.toLocaleString()}</span>
         
         `;
     }else{
