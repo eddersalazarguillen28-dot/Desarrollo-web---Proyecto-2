@@ -198,7 +198,8 @@ function actualizarGraficoProductos(ventasFiltradas) {
 
             plugins: {
                 legend: {
-                    display: false,
+                    display: true,
+                    position: "bottom"
                 },
                 tooltip: {
                     callbacks: {
