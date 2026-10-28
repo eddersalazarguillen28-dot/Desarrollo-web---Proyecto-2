@@ -22,9 +22,7 @@
         <div class="nav-container">
 
             <a href="inicioClientes.html" class="nav-logo" aria-label="OctoERP, página de inicio">
-                <img src="../Imagenes/Logo.png"
-                    alt="OctoERP Logo"
-                    onerror="this.style.display='none'">
+                <img src="../Imagenes/Logo.png" alt="OctoERP Logo" onerror="this.style.display='none'">
                 <span>Octo<span>ERP</span></span>
             </a>
 
@@ -33,26 +31,16 @@
                 <a href="categorias.html" class="nav-item">Categorías</a>
                 <a href="descuentos.html" class="nav-item">Descuentos</a>
                 <a href="QuienesSomos.html" class="nav-item">Sobre Nosotros</a>
-                <a href="soporte.html"
-                    class="nav-item active"
-                    aria-current="page">Soporte</a>
+                <a href="Soporte.html" class="nav-item active" aria-current="page">Soporte</a>
             </nav>
 
             <div class="nav-actions">
 
                 <!-- Cambiar tema -->
-                <button
-                    type="button"
-                    id="btn-toggle-theme"
-                    class="btn-theme-toggle"
-                    title="Cambiar tema"
+                <button type="button" id="btn-toggle-theme" class="btn-theme-toggle" title="Cambiar tema"
                     aria-label="Cambiar tema">
 
-                    <svg class="nav-svg-icon"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
+                    <svg class="nav-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         aria-hidden="true">
                         <circle cx="12" cy="12" r="5"></circle>
                         <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -67,18 +55,10 @@
                 </button>
 
                 <!-- Carrito -->
-                <button
-                    type="button"
-                    class="btn-cart"
-                    onclick="toggleModalCarrito()"
-                    title="Ver carrito"
+                <button type="button" class="btn-cart" onclick="toggleModalCarrito()" title="Ver carrito"
                     aria-label="Ver carrito">
 
-                    <svg class="nav-svg-icon"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
+                    <svg class="nav-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         aria-hidden="true">
                         <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
                     </svg>
@@ -101,32 +81,21 @@
     </header>
 
     <!-- Modal del carrito -->
-    <div
-        id="modal-carrito"
-        class="carrito-modal-overlay hidden"
-        role="dialog"
-        aria-modal="true"
+    <div id="modal-carrito" class="carrito-modal-overlay hidden" role="dialog" aria-modal="true"
         aria-labelledby="titulo-carrito">
 
         <div class="carrito-modal-content">
 
             <div class="carrito-header">
                 <h2 id="titulo-carrito">
-                    <svg class="modal-title-icon"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
+                    <svg class="modal-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         aria-hidden="true">
                         <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
                     </svg>
                     Tu Carrito de Compras
                 </h2>
 
-                <button
-                    type="button"
-                    class="btn-cerrar-carrito"
-                    onclick="toggleModalCarrito()"
+                <button type="button" class="btn-cerrar-carrito" onclick="toggleModalCarrito()"
                     aria-label="Cerrar carrito">
                     &times;
                 </button>
@@ -144,10 +113,7 @@
                     <span id="carrito-monto-total">₡0</span>
                 </div>
 
-                <button
-                    type="button"
-                    class="btn-procesar-compra"
-                    onclick="procesarCompra()">
+                <button type="button" class="btn-procesar-compra" onclick="procesarCompra()">
                     Finalizar Compra
                 </button>
             </div>
@@ -175,10 +141,7 @@
         <!-- Accesos rápidos -->
         <section class="soporte-grid-quick" aria-label="Accesos rápidos">
 
-            <div class="card-quick"
-                role="button"
-                tabindex="0"
-                onclick="scrollearA('seccion-compatibilidad')"
+            <div class="card-quick" role="button" tabindex="0" onclick="scrollearA('seccion-compatibilidad')"
                 onkeydown="activarAccesoRapido(event, 'seccion-compatibilidad')">
 
                 <div class="icon-quick" aria-hidden="true"></div>
@@ -189,10 +152,7 @@
                 </p>
             </div>
 
-            <div class="card-quick"
-                role="button"
-                tabindex="0"
-                onclick="scrollearA('seccion-rma')"
+            <div class="card-quick" role="button" tabindex="0" onclick="scrollearA('seccion-rma')"
                 onkeydown="activarAccesoRapido(event, 'seccion-rma')">
 
                 <div class="icon-quick" aria-hidden="true"></div>
@@ -203,10 +163,7 @@
                 </p>
             </div>
 
-            <div class="card-quick"
-                role="button"
-                tabindex="0"
-                onclick="scrollearA('seccion-drivers')"
+            <div class="card-quick" role="button" tabindex="0" onclick="scrollearA('seccion-drivers')"
                 onkeydown="activarAccesoRapido(event, 'seccion-drivers')">
 
                 <div class="icon-quick" aria-hidden="true"></div>
@@ -217,10 +174,7 @@
                 </p>
             </div>
 
-            <div class="card-quick"
-                role="button"
-                tabindex="0"
-                onclick="scrollearA('seccion-faq')"
+            <div class="card-quick" role="button" tabindex="0" onclick="scrollearA('seccion-faq')"
                 onkeydown="activarAccesoRapido(event, 'seccion-faq')">
 
                 <div class="icon-quick" aria-hidden="true"></div>
@@ -251,10 +205,7 @@
                         Selecciona tu duda de hardware:
                     </label>
 
-                    <select
-                        id="select-consulta"
-                        class="select-tech"
-                        onchange="verificarCompatibilidad()">
+                    <select id="select-consulta" class="select-tech" onchange="verificarCompatibilidad()">
 
                         <option value="">
                             -- Elige una consulta para analizar --
@@ -279,10 +230,7 @@
                     </select>
                 </div>
 
-                <div
-                    id="resultado-compatibilidad"
-                    class="resultado-box hidden"
-                    aria-live="polite">
+                <div id="resultado-compatibilidad" class="resultado-box hidden" aria-live="polite">
                 </div>
 
             </div>
@@ -302,16 +250,14 @@
             <div class="drivers-grid">
 
                 <!-- NVIDIA -->
-                <a
-                    href="https://www.nvidia.com/Download/index.aspx"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                <a href="https://www.nvidia.com/Download/index.aspx" target="_blank" rel="noopener noreferrer"
                     class="driver-card card-nvidia">
 
                     <div class="driver-header">
                         <div class="driver-brand-icon" aria-hidden="true">
                             <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M8.28 4.22a8.88 8.88 0 00-4.16 1.48A10.87 10.87 0 00.32 9.68a.82.82 0 00.37.93c1.3.82 2.68 1.5 4.14 2a8.82 8.82 0 011.83-3.8 8.12 8.12 0 013.82-2.48c-.7-.7-1.46-1.4-2.2-2.11zM12 2a10 10 0 00-10 10 10 10 0 0010 10 10 10 0 0010-10A10 10 0 0012 2zm-.2 15.6a5.8 5.8 0 01-3.6-1.3 5.4 5.4 0 01-1.9-3.2 6.5 6.5 0 012.3-5.5 6.6 6.6 0 015.4-1.6 6.8 6.8 0 014.8 2.8 6.3 6.3 0 01.8 5c-.4 1.8-1.5 3.3-3.1 4.2a6.7 6.7 0 01-4.7-.4z"/>
+                                <path
+                                    d="M8.28 4.22a8.88 8.88 0 00-4.16 1.48A10.87 10.87 0 00.32 9.68a.82.82 0 00.37.93c1.3.82 2.68 1.5 4.14 2a8.82 8.82 0 011.83-3.8 8.12 8.12 0 013.82-2.48c-.7-.7-1.46-1.4-2.2-2.11zM12 2a10 10 0 00-10 10 10 10 0 0010 10 10 10 0 0010-10A10 10 0 0012 2zm-.2 15.6a5.8 5.8 0 01-3.6-1.3 5.4 5.4 0 01-1.9-3.2 6.5 6.5 0 012.3-5.5 6.6 6.6 0 015.4-1.6 6.8 6.8 0 014.8 2.8 6.3 6.3 0 01.8 5c-.4 1.8-1.5 3.3-3.1 4.2a6.7 6.7 0 01-4.7-.4z" />
                             </svg>
                         </div>
                         <span class="badge-driver">GeForce Game Ready</span>
@@ -330,16 +276,14 @@
                 </a>
 
                 <!-- AMD -->
-                <a
-                    href="https://www.amd.com/en/support"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                <a href="https://www.amd.com/en/support" target="_blank" rel="noopener noreferrer"
                     class="driver-card card-amd">
 
                     <div class="driver-header">
                         <div class="driver-brand-icon" aria-hidden="true">
                             <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.8l7.2 3.6v7.2L12 19.2 4.8 15.6V8.4L12 4.8z"/>
+                                <path
+                                    d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.8l7.2 3.6v7.2L12 19.2 4.8 15.6V8.4L12 4.8z" />
                             </svg>
                         </div>
                         <span class="badge-driver">Software Adrenalin</span>
@@ -358,16 +302,14 @@
                 </a>
 
                 <!-- Intel -->
-                <a
-                    href="https://www.intel.com/content/www/us/en/download-center/home.html"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="driver-card card-intel">
+                <a href="https://www.intel.com/content/www/us/en/download-center/home.html" target="_blank"
+                    rel="noopener noreferrer" class="driver-card card-intel">
 
                     <div class="driver-header">
                         <div class="driver-brand-icon" aria-hidden="true">
                             <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm0-8h-2V7h2v2zm4 8h-2v-3c0-.55-.45-1-1-1s-1 .45-1 1v3h-2v-6h2v1.1c.45-.65 1.2-1.1 2-1.1 1.65 0 3 1.35 3 3v3z"/>
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm0-8h-2V7h2v2zm4 8h-2v-3c0-.55-.45-1-1-1s-1 .45-1 1v3h-2v-6h2v1.1c.45-.65 1.2-1.1 2-1.1 1.65 0 3 1.35 3 3v3z" />
                             </svg>
                         </div>
                         <span class="badge-driver">Drivers y soporte</span>
@@ -546,11 +488,10 @@
                     <div class="channel-card card-whatsapp">
 
                         <div class="channel-icon-wrap icon-wa-bg">
-                            <svg class="svg-channel-icon svg-wa"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
+                            <svg class="svg-channel-icon svg-wa" viewBox="0 0 24 24" fill="currentColor"
                                 aria-hidden="true">
-                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
+                                <path
+                                    d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z" />
                             </svg>
                         </div>
 
@@ -563,17 +504,12 @@
                             <span class="contact-value">+506 6133-6757</span>
                         </div>
 
-                        <a
-                            href="https://wa.me/50661336757?text=Hola%20OctoERP%2C%20necesito%20soporte%20t%C3%A9cnico"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="btn-channel btn-wa-action">
+                        <a href="https://wa.me/50661336757?text=Hola%20OctoERP%2C%20necesito%20soporte%20t%C3%A9cnico"
+                            target="_blank" rel="noopener noreferrer" class="btn-channel btn-wa-action">
 
-                            <svg class="btn-svg-icon"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                aria-hidden="true">
-                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654z"/>
+                            <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path
+                                    d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654z" />
                             </svg>
 
                             Abrir WhatsApp
@@ -585,11 +521,10 @@
                     <div class="channel-card card-email">
 
                         <div class="channel-icon-wrap icon-email-bg">
-                            <svg class="svg-channel-icon svg-email"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
+                            <svg class="svg-channel-icon svg-email" viewBox="0 0 24 24" fill="currentColor"
                                 aria-hidden="true">
-                                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                                <path
+                                    d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
                             </svg>
                         </div>
 
@@ -602,15 +537,12 @@
                             <span class="contact-value">soporte@octoerp.com</span>
                         </div>
 
-                        <a
-                            href="mailto:soporte@octoerp.com?subject=Solicitud%20de%20Garant%C3%ADa%20RMA%20-%20OctoERP"
+                        <a href="mailto:soporte@octoerp.com?subject=Solicitud%20de%20Garant%C3%ADa%20RMA%20-%20OctoERP"
                             class="btn-channel btn-email-action">
 
-                            <svg class="btn-svg-icon"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                aria-hidden="true">
-                                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                            <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path
+                                    d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
                             </svg>
 
                             Enviar correo
@@ -786,4 +718,5 @@
     </script>
 
 </body>
+
 </html>
