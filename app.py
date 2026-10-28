@@ -206,41 +206,63 @@ def solo_administrador(funcion):
 
 def solo_vendedor_o_admin(funcion):
     @wraps(funcion)
-    def protegida(args, **kwargs):
+    def protegida(*args, **kwargs):
         autorizacion = request.headers.get("Authorization", "")
 
-        if not autorizacion.startswith("Bearer"):
-            return jsonify({"status": "error", "message": "Debes iniciar sesión"}), 401
+        if not autorizacion.startswith("Bearer "):
+            return jsonify({
+                "status": "error",
+                "message": "Debes iniciar sesión"
+            }), 401
 
-        token = autorizacion[7:]
+        token = autorizacion[7:].strip()
 
         try:
             datos = firmador.loads(token, max_age=3600)
         except SignatureExpired:
-            return jsonify({"status": "error", "message": "Sesion vencida"}), 401
+            return jsonify({
+                "status": "error",
+                "message": "Sesión vencida"
+            }), 401
         except BadSignature:
-            return jsonify({"status": "error", "message": "Firma del token invalida"}), 401
+            return jsonify({
+                "status": "error",
+                "message": "Firma del token inválida"
+            }), 401
 
         conexion = None
+
         try:
             conexion = db.obtener_conexion()
-            with conexion.cursor() as cursor:
-                cursor.execute("SELECT rol FROM usuarios WHERE id = %s", (datos["id"],))
+
+            with conexion.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(
+                    "SELECT rol FROM usuarios WHERE id = %s",
+                    (datos["id"],)
+                )
                 usuario = cursor.fetchone()
 
-                if not usuario or usuario["rol"] not in ("vendedor", "administrador"):
+                if not usuario or usuario["rol"] not in (
+                    "vendedor", "administrador"
+                ):
                     return jsonify({
                         "status": "error",
                         "message": "No tienes permisos para realizar esta acción"
                     }), 403
+
         except Exception:
             app.logger.exception("Error al verificar permisos")
-            return jsonify({"status": "error", "message": "No se pudieron verificar los permisos"}), 500
+            return jsonify({
+                "status": "error",
+                "message": "No se pudieron verificar los permisos"
+            }), 500
+
         finally:
             if conexion:
                 conexion.close()
 
-        return funcion(args, **kwargs)
+        return funcion(*args, **kwargs)
+
     return protegida
 
 # =========================================================
@@ -1445,6 +1467,90 @@ def pagina_restablecer():
         </html>
     """
 
+
+@app.route("/api/dashboard", methods=["GET"])
+@solo_vendedor_o_admin
+def api_dashboard():
+    conexion = None
+
+    try:
+        conexion = db.obtener_conexion()
+
+        with conexion.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute("""
+                SELECT
+                    id,
+                    nombre,
+                    precio,
+                    stock,
+                    categoria,
+                    stock_minimo AS "stockMinimo"
+                FROM productos
+                ORDER BY nombre ASC;
+            """)
+            productos = cursor.fetchall()
+
+            cursor.execute("""
+                SELECT
+                    v.id AS id,
+                    TO_CHAR(v.fecha, 'YYYY-MM-DD') AS fecha,
+                    dv.producto_id AS "productoId",
+                    p.nombre AS "productoNombre",
+                    dv.cantidad AS cantidad,
+                    dv.precio_unitario AS "precioUnitario",
+                    dv.subtotal AS subtotal
+                FROM ventas v
+                INNER JOIN detalle_ventas dv
+                    ON dv.venta_id = v.id
+                LEFT JOIN productos p
+                    ON p.id = dv.producto_id
+                ORDER BY v.fecha DESC, v.id DESC;
+            """)
+            detalles = cursor.fetchall()
+
+        productos_json = []
+        for p in productos:
+            producto = dict(p)
+            producto["id"] = int(producto["id"])
+            producto["precio"] = float(producto["precio"] or 0)
+            producto["stock"] = int(producto["stock"] or 0)
+            producto["stockMinimo"] = int(
+                producto.get("stockMinimo") or 0
+            )
+            productos_json.append(producto)
+
+        ventas_json = []
+        for d in detalles:
+            detalle = dict(d)
+            detalle["id"] = int(detalle["id"])
+            detalle["productoId"] = (
+                int(detalle["productoId"])
+                if detalle["productoId"] is not None
+                else None
+            )
+            detalle["cantidad"] = int(detalle["cantidad"] or 0)
+            detalle["precioUnitario"] = float(
+                detalle["precioUnitario"] or 0
+            )
+            detalle["subtotal"] = float(detalle["subtotal"] or 0)
+            ventas_json.append(detalle)
+
+        return jsonify({
+            "status": "ok",
+            "productos": productos_json,
+            "ventas": ventas_json
+        }), 200
+
+    except Exception:
+        app.logger.exception("Error al cargar el dashboard.")
+        return jsonify({
+            "status": "error",
+            "message": "No se pudieron consultar los datos del dashboard."
+        }), 500
+
+    finally:
+        if conexion:
+            conexion.close()
 
 @app.route("/api/restablecer-password", methods=["POST"])
 def restablecer_password():

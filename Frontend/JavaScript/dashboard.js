@@ -1,19 +1,13 @@
 "use strict";
 
-// ======================================================
-// CONFIGURACIÓN
-// ======================================================
-
 const API_URL = "https://octo-erp.onrender.com/api/dashboard";
-const API_BASE = "https://octo-erp.onrender.com/api";
 
-// VARIABLES GLOBALES
+// VARIABLES GLOBALES (Declaradas explícitamente para evitar ReferenceError)
 let productos = [];
 let ventas = [];
 
 const nombreMeses = [
-    "Enero", "Febrero", "Marzo", "Abril",
-    "Mayo", "Junio", "Julio", "Agosto",
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto",
     "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ];
 
@@ -23,11 +17,6 @@ const mensajeActualizacion = document.getElementById("ultima-actualizacion");
 
 let graficoVentas = null;
 let graficoProductos = null;
-let cargandoDatos = false;
-
-// ======================================================
-// CONFIGURACIÓN DE CHART.JS
-// ======================================================
 
 if (typeof Chart !== "undefined") {
     Chart.defaults.font.size = 14;
@@ -35,157 +24,27 @@ if (typeof Chart !== "undefined") {
     Chart.defaults.color = "#243247";
 }
 
-// ======================================================
-// FUNCIONES AUXILIARES
-// ======================================================
-
+// Formato para cantidad como colones
 function formatearMoneda(valor) {
     return new Intl.NumberFormat("es-CR", {
         style: "currency",
         currency: "CRC",
         maximumFractionDigits: 0
-    }).format(Number(valor) || 0);
+    }).format(valor);
 }
 
+// Extraer el mes de una fecha (Formato esperado: DD/MM/YYYY)
 function obtenerMes(fecha) {
-    if (!fecha) return 0;
-
-    const texto = String(fecha);
-    let mes = 0;
-
-    // Fecha ISO: YYYY-MM-DD
-    if (/^\d{4}-\d{2}-\d{2}/.test(texto)) {
-        mes = Number(texto.substring(5, 7));
-    } else {
-        // Fecha DD/MM/YYYY
-        const partes = texto.split("/");
-
-        if (partes.length >= 2) {
-            mes = Number(partes[1]);
-        }
-    }
-
-    return mes >= 1 && mes <= 12 ? mes : 0;
+    if (!fecha) return 1;
+    return Number(fecha.split("/")[1]);
 }
 
 function calcularIngreso(venta) {
-    if (
-        venta.subtotal !== null &&
-        venta.subtotal !== undefined &&
-        venta.subtotal !== ""
-    ) {
-        return Number(venta.subtotal) || 0;
-    }
-
-    return (
-        (Number(venta.cantidad) || 0) *
-        (Number(venta.precioUnitario) || 0)
-    );
+    return venta.cantidad * venta.precioUnitario;
 }
 
-function obtenerToken() {
-    return localStorage.getItem("token");
-}
-
-function obtenerCabeceras() {
-    const cabeceras = {
-        Accept: "application/json"
-    };
-
-    const token = obtenerToken();
-
-    if (token) {
-        cabeceras.Authorization = `Bearer ${token}`;
-    }
-
-    return cabeceras;
-}
-
-async function leerRespuesta(respuesta) {
-    const texto = await respuesta.text();
-
-    if (!texto) return {};
-
-    try {
-        return JSON.parse(texto);
-    } catch {
-        return { message: texto };
-    }
-}
-
-// Normaliza los nombres de campos que puede devolver Flask.
-function normalizarVenta(venta) {
-    return {
-        ...venta,
-
-        // ID de la venta, no ID del detalle.
-        id: Number(
-            venta.id ??
-            venta.venta_id ??
-            venta.id_venta
-        ),
-
-        // ID del producto asociado al detalle.
-        productoId: Number(
-            venta.productoId ??
-            venta.producto_id ??
-            venta.id_producto
-        ),
-
-        // Nombre del producto enviado por el backend.
-        productoNombre:
-            venta.productoNombre ??
-            venta.producto_nombre ??
-            venta.nombre_producto ??
-            venta.producto ??
-            "",
-
-        cantidad: Number(venta.cantidad) || 0,
-
-        precioUnitario: Number(
-            venta.precioUnitario ??
-            venta.precio_unitario ??
-            venta.precio
-        ) || 0,
-
-        subtotal:
-            venta.subtotal === null ||
-            venta.subtotal === undefined ||
-            venta.subtotal === ""
-                ? null
-                : Number(venta.subtotal),
-
-        fecha: venta.fecha ?? ""
-    };
-}
-
-function normalizarProducto(producto) {
-    return {
-        ...producto,
-
-        id: Number(producto.id),
-
-        nombre: producto.nombre ?? "Producto sin nombre",
-
-        precio: Number(producto.precio) || 0,
-
-        stock: Number(producto.stock) || 0,
-
-        stockMinimo: Number(
-            producto.stockMinimo ??
-            producto.stock_minimo ??
-            5
-        )
-    };
-}
-
-// ======================================================
-// FILTRAR VENTAS POR MES
-// ======================================================
-
+// Devolver todas las ventas o solo las del mes seleccionado
 function filtrarVentas() {
-    if (!selectorMes) return ventas;
-
     const mesSeleccionado = selectorMes.value;
 
     if (mesSeleccionado === "todos") {
@@ -197,86 +56,43 @@ function filtrarVentas() {
     );
 }
 
-// ======================================================
-// INDICADORES DEL DASHBOARD
-// ======================================================
-
+// Actualizar las tarjetas de indicadores
 function actualizarIndicadores(ventasFiltradas) {
-    const totalVentas = ventasFiltradas.reduce(
-        (total, venta) => total + calcularIngreso(venta),
-        0
-    );
+    const totalVentas = ventasFiltradas.reduce((total, venta) => total + calcularIngreso(venta), 0);
 
-    // Cada detalle puede representar un producto de una misma venta.
-    const idsVentas = new Set(
-        ventasFiltradas
-            .map(venta => venta.id)
-            .filter(
-                id => Number.isFinite(id) && id > 0
-            )
-    );
+    const cantidadVentas = new Set(
+        ventasFiltradas.map(venta => venta.id)
+    ).size;
 
-    const cantidadVentas = idsVentas.size;
-
-    const ticketPromedio = cantidadVentas > 0
-        ? totalVentas / cantidadVentas
-        : 0;
-
-    const stockBajo = productos.filter(
-        producto => producto.stock <= producto.stockMinimo
-    );
+    const ticketPromedio = cantidadVentas > 0 ? totalVentas / cantidadVentas : 0;
+    const stockBajo = productos.filter(producto => producto.stock <= producto.stockMinimo);
 
     const elTotal = document.getElementById("total-ventas");
     const elCantidad = document.getElementById("cantidad-ventas");
     const elTicket = document.getElementById("ticket-promedio");
     const elStockBajo = document.getElementById("cantidad-stock-bajo");
 
-    if (elTotal) {
-        elTotal.textContent = formatearMoneda(totalVentas);
-    }
-
-    if (elCantidad) {
-        elCantidad.textContent = cantidadVentas;
-    }
-
-    if (elTicket) {
-        elTicket.textContent = formatearMoneda(ticketPromedio);
-    }
-
-    if (elStockBajo) {
-        elStockBajo.textContent = stockBajo.length;
-    }
+    if (elTotal) elTotal.textContent = formatearMoneda(totalVentas);
+    if (elCantidad) elCantidad.textContent = cantidadVentas;
+    if (elTicket) elTicket.textContent = formatearMoneda(ticketPromedio);
+    if (elStockBajo) elStockBajo.textContent = stockBajo.length;
 }
 
-// ======================================================
-// GRÁFICO DE VENTAS
-// ======================================================
-
+// Crear gráfico mensual o actualizar el existente
 function actualizarGraficoVentas(ventasFiltradas) {
     const canvas = document.getElementById("grafico-ventas");
+    if (!canvas) return;
 
-    if (!canvas || typeof Chart === "undefined") return;
-
-    const mesSeleccionado = selectorMes
-        ? selectorMes.value
-        : "todos";
-
-    const mesesVisibles = mesSeleccionado === "todos"
-        ? nombreMeses.map((_, indice) => indice + 1)
-        : [Number(mesSeleccionado)];
+    const mesSeleccionado = selectorMes.value;
+    const mesesVisibles = mesSeleccionado === "todos" ? nombreMeses.map((_, indice) => indice + 1) : [Number(mesSeleccionado)];
 
     const ingresos = mesesVisibles.map(mes =>
         ventasFiltradas
             .filter(venta => obtenerMes(venta.fecha) === mes)
-            .reduce(
-                (total, venta) => total + calcularIngreso(venta),
-                0
-            )
+            .reduce((total, venta) => total + calcularIngreso(venta), 0)
     );
 
-    const etiquetas = mesesVisibles.map(
-        mes => nombreMeses[mes - 1]
-    );
+    const etiquetas = mesesVisibles.map(mes => nombreMeses[mes - 1]);
 
     if (graficoVentas) {
         graficoVentas.data.labels = etiquetas;
@@ -287,39 +103,31 @@ function actualizarGraficoVentas(ventasFiltradas) {
 
     graficoVentas = new Chart(canvas, {
         type: "bar",
-
         data: {
             labels: etiquetas,
-
-            datasets: [{
-                label: "Ingresos",
-                data: ingresos,
-                backgroundColor: "#245bd7",
-                borderRadius: 6
-            }]
+            datasets: [
+                {
+                    label: "Ingresos",
+                    data: ingresos,
+                    backgroundColor: "#245bd7",
+                    borderRadius: 6
+                }
+            ]
         },
-
         options: {
             responsive: true,
             maintainAspectRatio: false,
-
             plugins: {
-                legend: {
-                    display: false
-                },
-
+                legend: { display: false },
                 tooltip: {
                     callbacks: {
-                        label: contexto =>
-                            formatearMoneda(contexto.parsed.y)
+                        label: contexto => formatearMoneda(contexto.parsed.y)
                     }
                 }
             },
-
             scales: {
                 y: {
                     beginAtZero: true,
-
                     ticks: {
                         callback: valor => formatearMoneda(valor)
                     }
@@ -329,56 +137,39 @@ function actualizarGraficoVentas(ventasFiltradas) {
     });
 }
 
-// ======================================================
-// COLORES PARA EL GRÁFICO DE PRODUCTOS
-// ======================================================
-
 function generarColores(cantidad) {
-    return Array.from({ length: cantidad }, (_, indice) => {
-        const tono = (indice * 137.508) % 360;
-
+    return Array.from({length: cantidad}, (_, i) => {
+        const tono = (i * 137.508) % 360;
         return `hsl(${tono}, 75%, 55%)`;
     });
 }
 
-// ======================================================
-// GRÁFICO DE PRODUCTOS MÁS VENDIDOS
-// ======================================================
-
+// Ordena los productos por unidades vendidas
 function actualizarGraficoProductos(ventasFiltradas) {
     const canvas = document.getElementById("grafico-productos");
-
-    if (!canvas || typeof Chart === "undefined") return;
+    if (!canvas) return;
 
     const ranking = productos.map(producto => {
-        const unidades = ventasFiltradas
-            .filter(venta =>
-                Number.isFinite(venta.productoId) &&
-                venta.productoId === producto.id
-            )
-            .reduce(
-                (total, venta) => total + venta.cantidad,
-                0
-            );
+
+        const unidades = ventasFiltradas.filter(venta => Number(venta.productoId) === Number(producto.id)).reduce((total, ventas) => total + Number(ventas.cantidad || 0), 0);
 
         return {
-            id: producto.id,
             nombre: producto.nombre,
-            unidades
+            unidades: unidades
         };
     });
 
-    ranking.sort((a, b) => b.unidades - a.unidades);
+    ranking.sort((a, b) => b.unidades + a.unidades);
 
-    const etiquetas = ranking.map(producto => producto.nombre);
-    const cantidades = ranking.map(producto => producto.unidades);
+    const etiquetas = ranking.map(p => p.nombre);
+    const cantidades = ranking.map(p => p.unidades);
     const colores = generarColores(ranking.length);
 
     if (graficoProductos) {
         graficoProductos.data.labels = etiquetas;
         graficoProductos.data.datasets[0].data = cantidades;
-        graficoProductos.data.datasets[0].backgroundColor = colores;
-        graficoProductos.data.datasets[0].hoverBackgroundColor = colores;
+        graficoProductos.data.datasets[0].backgroundColor = [...colores];
+        graficoProductos.data.datasets[0].hoverBackgroundColor = [...colores];
         graficoProductos.update();
         return;
     }
@@ -388,10 +179,10 @@ function actualizarGraficoProductos(ventasFiltradas) {
 
         data: {
             labels: etiquetas,
-
             datasets: [{
                 label: "Unidades vendidas",
                 data: cantidades,
+
                 backgroundColor: colores,
                 hoverBackgroundColor: colores,
                 borderColor: "#ffffff",
@@ -407,14 +198,11 @@ function actualizarGraficoProductos(ventasFiltradas) {
 
             plugins: {
                 legend: {
-                    display: true,
-                    position: "bottom"
+                    display: false,
                 },
-
                 tooltip: {
                     callbacks: {
-                        label: contexto =>
-                            `${contexto.label}: ${contexto.parsed} unidades`
+                        label: contexto => `${contexto.label}: ${contexto.parsed} unidades`
                     }
                 }
             }
@@ -422,48 +210,35 @@ function actualizarGraficoProductos(ventasFiltradas) {
     });
 }
 
-// ======================================================
-// ALERTAS DE STOCK BAJO
-// ======================================================
-
+// Tabla de alertas con el inventario actual
 function actualizarAlertas() {
     const tabla = document.getElementById("tabla-stock");
-
     if (!tabla) return;
-
     tabla.replaceChildren();
 
     const productosStockBajo = productos
-        .filter(
-            producto => producto.stock <= producto.stockMinimo
-        )
+        .filter(producto => producto.stock <= producto.stockMinimo)
         .sort((a, b) => a.stock - b.stock);
 
     if (productosStockBajo.length === 0) {
         const fila = document.createElement("tr");
         const celda = document.createElement("td");
-
         celda.colSpan = 5;
         celda.className = "sin-alertas";
         celda.textContent = "No hay productos con stock bajo";
-
         fila.appendChild(celda);
         tabla.appendChild(fila);
-
         return;
     }
 
     productosStockBajo.forEach(producto => {
         const fila = document.createElement("tr");
-
-        const valores = [
+        [
             producto.nombre,
             producto.stock,
             producto.stockMinimo,
-            Math.max(0, producto.stockMinimo - producto.stock)
-        ];
-
-        valores.forEach(valor => {
+            producto.stockMinimo - producto.stock
+        ].forEach(valor => {
             const celda = document.createElement("td");
             celda.textContent = valor;
             fila.appendChild(celda);
@@ -471,16 +246,10 @@ function actualizarAlertas() {
 
         const celdaEstado = document.createElement("td");
         const estado = document.createElement("span");
+        const agotado = producto.stock === 0;
 
-        const agotado = producto.stock <= 0;
-
-        estado.className = agotado
-            ? "estado agotado"
-            : "estado stock-bajo";
-
-        estado.textContent = agotado
-            ? "Agotado"
-            : "Stock bajo";
+        estado.className = agotado ? "estado agotado" : "estado stock-bajo";
+        estado.textContent = agotado ? "Agotado" : "Stock bajo";
 
         celdaEstado.appendChild(estado);
         fila.appendChild(celdaEstado);
@@ -488,13 +257,8 @@ function actualizarAlertas() {
     });
 }
 
-// ======================================================
-// TABLA DE DETALLES DE VENTAS
-// ======================================================
-
 function actualizarTablaVentas(ventasFiltradas) {
     const tabla = document.getElementById("tabla-ventas");
-
     if (!tabla) return;
 
     tabla.replaceChildren();
@@ -508,46 +272,36 @@ function actualizarTablaVentas(ventasFiltradas) {
 
         fila.appendChild(celda);
         tabla.appendChild(fila);
-
         return;
     }
 
     ventasFiltradas.forEach(venta => {
-        const producto = productos.find(
-            p => p.id === venta.productoId
-        );
-
-        // Primero se usa el nombre guardado en el detalle de venta.
-        // Si no viene del servidor, se intenta buscar por ID.
-        const nombreProducto =
-            venta.productoNombre ||
-            producto?.nombre ||
-            "Producto no disponible";
+        const producto = productos.find(p => p.id === venta.productoId);
 
         const fila = document.createElement("tr");
 
         const valores = [
             venta.id,
-            venta.fecha || "Fecha no disponible",
-            nombreProducto,
+            venta.fecha,
+            producto ? producto.nombre : "Producto no disponible",
             venta.cantidad,
+
             formatearMoneda(venta.precioUnitario),
+
             formatearMoneda(calcularIngreso(venta))
         ];
 
         valores.forEach(valor => {
             const celda = document.createElement("td");
-            celda.textContent = valor ?? "";
+            celda.textContent = valor;
             fila.appendChild(celda);
         });
 
         const celdaAccion = document.createElement("td");
         const botonEliminar = document.createElement("button");
-
         botonEliminar.type = "button";
         botonEliminar.textContent = "Eliminar";
         botonEliminar.className = "btn-eliminar-venta";
-
         botonEliminar.addEventListener("click", () => {
             eliminarVenta(venta.id);
         });
@@ -558,122 +312,84 @@ function actualizarTablaVentas(ventasFiltradas) {
     });
 }
 
-// ======================================================
-// ELIMINAR UNA VENTA
-// ======================================================
-
 async function eliminarVenta(ventaId) {
-    if (!Number.isFinite(ventaId) || ventaId <= 0) {
-        window.alert("El identificador de la venta no es válido.");
-        return;
-    }
+    const confirmar = confirm(
+        `¿Estás seguro de que deseas eliminar la venta numero ${ventaId}? Esta acción no se puede deshacer`);
 
-    const confirmar = window.confirm(
-        `¿Estás seguro de que deseas eliminar la venta número ${ventaId}? Esta acción no se puede deshacer.`
-    );
+        if (!confirmar) return;
 
-    if (!confirmar) return;
+        const token = localStorage.getItem("token");
 
-    if (!obtenerToken()) {
-        window.alert(
-            "No se encontró el token de sesión. Inicia sesión nuevamente."
-        );
-        return;
-    }
-
-    try {
-        const respuesta = await fetch(
-            `${API_BASE}/ventas/${encodeURIComponent(ventaId)}`,
-            {
-                method: "DELETE",
-                headers: obtenerCabeceras()
-            }
-        );
-
-        const datos = await leerRespuesta(respuesta);
-
-        if (!respuesta.ok || datos.status === "error") {
-            throw new Error(
-                datos.message ||
-                datos.error ||
-                `Error HTTP ${respuesta.status}`
-            );
+        if (!token) {
+            alert("Tu sesión no tiene un token válido. Inicia sesión nuevamente")
+            return;
         }
 
-        window.alert("Venta eliminada correctamente.");
+        try {
+            const respuesta = await fetch(
+                `https://octo-erp.onrender.com/api/ventas/${ventaId}`,{
+                    method: "DELETE",
+                    headers:{
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+            const datos = await respuesta.json();
 
-        await cargarDatos();
+            console.log("Estado HTTPS:", respuesta.status);
+            console.log("Respuesta del servidor", datos);
 
-    } catch (error) {
-        console.error("Error al eliminar la venta:", error);
-
-        window.alert(
-            error.message || "Ocurrió un error al eliminar la venta."
-        );
-    }
+            if (!respuesta.ok || datos.status === "error"){
+                throw new Error(
+                    datos.message || "No se pudo eliminar la venta"
+                );
+            }
+            alert("Venta eliminada correctamente");
+            window.location.reload();
+        } catch (error) {
+            console.error("Error al eliminar la venta", error);
+            alert(error.message || "Ocurrió un erro al eliminar la venta");
+        }
 }
 
-// ======================================================
-// ACTUALIZAR TODO EL DASHBOARD
-// ======================================================
-
+// Ejecutar todas las actualizaciones del dashboard
 function actualizarDashboard() {
     const ventasFiltradas = filtrarVentas();
 
-    const aviso = document.getElementById("aviso-sin-ventas");
+    const elAviso = document.getElementById("aviso-sin-ventas");
+    if (elAviso) elAviso.hidden = ventasFiltradas.length > 0;
 
-    if (aviso) {
-        aviso.hidden = ventasFiltradas.length > 0;
-    }
+    const periodo = selectorMes.value === "todos"
+        ? "Todos los meses"
+        : nombreMeses[Number(selectorMes.value) - 1];
 
-    const periodo =
-        !selectorMes || selectorMes.value === "todos"
-            ? "Todos los meses"
-            : nombreMeses[Number(selectorMes.value) - 1];
+    const elTituloVentas = document.getElementById("titulo-ventas");
+    const elTituloProd = document.getElementById("titulo-productos");
 
-    const tituloVentas = document.getElementById("titulo-ventas");
-    const tituloProductos = document.getElementById("titulo-productos");
-
-    if (tituloVentas) {
-        tituloVentas.textContent =
-            `Ventas por mes - Ingresos (₡) - ${periodo}`;
-    }
-
-    if (tituloProductos) {
-        tituloProductos.textContent =
-            `Productos más vendidos - Unidades vendidas - ${periodo}`;
-    }
+    if (elTituloVentas) elTituloVentas.textContent = "Ventas por mes - Ingresos (₡) - " + periodo;
+    if (elTituloProd) elTituloProd.textContent = "Productos más vendidos - Unidades vendidas - " + periodo;
 
     actualizarIndicadores(ventasFiltradas);
     actualizarTablaVentas(ventasFiltradas);
     actualizarAlertas();
 
     if (typeof Chart === "undefined") {
-        if (mensajeActualizacion) {
-            mensajeActualizacion.textContent =
-                "No se pudo cargar Chart.js. Revisa tu conexión.";
-        }
-
+        if (mensajeActualizacion) mensajeActualizacion.textContent = "No se pudo cargar Chart.js. Revisa tu conexión.";
         return;
     }
 
     actualizarGraficoVentas(ventasFiltradas);
     actualizarGraficoProductos(ventasFiltradas);
 
-    if (mensajeActualizacion) {
-        mensajeActualizacion.textContent =
-            "Última actualización: " +
-            new Date().toLocaleTimeString("es-CR");
-    }
+    const hora = new Date().toLocaleTimeString("es-CR");
+    if (mensajeActualizacion) mensajeActualizacion.textContent = "Última actualización: " + hora;
 }
 
-// ======================================================
-// CARGAR DATOS DESDE FLASK / RENDER
-// ======================================================
+// Interacción del usuario y Fetch
+let cargandoDatos = false;
 
 async function cargarDatos() {
     if (cargandoDatos) return;
-
     cargandoDatos = true;
 
     if (mensajeActualizacion) {
@@ -681,55 +397,49 @@ async function cargarDatos() {
     }
 
     try {
-        if (!obtenerToken()) {
-            throw new Error(
-                "No se encontró el token de sesión. Inicia sesión nuevamente."
-            );
-        }
-
-        const respuesta = await fetch(API_URL, {
-            method: "GET",
-            headers: obtenerCabeceras()
-        });
-
-        const datos = await leerRespuesta(respuesta);
+        const respuesta = await fetch(API_URL);
 
         if (!respuesta.ok) {
-            if (respuesta.status === 401) {
-                throw new Error(
-                    "El servidor no autorizó la consulta. " +
-                    "Tu sesión puede haber vencido o el token no ser válido."
-                );
-            }
-
-            if (respuesta.status === 403) {
-                throw new Error(
-                    "No tienes permisos para consultar el dashboard."
-                );
-            }
-
-            throw new Error(
-                datos.message ||
-                datos.error ||
-                `Error HTTP ${respuesta.status}`
-            );
+            throw new Error("Error HTTP " + respuesta.status);
         }
 
+        const datos = await respuesta.json();
+
+        // Validar que el backend haya respondido correctamente.
         if (!Array.isArray(datos.productos)) {
-            throw new Error(
-                "La respuesta del servidor no contiene el arreglo 'productos'."
-            );
+            throw new Error("La respuesta no contiene el arreglo 'productos'");
         }
 
+        // Aceptar cualquiera de los dos nombres que podría devolver el backend.
         const datosVentas = Array.isArray(datos.ventas)
             ? datos.ventas
             : Array.isArray(datos.detalles)
                 ? datos.detalles
                 : [];
 
-        productos = datos.productos.map(normalizarProducto);
+        productos = datos.productos.map(producto => ({
+            ...producto,
+            id: Number(producto.id),
+            precio: Number(producto.precio) || 0,
+            stock: Number(producto.stock) || 0,
+            stockMinimo: Number(
+                producto.stockMinimo ?? producto.stock_minimo ?? 5
+            )
+        }));
 
-        ventas = datosVentas.map(normalizarVenta);
+        // Adaptar los nombres de los campos para el dashboard.
+        ventas = datosVentas.map(venta => ({
+            ...venta,
+            id: Number(venta.id),
+            productoId: Number(
+                venta.productoId ?? venta.producto_id
+            ),
+            cantidad: Number(venta.cantidad) || 0,
+            precioUnitario: Number(
+                venta.precioUnitario ?? venta.precio_unitario
+            ) || 0,
+            fecha: venta.fecha ?? ""
+        }));
 
         actualizarDashboard();
 
@@ -738,36 +448,23 @@ async function cargarDatos() {
 
         if (mensajeActualizacion) {
             mensajeActualizacion.textContent =
-                error.message ||
-                "No se pudieron actualizar los datos.";
+                "No se pudieron actualizar los datos. Revisa la conexión.";
         }
     } finally {
         cargandoDatos = false;
     }
 }
 
-// ======================================================
-// EVENTOS
-// ======================================================
+// Event Listeners
+if (selectorMes) selectorMes.addEventListener("change", actualizarDashboard);
+if (botonActualizar) botonActualizar.addEventListener("click", cargarDatos);
 
-if (selectorMes) {
-    selectorMes.addEventListener("change", actualizarDashboard);
-}
-
-if (botonActualizar) {
-    botonActualizar.addEventListener("click", cargarDatos);
-}
-
-// Actualización automática cada 15 segundos.
-// No consulta mientras la página está oculta.
+// Consultar cada 15 segundos
 setInterval(() => {
     if (document.visibilityState === "visible") {
         cargarDatos();
     }
 }, 15000);
 
-// ======================================================
-// CARGA INICIAL
-// ======================================================
-
+// Carga Inicial
 cargarDatos();
