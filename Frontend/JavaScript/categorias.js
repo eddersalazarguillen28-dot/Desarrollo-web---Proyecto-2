@@ -1,10 +1,6 @@
 
-const API_URL = "https://octo-erp.onrender.com/api/dashboard";
-const LOGO = "../Imagenes/Logo.png";
-
-
 //
-let productosGlobales = [];
+
 let carrito = cargarCarrito();
 
 const $ = (id) => document.getElementById(id);
