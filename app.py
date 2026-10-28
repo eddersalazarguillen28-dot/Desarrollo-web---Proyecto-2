@@ -513,7 +513,7 @@ def crear_producto():
         try:
             precio = Decimal(str(precio))
             stock = int(stock)
-            stock_minimo = int(datos.get("stockMinimo", datos.get("stock_minimo")))
+            stock_minimo = int(datos.get("stockMinimo", datos.get("stock_minimo", 5)))
 
             if precio_oferta is not None and str(precio_oferta).strip() != "":
                 precio_oferta = Decimal(str(precio_oferta))
@@ -628,7 +628,7 @@ def actualizar_producto(p_id):
         try:
             precio = Decimal(str(precio))
             stock = int(stock)
-            stock_minimo = int(stock_minimo)
+            stock_minimo = int(datos.get("stockMinimo", datos.get("stock_minimo", 5)))
 
             if precio_oferta is not None and str(precio_oferta).strip():
                 precio_oferta = Decimal(str(precio_oferta))
