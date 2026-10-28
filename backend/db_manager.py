@@ -466,30 +466,31 @@ def actualizar_producto(
     finally:
         conn.close()
 
+
 def agregar_stock_productos(producto_id, cantidad):
-    """Agregar unidades al stock existente de un producto"""
+    """Agrega unidades al stock de un producto existente."""
+    _validar_entero_positivo(producto_id, "producto_id")
+    _validar_entero_positivo(cantidad, "cantidad")
 
-    _validar_entero_positivo(producto_id, "producto_id") 
-    cantidad =  _validar_entero_positivo(cantidad, "cantidad")
-
-    conn= obtener_conexion()
+    conn = obtener_conexion()
 
     try:
         with conn.cursor() as cursor:
             cursor.execute("""
-                UPDATE productos 
+                UPDATE productos
                 SET stock = stock + %s
                 WHERE id = %s
-                RETURNING id, nombrem stock;
-                """, (cantidad, producto_id))
-            
-            producto  = cursor.fetchone()
+                RETURNING id, nombre, stock;
+            """, (cantidad, producto_id))
+
+            producto = cursor.fetchone()
 
             if producto is None:
-                conn.rollback()
+                conn.commit()
                 return None
+
         conn.commit()
-        return producto 
+        return dict(producto)
 
     except Exception:
         conn.rollback()
@@ -498,8 +499,9 @@ def agregar_stock_productos(producto_id, cantidad):
     finally:
         conn.close()
 
+
 def eliminar_producto(producto_id):
-    """Elimina productos que no tengan detalles de ventas."""
+    """Elimina productos únicamente si no tienen ventas asociadas."""
     _validar_entero_positivo(producto_id, "producto_id")
 
     conn = obtener_conexion()
@@ -518,9 +520,17 @@ def eliminar_producto(producto_id):
                 return False
 
             cursor.execute("""
-                DELETE FROM detalle_ventas
-                WHERE producto_id = %s;
-                """, (producto_id,))
+                SELECT 1
+                FROM detalle_ventas
+                WHERE producto_id = %s
+                LIMIT 1;
+            """, (producto_id,))
+
+            if cursor.fetchone() is not None:
+                raise ValueError(
+                    "No se puede eliminar este producto porque tiene "
+                    "ventas asociadas. Puedes dejar su stock en cero."
+                )
 
             cursor.execute("""
                 DELETE FROM productos
@@ -536,6 +546,7 @@ def eliminar_producto(producto_id):
 
     finally:
         conn.close()
+
 
 # =========================================================
 # CLIENTES
