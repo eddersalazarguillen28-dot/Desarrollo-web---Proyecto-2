@@ -772,70 +772,104 @@ def borrar_cliente(cliente_id):
         }), 500
             
 
-# =========================================================
-# DASHBOARD Y REPORTES
-# =========================================================
-
-@app.route("/api/dashboard", methods=["GET"])
-@solo_administrador
-def dashboard():
-    try:
-        productos = db.obtener_productos()
-        detalles = db.obtener_detalles_dashboard()
-
-        detalles_json = []
-        for detalle in detalles:
-            detalle_dict = dict(detalle)
-            for clave, valor in detalle_dict.items():
-                if isinstance(valor, Decimal):
-                    detalle_dict[clave] = float(valor)
-            detalles_json.append(detalle_dict)
-
-        return jsonify({
-            "status": "ok",
-            "productos": productos,
-            "detalles": detalles_json
-        }), 200
-    except Exception:
-        app.logger.exception("Error al cargar el dashboard.")
-        return jsonify({"status": "error", "message": "No se pudo cargar el dashboard."}), 500
-
 
 @app.route("/api/reportes/ventas", methods=["GET"])
 def api_reportes_ventas():
     conexion = None
+
     try:
         conexion = db.obtener_conexion()
+
         with conexion.cursor(cursor_factory=RealDictCursor) as cursor:
             cursor.execute("""
-                SELECT 
+                SELECT
                     v.id,
                     TO_CHAR(v.fecha, 'YYYY-MM-DD') AS fecha,
                     COALESCE(c.nombre, 'Cliente Mostrador') AS cliente,
                     v.total AS monto_total,
-                    'Completado' AS estado
+                    'Completado' AS estado,
+                    COALESCE(
+                        json_agg(
+                            json_build_object(
+                                'producto_id', p.id,
+                                'nombre', p.nombre,
+                                'cantidad', dv.cantidad,
+                                'precio_unitario', dv.precio_unitario,
+                                'subtotal', dv.subtotal
+                            )
+                            ORDER BY p.nombre
+                        ) FILTER (WHERE dv.id IS NOT NULL),
+                        '[]'::json
+                    ) AS detalles
                 FROM ventas v
-                LEFT JOIN clientes c ON v.cliente_id = c.id
-                ORDER BY v.fecha DESC, v.id DESC;
+                LEFT JOIN clientes c
+                    ON v.cliente_id = c.id
+                LEFT JOIN detalle_ventas dv
+                    ON dv.venta_id = v.id
+                LEFT JOIN productos p
+                    ON p.id = dv.producto_id
+                GROUP BY
+                    v.id,
+                    v.fecha,
+                    v.total,
+                    c.nombre
+                ORDER BY
+                    v.fecha DESC,
+                    v.id DESC;
             """)
+
             ventas = cursor.fetchall()
 
-            for v in ventas:
-                if isinstance(v.get("monto_total"), Decimal):
-                    v["monto_total"] = float(v["monto_total"])
-                v["referencia"] = f"VNT-{v['id']:03d}" if isinstance(v['id'], int) else f"VNT-{v['id']}"
-                v["descripcion"] = f"Venta de Hardware / Factura #{v['id']}"
+            ventas_json = []
+
+            for venta in ventas:
+                venta = dict(venta)
+
+                # Convertir Decimal a float para JSON.
+                if isinstance(venta.get("monto_total"), Decimal):
+                    venta["monto_total"] = float(venta["monto_total"])
+
+                # PostgreSQL devuelve las cantidades monetarias como Decimal.
+                detalles = venta.get("detalles") or []
+
+                for detalle in detalles:
+                    if detalle.get("precio_unitario") is not None:
+                        detalle["precio_unitario"] = float(
+                            detalle["precio_unitario"]
+                        )
+
+                    if detalle.get("subtotal") is not None:
+                        detalle["subtotal"] = float(
+                            detalle["subtotal"]
+                        )
+
+                # Compatibilidad con el frontend actual.
+                venta["referencia"] = f"VNT-{venta['id']:03d}"
+                venta["descripcion"] = ", ".join(
+                    f"{detalle['nombre']} × {detalle['cantidad']}"
+                    for detalle in detalles
+                    if detalle.get("nombre")
+                ) or "Sin detalle de productos"
+
+                venta["detalles"] = detalles
+
+                ventas_json.append(venta)
 
         return jsonify({
             "status": "ok",
-            "ventas": [dict(v) for v in ventas]
+            "ventas": ventas_json
         }), 200
+
     except Exception:
-        app.logger.exception("Error al obtener reporte de ventas.")
+        app.logger.exception(
+            "Error al obtener los reportes de ventas."
+        )
+
         return jsonify({
             "status": "error",
             "message": "No se pudo cargar el reporte de ventas."
         }), 500
+
     finally:
         if conexion:
             conexion.close()

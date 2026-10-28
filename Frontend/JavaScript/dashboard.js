@@ -1,4 +1,3 @@
-
 "use strict";
 
 // ======================================================
@@ -26,7 +25,10 @@ let graficoVentas = null;
 let graficoProductos = null;
 let cargandoDatos = false;
 
-// Configuración de Chart.js
+// ======================================================
+// CONFIGURACIÓN DE CHART.JS
+// ======================================================
+
 if (typeof Chart !== "undefined") {
     Chart.defaults.font.size = 14;
     Chart.defaults.font.family = "Arial";
@@ -48,48 +50,52 @@ function formatearMoneda(valor) {
 function obtenerMes(fecha) {
     if (!fecha) return 0;
 
-    // Admite DD/MM/YYYY y fechas ISO YYYY-MM-DD.
     const texto = String(fecha);
+    let mes = 0;
 
-    let mes;
-
+    // Fecha ISO: YYYY-MM-DD
     if (/^\d{4}-\d{2}-\d{2}/.test(texto)) {
         mes = Number(texto.substring(5, 7));
     } else {
+        // Fecha DD/MM/YYYY
         const partes = texto.split("/");
-        mes = partes.length >= 2 ? Number(partes[1]) : 0;
+
+        if (partes.length >= 2) {
+            mes = Number(partes[1]);
+        }
     }
 
     return mes >= 1 && mes <= 12 ? mes : 0;
 }
 
 function calcularIngreso(venta) {
-    if (venta.subtotal !== null &&
+    if (
+        venta.subtotal !== null &&
         venta.subtotal !== undefined &&
-        venta.subtotal !== "") {
+        venta.subtotal !== ""
+    ) {
         return Number(venta.subtotal) || 0;
     }
 
-    return (Number(venta.cantidad) || 0) *
-           (Number(venta.precioUnitario) || 0);
+    return (
+        (Number(venta.cantidad) || 0) *
+        (Number(venta.precioUnitario) || 0)
+    );
 }
+
 function obtenerToken() {
     return localStorage.getItem("token");
 }
 
-function obtenerCabeceras(incluirJson = false) {
+function obtenerCabeceras() {
     const cabeceras = {
-        "Accept": "application/json"
+        Accept: "application/json"
     };
 
     const token = obtenerToken();
 
     if (token) {
         cabeceras.Authorization = `Bearer ${token}`;
-    }
-
-    if (incluirJson) {
-        cabeceras["Content-Type"] = "application/json";
     }
 
     return cabeceras;
@@ -105,6 +111,72 @@ async function leerRespuesta(respuesta) {
     } catch {
         return { message: texto };
     }
+}
+
+// Normaliza los nombres de campos que puede devolver Flask.
+function normalizarVenta(venta) {
+    return {
+        ...venta,
+
+        // ID de la venta, no ID del detalle.
+        id: Number(
+            venta.id ??
+            venta.venta_id ??
+            venta.id_venta
+        ),
+
+        // ID del producto asociado al detalle.
+        productoId: Number(
+            venta.productoId ??
+            venta.producto_id ??
+            venta.id_producto
+        ),
+
+        // Nombre del producto enviado por el backend.
+        productoNombre:
+            venta.productoNombre ??
+            venta.producto_nombre ??
+            venta.nombre_producto ??
+            venta.producto ??
+            "",
+
+        cantidad: Number(venta.cantidad) || 0,
+
+        precioUnitario: Number(
+            venta.precioUnitario ??
+            venta.precio_unitario ??
+            venta.precio
+        ) || 0,
+
+        subtotal:
+            venta.subtotal === null ||
+            venta.subtotal === undefined ||
+            venta.subtotal === ""
+                ? null
+                : Number(venta.subtotal),
+
+        fecha: venta.fecha ?? ""
+    };
+}
+
+function normalizarProducto(producto) {
+    return {
+        ...producto,
+
+        id: Number(producto.id),
+
+        nombre: producto.nombre ?? "Producto sin nombre",
+
+        precio: Number(producto.precio) || 0,
+
+        stock: Number(producto.stock) || 0,
+
+        stockMinimo: Number(
+            producto.stockMinimo ??
+            producto.stock_minimo ??
+            5
+        )
+    };
 }
 
 // ======================================================
@@ -135,14 +207,17 @@ function actualizarIndicadores(ventasFiltradas) {
         0
     );
 
-    // Cada venta puede contener varios productos.
+    // Cada detalle puede representar un producto de una misma venta.
     const idsVentas = new Set(
         ventasFiltradas
             .map(venta => venta.id)
-            .filter(id => id !== null && id !== undefined && !Number.isNaN(id))
+            .filter(
+                id => Number.isFinite(id) && id > 0
+            )
     );
 
     const cantidadVentas = idsVentas.size;
+
     const ticketPromedio = cantidadVentas > 0
         ? totalVentas / cantidadVentas
         : 0;
@@ -156,10 +231,21 @@ function actualizarIndicadores(ventasFiltradas) {
     const elTicket = document.getElementById("ticket-promedio");
     const elStockBajo = document.getElementById("cantidad-stock-bajo");
 
-    if (elTotal) elTotal.textContent = formatearMoneda(totalVentas);
-    if (elCantidad) elCantidad.textContent = cantidadVentas;
-    if (elTicket) elTicket.textContent = formatearMoneda(ticketPromedio);
-    if (elStockBajo) elStockBajo.textContent = stockBajo.length;
+    if (elTotal) {
+        elTotal.textContent = formatearMoneda(totalVentas);
+    }
+
+    if (elCantidad) {
+        elCantidad.textContent = cantidadVentas;
+    }
+
+    if (elTicket) {
+        elTicket.textContent = formatearMoneda(ticketPromedio);
+    }
+
+    if (elStockBajo) {
+        elStockBajo.textContent = stockBajo.length;
+    }
 }
 
 // ======================================================
@@ -182,7 +268,10 @@ function actualizarGraficoVentas(ventasFiltradas) {
     const ingresos = mesesVisibles.map(mes =>
         ventasFiltradas
             .filter(venta => obtenerMes(venta.fecha) === mes)
-            .reduce((total, venta) => total + calcularIngreso(venta), 0)
+            .reduce(
+                (total, venta) => total + calcularIngreso(venta),
+                0
+            )
     );
 
     const etiquetas = mesesVisibles.map(
@@ -198,8 +287,10 @@ function actualizarGraficoVentas(ventasFiltradas) {
 
     graficoVentas = new Chart(canvas, {
         type: "bar",
+
         data: {
             labels: etiquetas,
+
             datasets: [{
                 label: "Ingresos",
                 data: ingresos,
@@ -207,13 +298,16 @@ function actualizarGraficoVentas(ventasFiltradas) {
                 borderRadius: 6
             }]
         },
+
         options: {
             responsive: true,
             maintainAspectRatio: false,
+
             plugins: {
                 legend: {
                     display: false
                 },
+
                 tooltip: {
                     callbacks: {
                         label: contexto =>
@@ -221,9 +315,11 @@ function actualizarGraficoVentas(ventasFiltradas) {
                     }
                 }
             },
+
             scales: {
                 y: {
                     beginAtZero: true,
+
                     ticks: {
                         callback: valor => formatearMoneda(valor)
                     }
@@ -240,6 +336,7 @@ function actualizarGraficoVentas(ventasFiltradas) {
 function generarColores(cantidad) {
     return Array.from({ length: cantidad }, (_, indice) => {
         const tono = (indice * 137.508) % 360;
+
         return `hsl(${tono}, 75%, 55%)`;
     });
 }
@@ -256,10 +353,11 @@ function actualizarGraficoProductos(ventasFiltradas) {
     const ranking = productos.map(producto => {
         const unidades = ventasFiltradas
             .filter(venta =>
-                Number(venta.productoId) === Number(producto.id)
+                Number.isFinite(venta.productoId) &&
+                venta.productoId === producto.id
             )
             .reduce(
-                (total, venta) => total + (Number(venta.cantidad) || 0),
+                (total, venta) => total + venta.cantidad,
                 0
             );
 
@@ -270,7 +368,6 @@ function actualizarGraficoProductos(ventasFiltradas) {
         };
     });
 
-    // Orden descendente: más vendidos primero.
     ranking.sort((a, b) => b.unidades - a.unidades);
 
     const etiquetas = ranking.map(producto => producto.nombre);
@@ -288,8 +385,10 @@ function actualizarGraficoProductos(ventasFiltradas) {
 
     graficoProductos = new Chart(canvas, {
         type: "doughnut",
+
         data: {
             labels: etiquetas,
+
             datasets: [{
                 label: "Unidades vendidas",
                 data: cantidades,
@@ -300,15 +399,18 @@ function actualizarGraficoProductos(ventasFiltradas) {
                 hoverOffset: 6
             }]
         },
+
         options: {
             responsive: true,
             maintainAspectRatio: false,
             cutout: "60%",
+
             plugins: {
                 legend: {
                     display: true,
                     position: "bottom"
                 },
+
                 tooltip: {
                     callbacks: {
                         label: contexto =>
@@ -332,7 +434,9 @@ function actualizarAlertas() {
     tabla.replaceChildren();
 
     const productosStockBajo = productos
-        .filter(producto => producto.stock <= producto.stockMinimo)
+        .filter(
+            producto => producto.stock <= producto.stockMinimo
+        )
         .sort((a, b) => a.stock - b.stock);
 
     if (productosStockBajo.length === 0) {
@@ -345,6 +449,7 @@ function actualizarAlertas() {
 
         fila.appendChild(celda);
         tabla.appendChild(fila);
+
         return;
     }
 
@@ -366,6 +471,7 @@ function actualizarAlertas() {
 
         const celdaEstado = document.createElement("td");
         const estado = document.createElement("span");
+
         const agotado = producto.stock <= 0;
 
         estado.className = agotado
@@ -402,20 +508,28 @@ function actualizarTablaVentas(ventasFiltradas) {
 
         fila.appendChild(celda);
         tabla.appendChild(fila);
+
         return;
     }
 
     ventasFiltradas.forEach(venta => {
         const producto = productos.find(
-            p => Number(p.id) === Number(venta.productoId)
+            p => p.id === venta.productoId
         );
+
+        // Primero se usa el nombre guardado en el detalle de venta.
+        // Si no viene del servidor, se intenta buscar por ID.
+        const nombreProducto =
+            venta.productoNombre ||
+            producto?.nombre ||
+            "Producto no disponible";
 
         const fila = document.createElement("tr");
 
         const valores = [
             venta.id,
             venta.fecha || "Fecha no disponible",
-            producto ? producto.nombre : "Producto no disponible",
+            nombreProducto,
             venta.cantidad,
             formatearMoneda(venta.precioUnitario),
             formatearMoneda(calcularIngreso(venta))
@@ -449,15 +563,18 @@ function actualizarTablaVentas(ventasFiltradas) {
 // ======================================================
 
 async function eliminarVenta(ventaId) {
+    if (!Number.isFinite(ventaId) || ventaId <= 0) {
+        window.alert("El identificador de la venta no es válido.");
+        return;
+    }
+
     const confirmar = window.confirm(
         `¿Estás seguro de que deseas eliminar la venta número ${ventaId}? Esta acción no se puede deshacer.`
     );
 
     if (!confirmar) return;
 
-    const token = obtenerToken();
-
-    if (!token) {
+    if (!obtenerToken()) {
         window.alert(
             "No se encontró el token de sesión. Inicia sesión nuevamente."
         );
@@ -484,10 +601,12 @@ async function eliminarVenta(ventaId) {
         }
 
         window.alert("Venta eliminada correctamente.");
+
         await cargarDatos();
 
     } catch (error) {
         console.error("Error al eliminar la venta:", error);
+
         window.alert(
             error.message || "Ocurrió un error al eliminar la venta."
         );
@@ -507,9 +626,10 @@ function actualizarDashboard() {
         aviso.hidden = ventasFiltradas.length > 0;
     }
 
-    const periodo = !selectorMes || selectorMes.value === "todos"
-        ? "Todos los meses"
-        : nombreMeses[Number(selectorMes.value) - 1];
+    const periodo =
+        !selectorMes || selectorMes.value === "todos"
+            ? "Todos los meses"
+            : nombreMeses[Number(selectorMes.value) - 1];
 
     const tituloVentas = document.getElementById("titulo-ventas");
     const tituloProductos = document.getElementById("titulo-productos");
@@ -533,6 +653,7 @@ function actualizarDashboard() {
             mensajeActualizacion.textContent =
                 "No se pudo cargar Chart.js. Revisa tu conexión.";
         }
+
         return;
     }
 
@@ -560,9 +681,7 @@ async function cargarDatos() {
     }
 
     try {
-        const token = obtenerToken();
-
-        if (!token) {
+        if (!obtenerToken()) {
             throw new Error(
                 "No se encontró el token de sesión. Inicia sesión nuevamente."
             );
@@ -580,6 +699,12 @@ async function cargarDatos() {
                 throw new Error(
                     "El servidor no autorizó la consulta. " +
                     "Tu sesión puede haber vencido o el token no ser válido."
+                );
+            }
+
+            if (respuesta.status === 403) {
+                throw new Error(
+                    "No tienes permisos para consultar el dashboard."
                 );
             }
 
@@ -602,33 +727,9 @@ async function cargarDatos() {
                 ? datos.detalles
                 : [];
 
-        productos = datos.productos.map(producto => ({
-            ...producto,
-            id: Number(producto.id),
-            nombre: producto.nombre ?? "Producto sin nombre",
-            precio: Number(producto.precio) || 0,
-            stock: Number(producto.stock) || 0,
-            stockMinimo: Number(
-                producto.stockMinimo ??
-                producto.stock_minimo ??
-                5
-            )
-        }));
+        productos = datos.productos.map(normalizarProducto);
 
-        ventas = datosVentas.map(venta => ({
-            ...venta,
-            id: Number(venta.id),
-            productoId: Number(
-                venta.productoId ??
-                venta.producto_id
-            ),
-            cantidad: Number(venta.cantidad) || 0,
-            precioUnitario: Number(
-                venta.precioUnitario ??
-                venta.precio_unitario
-            ) || 0,
-            fecha: venta.fecha ?? ""
-        }));
+        ventas = datosVentas.map(normalizarVenta);
 
         actualizarDashboard();
 
@@ -658,7 +759,7 @@ if (botonActualizar) {
 }
 
 // Actualización automática cada 15 segundos.
-// No se consulta si la página está oculta.
+// No consulta mientras la página está oculta.
 setInterval(() => {
     if (document.visibilityState === "visible") {
         cargarDatos();
@@ -670,3 +771,4 @@ setInterval(() => {
 // ======================================================
 
 cargarDatos();
+```
