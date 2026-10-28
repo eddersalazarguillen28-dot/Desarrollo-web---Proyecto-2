@@ -64,10 +64,15 @@ function obtenerMes(fecha) {
 }
 
 function calcularIngreso(venta) {
+    if (venta.subtotal !== null &&
+        venta.subtotal !== undefined &&
+        venta.subtotal !== "") {
+        return Number(venta.subtotal) || 0;
+    }
+
     return (Number(venta.cantidad) || 0) *
            (Number(venta.precioUnitario) || 0);
 }
-
 function obtenerToken() {
     return localStorage.getItem("token");
 }
