@@ -1,4 +1,4 @@
-const API_URL = "https://octo-erp.onrender.com/api/dashboard";
+const API_URL = "https://octo-erp.onrender.com/api/productos";
 const LOGO = "../Imagenes/Logo.png";
 
 //
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded',() =>{
     actualizarCarritoUI();
     initSesionYPerfilDropdown();
     initModalDetalle();
-    initBuscaadorProductos();
+    initBuscadorProductos();
 
 
 })
@@ -178,21 +178,60 @@ async function cargarProductosDeCategoria(){
     gridContainer.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);">Cargando productos...</p>`;
 
     try{
-        const respuesta = await fetch(API_URL);
+        ///////////////////////////////////////////
+        const token = localStorage.getItem("token");
+        const headers = {"Content-type": "application/json"};
+
+        if(token){
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const respuesta = await fetch(API_URL, {
+            method:"GET",
+            headers:headers
+        });
+
+        /////////////////////////////////////////////////////
         const texto = await respuesta.text();
         let datos = texto ? JSON.parse(texto) : [];
-        const productos = Array.isArray(datos) ? datos : (datos.productos || []);
+
+        console.log("Datos recibidos de la API",datos)
+
+        const productos = Array.isArray(datos) ? datos : (datos.productos|| datos.inventario || datos.data||datos.items || []);
 
         //Guardar globalmente para las consultas del carrito
-        productosGlobales = productos.map((p,i) => ({
-            id:p.id ?? p.id_producto ?? `p${i}`,
-            nombre:p.nombre ?? "",
-            precio:Number(p.precio) || 0,
-            stock:Number(p.stock ?? p.cantidad ?? 0),
-            categoria:p.categoria ? p.categoria.trim() : "General",
-            descripcion:p.descripcion ?? p.detalle ?? "",
-            imagen:p.imagen_url ?? p.imagen ?? LOGO
-        }))
+        productosGlobales = productos.map((p,i) => {
+            const precioOriginal = Number(p.precio) || 0;
+            //Detecta el precio
+            const enDescuento = Boolean(p.en_descuento || p.descuento || p.porcentaje_descuento > 0);
+            const porcentajeDesc = Number(p.porcentaje_descuento || p.descuento_porcentaje || 0);
+
+            let precioFinal = precioOriginal;
+            if (enDescuento && porcentajeDesc > 0){
+                precioFinal = precioOriginal-(precioOriginal * (porcentajeDesc/100));
+            }else if(p.precio_oferta || p.precio_descuento){
+                precioFinal = Number(p.precio_oferta || p.precio_descuento);
+            }
+
+            return{
+
+                id:p.id ?? p.id_producto ?? `p${i}`,
+                nombre:p.nombre ?? "",
+                precioOriginal:precioOriginal,
+                precio:precioFinal,
+                enDescuento:enDescuento || (precioFinal < precioOriginal),
+                porcentajeDesc:porcentajeDesc,
+                stock:Number(p.stock ?? p.cantidad ?? 0),
+                categoria:p.categoria ? p.categoria.trim() : "General",
+                descripcion:p.descripcion ?? p.detalle ?? "",
+                imagen:p.imagen_url ?? p.imagen ?? LOGO
+
+            };
+
+
+
+            
+        });
 
         
 
@@ -217,6 +256,7 @@ async function cargarProductosDeCategoria(){
     
 }
 
+
 function renderizarProductos(productosAMostrar){
     const gridContainer = document.getElementById("grid-productos-categoria");
     if(!gridContainer)return;
@@ -234,16 +274,41 @@ function renderizarProductos(productosAMostrar){
     productosAMostrar.forEach((prod) => {
             const agotado = prod.stock === 0;
             const poco = prod.stock > 0 && prod.stock <=5;
-            const tag = agotado ? "Agotado" : poco ? `Quedan ${prod.stock}`:"Disponible";
+
+            //Determinar etiqueta
+
+            let tagHTML = "";
+            if(agotado) {
+                tagHTML = `<span style="position:absolute;top:5px;right:5px;font-size:10px;padding:3px 8px;background:#e74c3c;color:#fff;border-radius:4px;font-weight:700;">Agotado</span>`;
+            }else if(prod.enDescuento){
+                tagHTML= `<span style="position:absolute;top:5px;right:5px;font-size:10px;padding:3px 8px;background:#e67e22;color:#fff;border-radius:4px;font-weight:700;">En descuento</span>`;
+            }else if (poco){
+                tagHTML = `<span style="position:absolute;top:5px;right:5px;font-size:10px;padding:3px 8px;background:var(--primary-purple);color:#fff;border-radius:4px;font-weight:700;">Quedan ${prod.stock}</span>`;
+            }else{
+                tagHTML = `<span style="position:absolute;top:5px;right:5px;font-size:10px;padding:3px 8px;background:var(--primary-purple);color:#fff;border-radius:4px;font-weight:700;">Disponible</span>`;
+            }
 
             const imagenUrl = prod.imagen || LOGO;
-            const precioFormateado = Number(prod.precio || 0).toLocaleString();
             const stock = prod.stock;
+
+            //Descuento antes y ahora
+            let precioHTML ="";
+            if (prod.enDescuento){
+                precioHTML = `
+                <div class="precio-descuento-container" style="display:flex;flex-direction:column;">
+                    <span style="font-size:11px;color:var(--text-muted);text-decoration:line-through;">Antes:₡${prod.precioOriginal.toLocaleString()}</span>
+                    <span class="precio-prod-item" style="color:var(--price-green);font-weight:bold;">Ahora: ₡${prod.precio.toLocaleString()}</span>
+                </div>
+                
+                `;
+            }else{
+                precioHTML = `<span class="precio-prod-item">₡${prod.precio.toLocaleString()}</span>`;
+            }
 
             const cardHTML=`
                 <article class="card-producto-cat ${agotado?"agotado":""}" data-id-card="${prod.id}" style="cursor:pointer;">
                     <div class="box-imagen-prod" style="position:relative">
-                        <span style="position:absolute;top:5px;right:5px;font-size:10px;padding:3px 8px;background:var(--primary-purple);color:#fff;border-radius:4px;font-weight:700;">${tag}</span>
+                        ${tagHTML}
                         <img src="${imagenUrl}" alt="${prod.nombre}" class="img-producto-item" loading="lazy" onerror="this.src = '../Imagenes/Logo.png'">
                     </div>
 
@@ -251,7 +316,7 @@ function renderizarProductos(productosAMostrar){
                         <h3 class="titulo-prod-item">${prod.nombre}</h3>
                         <p class="stock-prod-item">Stock: ${stock} disp.</p>
                         <div class="footer-card-prod">
-                            <span class="precio-prod-item">₡${precioFormateado}</span>
+                            ${precioHTML}
                             <button class="btn-add-carrito-cat" data-add="${prod.id}" ${agotado ? "disabled" : ""}>${agotado ? "Agotado" : "Agregar"}</button>
                         </div>
                     </div>
@@ -281,7 +346,7 @@ function renderizarProductos(productosAMostrar){
 
 }
 
-function initBuscaadorProductos(){
+function initBuscadorProductos(){
     const inputBuscador = $("input-buscador-prod");
     if(!inputBuscador) return;
 
@@ -318,7 +383,18 @@ function abrirModalDetalle(id){
         descElem.textContent = "Sin descripción disponible";
     }
 
-    $("modal-prod-precio").textContent = fmt(producto.precio);
+    //Descuento
+    const precioModalElem = $("modal-prod-precio");
+    if (producto.enDescuento){
+        precioModalElem.innerHTML = `
+            <span style="font-size:13px;color:var(--text-muted);text-decoration:line-through;display:block;">Antes: ${producto.precioOriginal.toLocaleString()}</span>
+            <span style = "color:#e74c3c;font-weight:bold;">Ahora: ${producto.precio.toLocaleString()}</span>
+        
+        `;
+    }else{
+        precioModalElem.textContent = fmt(producto.precio);
+    }
+
 
     const btnModalAdd = $("modal-btn-add-carrito");
     if(btnModalAdd){

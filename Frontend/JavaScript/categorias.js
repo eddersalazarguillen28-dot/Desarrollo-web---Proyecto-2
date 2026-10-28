@@ -1,9 +1,6 @@
-const API_URL = "https://octo-erp.onrender.com/api/dashboard";
-const LOGO = "../Imagenes/Logo.png";
-
 
 //
-let productosGlobales = [];
+
 let carrito = cargarCarrito();
 
 const $ = (id) => document.getElementById(id);
@@ -207,7 +204,7 @@ async function cargarCategoriasDesdeAPI() {
                 categoriasMap[catNombre] ={
                     nombre:catNombre,
                     key:catKey,
-                    imagenPortada:prod.imagen_url || imagenDefault,
+                    imagenPortada:imagenDefault,
                     productos:[]
                 };
             }

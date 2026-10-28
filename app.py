@@ -206,41 +206,63 @@ def solo_administrador(funcion):
 
 def solo_vendedor_o_admin(funcion):
     @wraps(funcion)
-    def protegida(args, **kwargs):
+    def protegida(*args, **kwargs):
         autorizacion = request.headers.get("Authorization", "")
 
-        if not autorizacion.startswith("Bearer"):
-            return jsonify({"status": "error", "message": "Debes iniciar sesión"}), 401
+        if not autorizacion.startswith("Bearer "):
+            return jsonify({
+                "status": "error",
+                "message": "Debes iniciar sesión"
+            }), 401
 
-        token = autorizacion[7:]
+        token = autorizacion[7:].strip()
 
         try:
             datos = firmador.loads(token, max_age=3600)
         except SignatureExpired:
-            return jsonify({"status": "error", "message": "Sesion vencida"}), 401
+            return jsonify({
+                "status": "error",
+                "message": "Sesión vencida"
+            }), 401
         except BadSignature:
-            return jsonify({"status": "error", "message": "Firma del token invalida"}), 401
+            return jsonify({
+                "status": "error",
+                "message": "Firma del token inválida"
+            }), 401
 
         conexion = None
+
         try:
             conexion = db.obtener_conexion()
-            with conexion.cursor() as cursor:
-                cursor.execute("SELECT rol FROM usuarios WHERE id = %s", (datos["id"],))
+
+            with conexion.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(
+                    "SELECT rol FROM usuarios WHERE id = %s",
+                    (datos["id"],)
+                )
                 usuario = cursor.fetchone()
 
-                if not usuario or usuario["rol"] not in ("vendedor", "administrador"):
+                if not usuario or usuario["rol"] not in (
+                    "vendedor", "administrador"
+                ):
                     return jsonify({
                         "status": "error",
                         "message": "No tienes permisos para realizar esta acción"
                     }), 403
+
         except Exception:
             app.logger.exception("Error al verificar permisos")
-            return jsonify({"status": "error", "message": "No se pudieron verificar los permisos"}), 500
+            return jsonify({
+                "status": "error",
+                "message": "No se pudieron verificar los permisos"
+            }), 500
+
         finally:
             if conexion:
                 conexion.close()
 
-        return funcion(args, **kwargs)
+        return funcion(*args, **kwargs)
+
     return protegida
 
 # =========================================================
@@ -772,70 +794,104 @@ def borrar_cliente(cliente_id):
         }), 500
             
 
-# =========================================================
-# DASHBOARD Y REPORTES
-# =========================================================
-
-@app.route("/api/dashboard", methods=["GET"])
-@solo_administrador
-def dashboard():
-    try:
-        productos = db.obtener_productos()
-        detalles = db.obtener_detalles_dashboard()
-
-        detalles_json = []
-        for detalle in detalles:
-            detalle_dict = dict(detalle)
-            for clave, valor in detalle_dict.items():
-                if isinstance(valor, Decimal):
-                    detalle_dict[clave] = float(valor)
-            detalles_json.append(detalle_dict)
-
-        return jsonify({
-            "status": "ok",
-            "productos": productos,
-            "detalles": detalles_json
-        }), 200
-    except Exception:
-        app.logger.exception("Error al cargar el dashboard.")
-        return jsonify({"status": "error", "message": "No se pudo cargar el dashboard."}), 500
-
 
 @app.route("/api/reportes/ventas", methods=["GET"])
 def api_reportes_ventas():
     conexion = None
+
     try:
         conexion = db.obtener_conexion()
+
         with conexion.cursor(cursor_factory=RealDictCursor) as cursor:
             cursor.execute("""
-                SELECT 
+                SELECT
                     v.id,
                     TO_CHAR(v.fecha, 'YYYY-MM-DD') AS fecha,
                     COALESCE(c.nombre, 'Cliente Mostrador') AS cliente,
                     v.total AS monto_total,
-                    'Completado' AS estado
+                    'Completado' AS estado,
+                    COALESCE(
+                        json_agg(
+                            json_build_object(
+                                'producto_id', p.id,
+                                'nombre', p.nombre,
+                                'cantidad', dv.cantidad,
+                                'precio_unitario', dv.precio_unitario,
+                                'subtotal', dv.subtotal
+                            )
+                            ORDER BY p.nombre
+                        ) FILTER (WHERE dv.id IS NOT NULL),
+                        '[]'::json
+                    ) AS detalles
                 FROM ventas v
-                LEFT JOIN clientes c ON v.cliente_id = c.id
-                ORDER BY v.fecha DESC, v.id DESC;
+                LEFT JOIN clientes c
+                    ON v.cliente_id = c.id
+                LEFT JOIN detalle_ventas dv
+                    ON dv.venta_id = v.id
+                LEFT JOIN productos p
+                    ON p.id = dv.producto_id
+                GROUP BY
+                    v.id,
+                    v.fecha,
+                    v.total,
+                    c.nombre
+                ORDER BY
+                    v.fecha DESC,
+                    v.id DESC;
             """)
+
             ventas = cursor.fetchall()
 
-            for v in ventas:
-                if isinstance(v.get("monto_total"), Decimal):
-                    v["monto_total"] = float(v["monto_total"])
-                v["referencia"] = f"VNT-{v['id']:03d}" if isinstance(v['id'], int) else f"VNT-{v['id']}"
-                v["descripcion"] = f"Venta de Hardware / Factura #{v['id']}"
+            ventas_json = []
+
+            for venta in ventas:
+                venta = dict(venta)
+
+                # Convertir Decimal a float para JSON.
+                if isinstance(venta.get("monto_total"), Decimal):
+                    venta["monto_total"] = float(venta["monto_total"])
+
+                # PostgreSQL devuelve las cantidades monetarias como Decimal.
+                detalles = venta.get("detalles") or []
+
+                for detalle in detalles:
+                    if detalle.get("precio_unitario") is not None:
+                        detalle["precio_unitario"] = float(
+                            detalle["precio_unitario"]
+                        )
+
+                    if detalle.get("subtotal") is not None:
+                        detalle["subtotal"] = float(
+                            detalle["subtotal"]
+                        )
+
+                # Compatibilidad con el frontend actual.
+                venta["referencia"] = f"VNT-{venta['id']:03d}"
+                venta["descripcion"] = ", ".join(
+                    f"{detalle['nombre']} × {detalle['cantidad']}"
+                    for detalle in detalles
+                    if detalle.get("nombre")
+                ) or "Sin detalle de productos"
+
+                venta["detalles"] = detalles
+
+                ventas_json.append(venta)
 
         return jsonify({
             "status": "ok",
-            "ventas": [dict(v) for v in ventas]
+            "ventas": ventas_json
         }), 200
+
     except Exception:
-        app.logger.exception("Error al obtener reporte de ventas.")
+        app.logger.exception(
+            "Error al obtener los reportes de ventas."
+        )
+
         return jsonify({
             "status": "error",
             "message": "No se pudo cargar el reporte de ventas."
         }), 500
+
     finally:
         if conexion:
             conexion.close()
@@ -1411,6 +1467,90 @@ def pagina_restablecer():
         </html>
     """
 
+
+@app.route("/api/dashboard", methods=["GET"])
+@solo_vendedor_o_admin
+def api_dashboard():
+    conexion = None
+
+    try:
+        conexion = db.obtener_conexion()
+
+        with conexion.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute("""
+                SELECT
+                    id,
+                    nombre,
+                    precio,
+                    stock,
+                    categoria,
+                    stock_minimo AS "stockMinimo"
+                FROM productos
+                ORDER BY nombre ASC;
+            """)
+            productos = cursor.fetchall()
+
+            cursor.execute("""
+                SELECT
+                    v.id AS id,
+                    TO_CHAR(v.fecha, 'YYYY-MM-DD') AS fecha,
+                    dv.producto_id AS "productoId",
+                    p.nombre AS "productoNombre",
+                    dv.cantidad AS cantidad,
+                    dv.precio_unitario AS "precioUnitario",
+                    dv.subtotal AS subtotal
+                FROM ventas v
+                INNER JOIN detalle_ventas dv
+                    ON dv.venta_id = v.id
+                LEFT JOIN productos p
+                    ON p.id = dv.producto_id
+                ORDER BY v.fecha DESC, v.id DESC;
+            """)
+            detalles = cursor.fetchall()
+
+        productos_json = []
+        for p in productos:
+            producto = dict(p)
+            producto["id"] = int(producto["id"])
+            producto["precio"] = float(producto["precio"] or 0)
+            producto["stock"] = int(producto["stock"] or 0)
+            producto["stockMinimo"] = int(
+                producto.get("stockMinimo") or 0
+            )
+            productos_json.append(producto)
+
+        ventas_json = []
+        for d in detalles:
+            detalle = dict(d)
+            detalle["id"] = int(detalle["id"])
+            detalle["productoId"] = (
+                int(detalle["productoId"])
+                if detalle["productoId"] is not None
+                else None
+            )
+            detalle["cantidad"] = int(detalle["cantidad"] or 0)
+            detalle["precioUnitario"] = float(
+                detalle["precioUnitario"] or 0
+            )
+            detalle["subtotal"] = float(detalle["subtotal"] or 0)
+            ventas_json.append(detalle)
+
+        return jsonify({
+            "status": "ok",
+            "productos": productos_json,
+            "ventas": ventas_json
+        }), 200
+
+    except Exception:
+        app.logger.exception("Error al cargar el dashboard.")
+        return jsonify({
+            "status": "error",
+            "message": "No se pudieron consultar los datos del dashboard."
+        }), 500
+
+    finally:
+        if conexion:
+            conexion.close()
 
 @app.route("/api/restablecer-password", methods=["POST"])
 def restablecer_password():
