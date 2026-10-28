@@ -1092,3 +1092,121 @@ document.addEventListener("DOMContentLoaded", () => {
         boton.title = "Reproducir música";
     });
 });
+
+// ============================================================
+// CARGAR Y MOSTRAR OFERTAS EN LA PÁGINA DE INICIO (VISTA PREVIA)
+// ============================================================
+
+async function cargarOfertas() {
+    const contenedor = document.getElementById("contenedor-ofertas");
+    const contenedorBoton = document.getElementById("contenedor-btn-ofertas");
+    
+    if (!contenedor) return; 
+
+    const API_URL = "https://octo-erp.onrender.com/api/productos";
+
+    try {
+        const respuesta = await fetch(API_URL);
+        if (!respuesta.ok) throw new Error("Error al cargar productos");
+
+        const data = await respuesta.json();
+        const productos = data.productos || [];
+
+        // 1. Filtrar solo los que tienen precio de oferta válido
+        const todasLasOfertas = productos.filter(p => 
+            p.precio_oferta && 
+            parseFloat(p.precio_oferta) > 0 && 
+            parseFloat(p.precio_oferta) < parseFloat(p.precio)
+        );
+
+        if (todasLasOfertas.length === 0) {
+            contenedor.innerHTML = `
+                <p style="grid-column: 1 / -1; text-align: center; color: #64748b; padding: 20px;">
+                    No hay ofertas disponibles en este momento.
+                </p>
+            `;
+            if (contenedorBoton) contenedorBoton.style.display = "none";
+            return;
+        }
+
+        // 2. Tomar solo las primeras 4 ofertas
+        const ofertasMostradas = todasLasOfertas.slice(0, 4);
+
+        // 3. Renderizar las 4 ofertas
+        contenedor.innerHTML = ofertasMostradas.map(producto => {
+            const precioBase = parseFloat(producto.precio).toLocaleString('es-CR');
+            const precioOferta = parseFloat(producto.precio_oferta).toLocaleString('es-CR');
+            
+            const descuento = Math.round(
+                ((producto.precio - producto.precio_oferta) / producto.precio) * 100
+            );
+
+            const imagen = producto.imagen_url || "../Imagenes/Logo.png";
+
+            return `
+                <div class="product-card" onclick="verDetalleProducto(${producto.id})" style="cursor: pointer;">
+                    <div class="product-img-box" style="position: relative;">
+                        <span class="oferta-badge" style="
+                            position: absolute; top: 10px; right: 10px;
+                            background: #ef4444; color: white;
+                            padding: 4px 10px; border-radius: 20px;
+                            font-size: 12px; font-weight: 700;
+                            z-index: 2;
+                        ">-${descuento}%</span>
+                        <img src="${imagen}" alt="${producto.nombre}" 
+                             onerror="this.src='../Imagenes/Logo.png'">
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">${producto.categoria || 'General'}</span>
+                        <h3>${producto.nombre}</h3>
+                        <p class="product-desc" style="
+                            display: -webkit-box;
+                            -webkit-line-clamp: 2;
+                            -webkit-box-orient: vertical;
+                            overflow: hidden;
+                            min-height: 2.8em;
+                        ">${producto.descripcion || 'Producto en oferta especial'}</p>
+                        <div class="product-action-row">
+                            <div>
+                                <span style="
+                                    text-decoration: line-through;
+                                    color: #94a3b8;
+                                    font-size: 13px;
+                                    display: block;
+                                ">₡${precioBase}</span>
+                                <span class="product-price" style="color: #ef4444;">
+                                    ₡${precioOferta}
+                                </span>
+                            </div>
+                            <button class="btn-add-product" 
+                                    onclick="event.stopPropagation(); agregarAlCarrito(${producto.id})">
+                                Agregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // 4. Mostrar el botón "Ver todas las ofertas" si hay más de 4 ofertas
+        if (contenedorBoton) {
+            if (todasLasOfertas.length > 4) {
+                contenedorBoton.style.display = "block"; // Hay más, mostrar botón
+            } else {
+                contenedorBoton.style.display = "none";  // Solo hay 4 o menos, ocultar botón
+            }
+        }
+
+    } catch (error) {
+        console.error("Error cargando ofertas:", error);
+        contenedor.innerHTML = `
+            <p style="grid-column: 1 / -1; text-align: center; color: #ef4444; padding: 20px;">
+                No se pudieron cargar las ofertas. Intenta de nuevo más tarde.
+            </p>
+        `;
+        if (contenedorBoton) contenedorBoton.style.display = "none";
+    }
+}
+
+// Ejecutar al cargar la página
+document.addEventListener("DOMContentLoaded", cargarOfertas);
