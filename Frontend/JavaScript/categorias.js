@@ -280,9 +280,66 @@ async function cargarProductosDeCategoria() {
     const subtituloCatElem = $("subtitulo-categoria");
     const gridContainer = $("grid-productos-categoria");
 
-    if (!categoriaSeleccionada) {
-        if (tituloCatElem) {
-            tituloCatElem.textContent = "Categoría no especificada";
+async function cargarCategoriasDesdeAPI() {
+    const API_BASE = "https://octo-erp.onrender.com";
+    const gridContainer = document.getElementById("grid-categorias-dinamico");
+    const contadorCategorias = document.getElementById("contador-categorias");
+
+    if(!gridContainer){
+        console.error("No se encontro grid categorias dianmico");
+        return;
+    } 
+
+    if(contadorCategorias){
+        contadorCategorias.textContent = "Cargando categorias..."
+    }
+
+    const imagenesCategoriasPorDefecto = {
+        "periféricos":"../Imagenes/perifericos.jpg",
+        "componentes":"../Imagenes/componentes.png",
+        "tarjetas de video":"../Imagenes/tarjetaVideo.png",
+        "monitores":"../Imagenes/monitores.png",
+        "memorias ram":"../Imagenes/RAM.png",
+        "almacenamiento":"../Imagenes/almacenamiento.png",
+        "muebles y sillas":"../Imagenes/mueblesSillas.png",
+        "electrónica":"../Imagenes/electronica.png",
+        "general":"../Imagenes/general.png"
+
+    };
+
+    try{
+        const respuesta = await fetch(`${API_BASE}/api/productos`);
+        const texto = await respuesta.text();
+        let datos = texto ? JSON.parse(texto) : [];
+        const productos = Array.isArray(datos) ? datos : (datos.productos || []);
+
+        console.log("Productos de la API:", productos);
+
+        //Productos agrupados por categoria
+
+        const categoriasMap = {};
+
+        productos.forEach(prod => {
+            let catNombre = prod.categoria ? prod.categoria.trim() : "General";
+            let catKey = catNombre.toLowerCase();
+
+            if (!categoriasMap[catNombre]){
+
+                const imagenDefault = imagenesCategoriasPorDefecto[catKey] || "../Imagenes/Logo.png";
+
+                categoriasMap[catNombre] ={
+                    nombre:catNombre,
+                    key:catKey,
+                    imagenPortada:imagenDefault,
+                    productos:[]
+                };
+            }
+            categoriasMap[catNombre].productos.push(prod);
+        });
+
+        const nombresCategorias = Object.keys(categoriasMap);
+        if (contadorCategorias){
+            contadorCategorias.textContent =  "";
         }
 
         if (gridContainer) {
