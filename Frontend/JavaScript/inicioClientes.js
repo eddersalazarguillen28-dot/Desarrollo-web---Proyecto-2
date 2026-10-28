@@ -1,8 +1,9 @@
-const API_URL = "https://octo-erp.onrender.com/api/dashboard";
+
+const API_URL = "https://octo-erp.onrender.com/api/productos";
 const LOGO = "../Imagenes/Logo.png";
-const REFRESCO_MS = 20000;   // Actualización automática
-const TIMEOUT_MS = 45000;    // Render puede tardar en despertar
-const LIMITE_INICIO = 8;     // Productos mostrados en el inicio
+const REFRESCO_MS = 20000;
+const TIMEOUT_MS = 45000;
+const LIMITE_INICIO = 8;
 
 const reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -15,10 +16,20 @@ let idxDestacado = 0;
 let timerDestacado = null;
 
 const $ = (id) => document.getElementById(id);
+
 const fmt = (n) => `₡${Number(n || 0).toLocaleString("es-CR")}`;
-const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => (
-    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
-));
+
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+}[c]));
+
+/* ==========================================================================
+   INICIALIZACIÓN
+   ========================================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
     initTema();
@@ -28,82 +39,91 @@ document.addEventListener("DOMContentLoaded", () => {
     initCarrito();
     initProductos();
     actualizarCarritoUI();
+    initSesionYPerfilDropdown();
     cargarProductos();
-    initSesionYPerfilDropdown(); // 🟢 Inicializa la gestión del usuario, menú desplegable y bienvenida
 
-    setInterval(() => { if (!document.hidden) cargarProductos(); }, REFRESCO_MS);
-    document.addEventListener("visibilitychange", () => { if (!document.hidden) cargarProductos(); });
+    setInterval(() => {
+        if (!document.hidden) cargarProductos();
+    }, REFRESCO_MS);
+
+    document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) cargarProductos();
+    });
 });
 
 /* ==========================================================================
-   GESTIÓN DE SESIÓN, PERFIL DROPDOWN Y BIENVENIDA (ESTILO ÉLITE)
+   SESIÓN, PERFIL Y BIENVENIDA
    ========================================================================== */
+
 function initSesionYPerfilDropdown() {
     const usuarioGuardado = localStorage.getItem("usuario");
-    const tituloBienvenida = document.getElementById("titulo-bienvenida");
+    const tituloBienvenida = $("titulo-bienvenida");
 
     if (!usuarioGuardado) return;
 
     try {
         const usuario = JSON.parse(usuarioGuardado);
-        
-        // Extraer nombre, rol y foto de perfil de forma flexible
-        const nombreUsuario = usuario.nombre || usuario.nombres || usuario.name || "Cliente";
-        const rolUsuario = usuario.rol || usuario.rango || "Cliente";
-        const fotoUsuario = usuario.foto || ""; 
-        const esAdmin = rolUsuario.toLowerCase().includes("admin");
 
-        // 1. Ocultar botones de "Iniciar Sesión" y "Registrarse" (Escritorio y Móvil)
-        const authGuest = document.getElementById("auth-guest");
+        const nombreUsuario =
+            usuario.nombre || usuario.nombres || usuario.name || "Cliente";
+
+        const rolUsuario = usuario.rol || usuario.rango || "Cliente";
+        const fotoUsuario = usuario.foto || "";
+        const esAdmin = String(rolUsuario).toLowerCase().includes("admin");
+
+        const authGuest = $("auth-guest");
         if (authGuest) authGuest.style.display = "none";
 
         const authMobile = document.querySelector(".auth-buttons-mobile");
         if (authMobile) authMobile.style.display = "none";
 
-        // 2. Inyectar el menú desplegable del perfil en la barra de navegación
         const navActions = document.querySelector(".nav-actions");
-        if (navActions && !document.getElementById("user-profile-menu-container")) {
-            
+
+        if (navActions && !$("user-profile-menu-container")) {
             const menuContainer = document.createElement("div");
             menuContainer.id = "user-profile-menu-container";
             menuContainer.className = "octo-profile-container";
 
-            const iniciales = nombreUsuario.charAt(0).toUpperCase();
+            const inicial = String(nombreUsuario).charAt(0).toUpperCase();
 
-            // Si el usuario subió una foto personalizada, se usa la etiqueta <img>, de lo contrario muestra la inicial
-            const avatarContent = fotoUsuario 
-                ? `<img src="${fotoUsuario}" alt="Avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">` 
-                : iniciales;
+            const avatarContent = fotoUsuario
+                ? `<img src="${esc(fotoUsuario)}" alt="Avatar"
+                    style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+                : esc(inicial);
 
             menuContainer.innerHTML = `
-                <button type="button" id="btn-perfil-trigger" class="octo-profile-trigger">
-                    <div class="octo-profile-avatar ${esAdmin ? 'admin' : 'client'}">
+                <button type="button" id="btn-perfil-trigger"
+                    class="octo-profile-trigger">
+                    <div class="octo-profile-avatar ${esAdmin ? "admin" : "client"}">
                         ${avatarContent}
                     </div>
+
                     <div class="octo-profile-info">
-                        <span class="octo-profile-name">${nombreUsuario}</span>
-                        <span class="octo-profile-role ${esAdmin ? 'admin' : 'client'}">${rolUsuario}</span>
+                        <span class="octo-profile-name">${esc(nombreUsuario)}</span>
+                        <span class="octo-profile-role ${esAdmin ? "admin" : "client"}">
+                            ${esc(rolUsuario)}
+                        </span>
                     </div>
-                    <span style="font-size: 9px; opacity: 0.5; margin-left: 2px;">▼</span>
+
+                    <span style="font-size:9px;opacity:.5;margin-left:2px;">▼</span>
                 </button>
 
-                <!-- Menú Desplegable con Estilo Élite y SVGs -->
                 <div id="perfil-dropdown" class="octo-profile-dropdown">
                     <a href="perfil.html" class="octo-dropdown-item">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                         Ver y Editar Perfil
                     </a>
-                    
+
                     ${esAdmin ? `
-                    <a href="inventario.html" class="octo-dropdown-item admin-link">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                        Panel de Control
-                    </a>` : ''}
+                        <a href="inventario.html"
+                            class="octo-dropdown-item admin-link">
+                            Panel de Control
+                        </a>
+                    ` : ""}
 
                     <div class="octo-dropdown-divider"></div>
 
-                    <button type="button" id="btn-cerrar-sesion" class="octo-dropdown-item logout">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    <button type="button" id="btn-cerrar-sesion"
+                        class="octo-dropdown-item logout">
                         Cerrar Sesión
                     </button>
                 </div>
@@ -111,14 +131,14 @@ function initSesionYPerfilDropdown() {
 
             navActions.appendChild(menuContainer);
 
-            // Eventos del dropdown
-            const trigger = document.getElementById("btn-perfil-trigger");
-            const dropdown = document.getElementById("perfil-dropdown");
+            const trigger = $("btn-perfil-trigger");
+            const dropdown = $("perfil-dropdown");
 
-            trigger.addEventListener("click", (e) => {
+            trigger?.addEventListener("click", (e) => {
                 e.stopPropagation();
-                const visible = dropdown.style.display === "block";
-                dropdown.style.display = visible ? "none" : "block";
+
+                dropdown.style.display =
+                    dropdown.style.display === "block" ? "none" : "block";
             });
 
             document.addEventListener("click", (e) => {
@@ -127,98 +147,120 @@ function initSesionYPerfilDropdown() {
                 }
             });
 
-            // Evento para cerrar sesión
-            document.getElementById("btn-cerrar-sesion").addEventListener("click", () => {
+            $("btn-cerrar-sesion")?.addEventListener("click", () => {
                 localStorage.removeItem("token");
                 localStorage.removeItem("usuario");
                 window.location.href = "inicioSesion.html";
             });
         }
 
-        // 3. Actualizar el mensaje de bienvenida en grande
         if (tituloBienvenida) {
             tituloBienvenida.textContent = `¡Bienvenido, ${nombreUsuario}!`;
         }
-
-    } catch (e) {
-        console.error("Error al procesar los datos del usuario en localStorage:", e);
+    } catch (error) {
+        console.error("Error al leer el usuario:", error);
     }
 }
 
-/* --- Tema claro / oscuro --- */
+/* ==========================================================================
+   TEMA
+   ========================================================================== */
+
 function initTema() {
     const html = document.documentElement;
-    html.setAttribute("data-theme", localStorage.getItem("octoerp_theme") || "dark");
+
+    html.setAttribute(
+        "data-theme",
+        localStorage.getItem("octoerp_theme") || "dark"
+    );
 
     $("btn-toggle-theme")?.addEventListener("click", () => {
-        const nuevo = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        const nuevo =
+            html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+
         html.setAttribute("data-theme", nuevo);
         localStorage.setItem("octoerp_theme", nuevo);
     });
 }
 
-/* --- Menú móvil --- */
+/* ==========================================================================
+   MENÚ MÓVIL
+   ========================================================================== */
+
 function initMenuMovil() {
     const nav = $("nav-links");
-    $("btn-mobile-menu")?.addEventListener("click", () => nav.classList.toggle("nav-active"));
-    nav?.addEventListener("click", (e) => { if (e.target.closest("a")) nav.classList.remove("nav-active"); });
+
+    $("btn-mobile-menu")?.addEventListener("click", () => {
+        nav?.classList.toggle("nav-active");
+    });
+
+    nav?.addEventListener("click", (e) => {
+        if (e.target.closest("a")) {
+            nav.classList.remove("nav-active");
+        }
+    });
 }
 
-/* --- Animación al hacer scroll --- */
+/* ==========================================================================
+   ANIMACIONES
+   ========================================================================== */
+
 function initScrollReveal() {
-    const els = document.querySelectorAll(".reveal-on-scroll");
-    const obs = new IntersectionObserver((entries) => {
-        entries.forEach((en) => {
-            if (en.isIntersecting) {
-                en.target.classList.add("visible");
-                obs.unobserve(en.target);
+    const elementos = document.querySelectorAll(".reveal-on-scroll");
+
+    if (!("IntersectionObserver" in window)) {
+        elementos.forEach((el) => el.classList.add("visible"));
+        return;
+    }
+
+    const observador = new IntersectionObserver((entries) => {
+        entries.forEach((entrada) => {
+            if (entrada.isIntersecting) {
+                entrada.target.classList.add("visible");
+                observador.unobserve(entrada.target);
             }
         });
     }, { threshold: 0.12 });
-    els.forEach((el) => obs.observe(el));
+
+    elementos.forEach((el) => observador.observe(el));
 }
 
-/* --- Burbujas flotantes del hero --- */
 function initBurbujas() {
-    const cont = $("burbujas");
-    if (!cont || reducido) return;
+    const contenedor = $("burbujas");
+
+    if (!contenedor || reducido) return;
 
     for (let i = 0; i < 14; i++) {
-        const b = document.createElement("span");
-        b.className = "burbuja";
-        b.style.setProperty("--s", `${5 + Math.random() * 14}px`);
-        b.style.setProperty("--x", `${Math.random() * 100}%`);
-        b.style.setProperty("--d", `${7 + Math.random() * 7}s`);
-        b.style.setProperty("--dl", `${-Math.random() * 12}s`);
-        cont.appendChild(b);
+        const burbuja = document.createElement("span");
+
+        burbuja.className = "burbuja";
+        burbuja.style.setProperty("--s", `${5 + Math.random() * 14}px`);
+        burbuja.style.setProperty("--x", `${Math.random() * 100}%`);
+        burbuja.style.setProperty("--d", `${7 + Math.random() * 7}s`);
+        burbuja.style.setProperty("--dl", `${-Math.random() * 12}s`);
+
+        contenedor.appendChild(burbuja);
     }
 }
 
 /* ==========================================================================
-   CONEXIÓN CON LA BASE DE DATOS
+   PRODUCTOS DESDE RENDER
    ========================================================================== */
 
-function candidatos(data, profundidad = 0, salida = []) {
-    if (Array.isArray(data)) {
-        if (data.length && typeof data[0] === "object") salida.push(data);
-        return salida;
-    }
-    if (!data || typeof data !== "object" || profundidad > 3) return salida;
+function normalizarProducto(p, i) {
+    const numero = (v) =>
+        v === undefined || v === null || v === "" ? NaN : Number(v);
 
-    const claves = Object.keys(data);
-    const prioridad = claves.filter((k) => /product|invent|item|stock|articul/i.test(k));
-    [...prioridad, ...claves.filter((k) => !prioridad.includes(k))]
-        .forEach((k) => candidatos(data[k], profundidad + 1, salida));
-    return salida;
-}
+    const stock = numero(
+        p.stock ?? p.cantidad ?? p.existencias ?? p.inventario
+    );
 
-function normalizar(p, i) {
-    const num = (v) => (v === undefined || v === null || v === "" ? NaN : Number(v));
-    const stock = num(p.stock ?? p.cantidad ?? p.existencias ?? p.inventario);
     return {
         id: p.id ?? p.id_producto ?? p.idProducto ?? p.sku ?? p.codigo ?? `p${i}`,
         nombre: p.nombre ?? p.name ?? p.producto ?? p.nombre_producto ?? p.titulo ?? "",
-        precio: num(p.precio ?? p.price ?? p.precio_venta ?? p.precio_unitario) || 0,
+        precio: numero(
+            p.precio ?? p.price ?? p.precio_venta ?? p.precio_unitario
+        ) || 0,
         stock: Number.isFinite(stock) ? stock : null,
         categoria: p.categoria ?? p.category ?? p.tipo ?? "Hardware",
         descripcion: p.descripcion ?? p.description ?? "Hardware de alto rendimiento",
@@ -227,53 +269,100 @@ function normalizar(p, i) {
 }
 
 function extraerProductos(data) {
-    for (const lista of candidatos(data)) {
-        const res = lista.map(normalizar).filter((p) => p.nombre);
-        if (res.length) return res;
+    let lista = [];
+
+    if (Array.isArray(data)) {
+        lista = data;
+    } else if (Array.isArray(data?.productos)) {
+        lista = data.productos;
+    } else if (Array.isArray(data?.data)) {
+        lista = data.data;
     }
-    return [];
+
+    return lista
+        .map(normalizarProducto)
+        .filter((p) => p.nombre);
 }
 
 async function obtenerProductos() {
-    const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+    const controlador = new AbortController();
+
+    const timeout = setTimeout(
+        () => controlador.abort(),
+        TIMEOUT_MS
+    );
+
     try {
-        const res = await fetch(API_URL, { signal: ctrl.signal, headers: { Accept: "application/json" } });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return extraerProductos(await res.json());
+        const respuesta = await fetch(API_URL, {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            },
+            signal: controlador.signal
+        });
+
+        if (!respuesta.ok) {
+            throw new Error(`Error HTTP ${respuesta.status}`);
+        }
+
+        const data = await respuesta.json();
+
+        if (data.status && data.status !== "ok") {
+            throw new Error(data.message || "No se pudieron cargar los productos.");
+        }
+
+        return extraerProductos(data);
     } finally {
-        clearTimeout(t);
+        clearTimeout(timeout);
     }
 }
 
 async function cargarProductos(manual = false) {
     if (cargando) return;
+
     cargando = true;
 
-    if (manual || !productos.length) mostrarSkeleton();
+    if (manual || !productos.length) {
+        mostrarSkeleton();
+    }
+
     setEstadoBD("connecting");
 
     const aviso = setTimeout(() => {
-        if (!productos.length) $("carga-nota")?.classList.remove("hidden");
+        if (!productos.length) {
+            $("carga-nota")?.classList.remove("hidden");
+        }
     }, 6000);
 
     try {
         const lista = await obtenerProductos();
+
         productos = lista;
         setEstadoBD("online");
 
-        const nuevaFirma = JSON.stringify(lista.map((p) => [p.id, p.precio, p.stock, p.nombre]));
+        const nuevaFirma = JSON.stringify(
+            lista.map((p) => [p.id, p.precio, p.stock, p.nombre])
+        );
+
         if (nuevaFirma !== firma || manual) {
             firma = nuevaFirma;
+
             renderProductos();
             actualizarStat(lista.length);
             iniciarDestacado();
         }
-        if (!lista.length) renderVacio();
-    } catch (err) {
-        console.warn("OctoERP API:", err);
+
+        if (!lista.length) {
+            renderVacio();
+        }
+    } catch (error) {
+        console.error("Error al consultar los productos:", error);
+
         setEstadoBD("offline");
-        if (!productos.length) renderError();
+
+        if (!productos.length) {
+            renderError();
+        }
     } finally {
         clearTimeout(aviso);
         $("carga-nota")?.classList.add("hidden");
@@ -282,157 +371,267 @@ async function cargarProductos(manual = false) {
 }
 
 function setEstadoBD(estado) {
-    const badge = $("db-status-indicator");
-    const txt = $("db-text");
-    if (!badge || !txt) return;
-    badge.classList.remove("connecting", "offline");
-    if (estado === "connecting") { badge.classList.add("connecting"); txt.textContent = "Conectando"; }
-    else if (estado === "offline") { badge.classList.add("offline"); txt.textContent = "BD Offline"; }
-    else { txt.textContent = "BD Online"; }
+    const indicador = $("db-status-indicator");
+    const texto = $("db-text");
+
+    if (!indicador || !texto) return;
+
+    indicador.classList.remove("connecting", "offline");
+
+    if (estado === "connecting") {
+        indicador.classList.add("connecting");
+        texto.textContent = "Conectando";
+    } else if (estado === "offline") {
+        indicador.classList.add("offline");
+        texto.textContent = "BD Offline";
+    } else {
+        texto.textContent = "BD Online";
+    }
 }
 
 /* ==========================================================================
-   RENDER DE PRODUCTOS
+   TARJETAS DE PRODUCTOS
    ========================================================================== */
-function initProductos() {
-    const cont = $("contenedor-productos-bd");
 
-    cont?.addEventListener("click", (e) => {
-        const add = e.target.closest("[data-add]");
-        if (add) return agregarAlCarrito(add.dataset.add);
-        if (e.target.closest("[data-reintentar]")) cargarProductos(true);
+function initProductos() {
+    const contenedor = $("contenedor-productos-bd");
+
+    contenedor?.addEventListener("click", (e) => {
+        const botonAgregar = e.target.closest("[data-add]");
+
+        if (botonAgregar) {
+            agregarAlCarrito(botonAgregar.dataset.add);
+            return;
+        }
+
+        if (e.target.closest("[data-reintentar]")) {
+            cargarProductos(true);
+        }
     });
 
-    cont?.addEventListener("error", (e) => {
-        if (e.target.tagName === "IMG" && !e.target.src.endsWith("Logo.png")) e.target.src = LOGO;
+    contenedor?.addEventListener("error", (e) => {
+        if (
+            e.target.tagName === "IMG" &&
+            !e.target.src.endsWith("Logo.png")
+        ) {
+            e.target.src = LOGO;
+        }
     }, true);
 
     $("hero-featured-img")?.addEventListener("error", (e) => {
-        if (!e.target.src.endsWith("Logo.png")) e.target.src = LOGO;
+        if (!e.target.src.endsWith("Logo.png")) {
+            e.target.src = LOGO;
+        }
     });
 
     $("hero-featured-btn")?.addEventListener("click", (e) => {
-        if (e.currentTarget.dataset.id) agregarAlCarrito(e.currentTarget.dataset.id);
+        const id = e.currentTarget.dataset.id;
+
+        if (id) {
+            agregarAlCarrito(id);
+        }
     });
 }
 
 function mostrarSkeleton() {
-    const cont = $("contenedor-productos-bd");
-    if (!cont) return;
-    cont.classList.remove("anima");
-    cont.innerHTML = Array.from({ length: 4 }, () => '<div class="skeleton-card"></div>').join("");
+    const contenedor = $("contenedor-productos-bd");
+
+    if (!contenedor) return;
+
+    contenedor.classList.remove("anima");
+
+    contenedor.innerHTML = Array.from(
+        { length: 4 },
+        () => '<div class="skeleton-card"></div>'
+    ).join("");
 }
 
 function tarjetaProducto(p, i) {
     const agotado = p.stock === 0;
     const poco = p.stock !== null && p.stock > 0 && p.stock <= 5;
-    const tag = agotado ? "Agotado" : poco ? `Quedan ${p.stock}` : "Disponible";
-    const claseTag = agotado ? "tag-agotado" : poco ? "tag-poco" : "";
+
+    const etiqueta = agotado
+        ? "Agotado"
+        : poco
+            ? `Quedan ${p.stock}`
+            : "Disponible";
+
+    const claseEtiqueta = agotado
+        ? "tag-agotado"
+        : poco
+            ? "tag-poco"
+            : "";
 
     return `
         <article class="product-card ${agotado ? "agotado" : ""}" style="--i:${i}">
             <div class="product-img-box">
-                <span class="product-tag ${claseTag}">${tag}</span>
-                <img src="${esc(p.imagen || LOGO)}" alt="${esc(p.nombre)}" loading="lazy">
+                <span class="product-tag ${claseEtiqueta}">
+                    ${etiqueta}
+                </span>
+
+                <img
+                    src="${esc(p.imagen || LOGO)}"
+                    alt="${esc(p.nombre)}"
+                    loading="lazy"
+                >
             </div>
+
             <div class="product-info">
                 <span class="product-category">${esc(p.categoria)}</span>
                 <h3>${esc(p.nombre)}</h3>
                 <p class="product-desc">${esc(p.descripcion)}</p>
+
                 <div class="product-action-row">
                     <span class="product-price">${fmt(p.precio)}</span>
-                    <button class="btn-add-product" data-add="${esc(p.id)}" ${agotado ? "disabled" : ""}>
+
+                    <button
+                        class="btn-add-product"
+                        data-add="${esc(p.id)}"
+                        ${agotado ? "disabled" : ""}
+                    >
                         ${agotado ? "Agotado" : "Agregar"}
                     </button>
                 </div>
             </div>
-        </article>`;
+        </article>
+    `;
 }
 
 function renderProductos() {
-    const cont = $("contenedor-productos-bd");
-    if (!cont || !productos.length) return;
-    cont.classList.toggle("anima", primeraRender);
-    cont.innerHTML = productos.slice(0, LIMITE_INICIO).map(tarjetaProducto).join("");
+    const contenedor = $("contenedor-productos-bd");
+
+    if (!contenedor || !productos.length) return;
+
+    contenedor.classList.toggle("anima", primeraRender);
+
+    contenedor.innerHTML = productos
+        .slice(0, LIMITE_INICIO)
+        .map(tarjetaProducto)
+        .join("");
+
     primeraRender = false;
 }
 
 function renderVacio() {
-    const cont = $("contenedor-productos-bd");
-    if (!cont) return;
-    cont.innerHTML = `
+    const contenedor = $("contenedor-productos-bd");
+
+    if (!contenedor) return;
+
+    contenedor.innerHTML = `
         <div class="estado-error">
             <h3>Aún no hay productos</h3>
             <p>Cuando se registren en el inventario aparecerán aquí automáticamente.</p>
-        </div>`;
-    const titulo = $("hero-featured-title");
-    if (titulo) titulo.textContent = "Sin productos";
+        </div>
+    `;
+
+    if ($("hero-featured-title")) {
+        $("hero-featured-title").textContent = "Sin productos";
+    }
 }
 
 function renderError() {
-    const cont = $("contenedor-productos-bd");
-    if (!cont) return;
-    cont.classList.remove("anima");
-    cont.innerHTML = `
+    const contenedor = $("contenedor-productos-bd");
+
+    if (!contenedor) return;
+
+    contenedor.classList.remove("anima");
+
+    contenedor.innerHTML = `
         <div class="estado-error">
             <h3>No pudimos conectar con el servidor</h3>
             <p>Revisa tu conexión e inténtalo de nuevo.</p>
-            <button class="btn-reintentar" data-reintentar>Reintentar</button>
-        </div>`;
-    const titulo = $("hero-featured-title");
-    if (titulo) titulo.textContent = "Sin conexión";
+            <button class="btn-reintentar" data-reintentar>
+                Reintentar
+            </button>
+        </div>
+    `;
+
+    if ($("hero-featured-title")) {
+        $("hero-featured-title").textContent = "Sin conexión";
+    }
 }
 
 function actualizarStat(total) {
-    const el = $("stat-total-productos");
-    if (!el) return;
-    if (reducido) { el.textContent = total; return; }
+    const elemento = $("stat-total-productos");
 
-    const inicio = Number(el.textContent) || 0;
-    const t0 = performance.now();
-    const paso = (t) => {
-        const k = Math.min((t - t0) / 900, 1);
-        el.textContent = Math.round(inicio + (total - inicio) * (1 - Math.pow(1 - k, 3)));
-        if (k < 1) requestAnimationFrame(paso);
+    if (!elemento) return;
+
+    if (reducido) {
+        elemento.textContent = total;
+        return;
+    }
+
+    const inicio = Number(elemento.textContent) || 0;
+    const inicioTiempo = performance.now();
+
+    const paso = (tiempo) => {
+        const progreso = Math.min((tiempo - inicioTiempo) / 900, 1);
+
+        elemento.textContent = Math.round(
+            inicio + (total - inicio) * (1 - Math.pow(1 - progreso, 3))
+        );
+
+        if (progreso < 1) {
+            requestAnimationFrame(paso);
+        }
     };
+
     requestAnimationFrame(paso);
 }
 
 /* ==========================================================================
    PRODUCTO DESTACADO
    ========================================================================== */
+
 function iniciarDestacado() {
     clearInterval(timerDestacado);
+
     const disponibles = productos.filter((p) => p.stock !== 0);
+
     if (!disponibles.length) return;
 
     idxDestacado %= disponibles.length;
+
     pintarDestacado(disponibles[idxDestacado], false);
 
     if (disponibles.length > 1 && !reducido) {
         timerDestacado = setInterval(() => {
             idxDestacado = (idxDestacado + 1) % disponibles.length;
+
             pintarDestacado(disponibles[idxDestacado], true);
         }, 6000);
     }
 }
 
 function pintarDestacado(p, animar) {
-    const card = $("hero-featured-card");
+    const tarjeta = $("hero-featured-card");
+
     const aplicar = () => {
-        $("hero-featured-img").src = p.imagen || LOGO;
-        $("hero-featured-img").alt = p.nombre;
-        $("hero-featured-title").textContent = p.nombre;
-        $("hero-featured-desc").textContent = p.descripcion;
-        $("hero-featured-price").textContent = fmt(p.precio);
-        const btn = $("hero-featured-btn");
-        btn.dataset.id = p.id;
-        btn.disabled = false;
-        card?.classList.remove("swap");
+        const imagen = $("hero-featured-img");
+        const titulo = $("hero-featured-title");
+        const descripcion = $("hero-featured-desc");
+        const precio = $("hero-featured-price");
+        const boton = $("hero-featured-btn");
+
+        if (imagen) {
+            imagen.src = p.imagen || LOGO;
+            imagen.alt = p.nombre;
+        }
+
+        if (titulo) titulo.textContent = p.nombre;
+        if (descripcion) descripcion.textContent = p.descripcion;
+        if (precio) precio.textContent = fmt(p.precio);
+
+        if (boton) {
+            boton.dataset.id = p.id;
+            boton.disabled = p.stock === 0;
+        }
+
+        tarjeta?.classList.remove("swap");
     };
 
-    if (animar && card) {
-        card.classList.add("swap");
+    if (animar && tarjeta) {
+        tarjeta.classList.add("swap");
         setTimeout(aplicar, 260);
     } else {
         aplicar();
@@ -442,14 +641,21 @@ function pintarDestacado(p, animar) {
 /* ==========================================================================
    CARRITO
    ========================================================================== */
+
 function cargarCarrito() {
     try {
         const datos = JSON.parse(localStorage.getItem("octo_carrito")) || [];
-        return datos.map((i) => ({
-            id: i.id ?? i.nombre,
-            nombre: i.nombre,
-            precio: Number(i.precio) || 0,
-            cantidad: i.cantidad || 1
+
+        if (!Array.isArray(datos)) return [];
+
+        return datos.map((item) => ({
+            id: item.id ?? item.id_producto ?? item.producto_id ?? item.nombre,
+            nombre: item.nombre || "Producto",
+            precio: Number(item.precio) || 0,
+            cantidad: Math.max(
+                1,
+                Number.parseInt(item.cantidad, 10) || 1
+            )
         }));
     } catch {
         return [];
@@ -466,24 +672,42 @@ function initCarrito() {
     $("btn-finalizar-compra")?.addEventListener("click", procesarCompra);
 
     const modal = $("modal-carrito");
-    modal?.addEventListener("click", (e) => { if (e.target === modal) toggleModalCarrito(); });
+
+    modal?.addEventListener("click", (e) => {
+        if (e.target === modal) {
+            toggleModalCarrito();
+        }
+    });
+
     document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && !modal.classList.contains("hidden")) toggleModalCarrito();
+        if (
+            e.key === "Escape" &&
+            modal &&
+            !modal.classList.contains("hidden")
+        ) {
+            toggleModalCarrito();
+        }
     });
 
     $("carrito-items-lista")?.addEventListener("click", (e) => {
-        const btn = e.target.closest("[data-accion]");
-        if (!btn) return;
-        const i = Number(btn.dataset.idx);
-        const item = carrito[i];
+        const boton = e.target.closest("[data-accion]");
+
+        if (!boton) return;
+
+        const indice = Number(boton.dataset.idx);
+        const item = carrito[indice];
+
         if (!item) return;
 
-        if (btn.dataset.accion === "mas") cambiarCantidad(i, 1);
-        else if (btn.dataset.accion === "menos") cambiarCantidad(i, -1);
-        else carrito.splice(i, 1);
-
-        guardarCarrito();
-        actualizarCarritoUI();
+        if (boton.dataset.accion === "mas") {
+            cambiarCantidad(indice, 1);
+        } else if (boton.dataset.accion === "menos") {
+            cambiarCantidad(indice, -1);
+        } else {
+            carrito.splice(indice, 1);
+            guardarCarrito();
+            actualizarCarritoUI();
+        }
     });
 }
 
@@ -492,96 +716,379 @@ function toggleModalCarrito() {
 }
 
 function stockDe(id) {
-    const p = productos.find((x) => String(x.id) === String(id));
-    return p ? p.stock : null;
+    const producto = productos.find(
+        (p) => String(p.id) === String(id)
+    );
+
+    return producto ? producto.stock : null;
 }
 
-function cambiarCantidad(i, delta) {
-    const item = carrito[i];
+function cambiarCantidad(indice, delta) {
+    const item = carrito[indice];
+
+    if (!item) return;
+
     const stock = stockDe(item.id);
-    const nueva = item.cantidad + delta;
+    const nuevaCantidad = item.cantidad + delta;
 
-    if (nueva <= 0) return carrito.splice(i, 1);
-    if (delta > 0 && stock !== null && nueva > stock) return toast("Alcanzaste el stock disponible", "warn");
-    item.cantidad = nueva;
-}
+    if (nuevaCantidad <= 0) {
+        carrito.splice(indice, 1);
+        guardarCarrito();
+        actualizarCarritoUI();
+        return;
+    }
 
-function agregarAlCarrito(id) {
-    const p = productos.find((x) => String(x.id) === String(id));
-    if (!p) return;
+    if (
+        delta > 0 &&
+        stock !== null &&
+        nuevaCantidad > stock
+    ) {
+        toast("Alcanzaste el stock disponible", "warn");
+        return;
+    }
 
-    const item = carrito.find((i) => String(i.id) === String(p.id));
-    const enCarrito = item ? item.cantidad : 0;
-    if (p.stock !== null && enCarrito >= p.stock) return toast("Alcanzaste el stock disponible", "warn");
-
-    if (item) item.cantidad++;
-    else carrito.push({ id: p.id, nombre: p.nombre, precio: p.precio, cantidad: 1 });
+    item.cantidad = nuevaCantidad;
 
     guardarCarrito();
     actualizarCarritoUI();
-    toast(`${p.nombre} agregado al carrito`);
+}
 
-    const btn = $("btn-cart");
-    btn?.classList.remove("bump");
-    void btn?.offsetWidth;
-    btn?.classList.add("bump");
+function agregarAlCarrito(id) {
+    const producto = productos.find(
+        (p) => String(p.id) === String(id)
+    );
+
+    if (!producto) return;
+
+    if (producto.stock === 0) {
+        toast("Este producto está agotado", "warn");
+        return;
+    }
+
+    const item = carrito.find(
+        (i) => String(i.id) === String(producto.id)
+    );
+
+    const cantidadActual = item ? item.cantidad : 0;
+
+    if (
+        producto.stock !== null &&
+        cantidadActual >= producto.stock
+    ) {
+        toast("Alcanzaste el stock disponible", "warn");
+        return;
+    }
+
+    if (item) {
+        item.cantidad++;
+    } else {
+        carrito.push({
+            id: producto.id,
+            nombre: producto.nombre,
+            precio: producto.precio,
+            cantidad: 1
+        });
+    }
+
+    guardarCarrito();
+    actualizarCarritoUI();
+
+    toast(`${producto.nombre} agregado al carrito`);
+
+    const botonCarrito = $("btn-cart");
+
+    botonCarrito?.classList.remove("bump");
+    void botonCarrito?.offsetWidth;
+    botonCarrito?.classList.add("bump");
 }
 
 function actualizarCarritoUI() {
     const lista = $("carrito-items-lista");
-    const totalEl = $("carrito-monto-total");
-    const badge = $("cart-count");
+    const totalElemento = $("carrito-monto-total");
+    const insignia = $("cart-count");
 
-    if (badge) badge.textContent = carrito.reduce((s, i) => s + i.cantidad, 0);
+    if (insignia) {
+        insignia.textContent = carrito.reduce(
+            (suma, item) => suma + item.cantidad,
+            0
+        );
+    }
+
     if (!lista) return;
 
     if (!carrito.length) {
-        lista.innerHTML = '<p class="carrito-vacio-msg">Tu carrito está vacío actualmente.</p>';
-        if (totalEl) totalEl.textContent = "₡0";
+        lista.innerHTML = `
+            <p class="carrito-vacio-msg">
+                Tu carrito está vacío actualmente.
+            </p>
+        `;
+
+        if (totalElemento) totalElemento.textContent = "₡0";
+
         return;
     }
 
-    lista.innerHTML = carrito.map((item, i) => `
+    lista.innerHTML = carrito.map((item, indice) => `
         <div class="carrito-item">
             <div class="carrito-item-info">
                 <h4>${esc(item.nombre)}</h4>
                 <p>${fmt(item.precio * item.cantidad)}</p>
             </div>
+
             <div class="carrito-item-controles">
-                <button class="btn-cant" data-accion="menos" data-idx="${i}" aria-label="Quitar uno">−</button>
+                <button
+                    class="btn-cant"
+                    data-accion="menos"
+                    data-idx="${indice}"
+                    aria-label="Quitar uno"
+                >−</button>
+
                 <span class="cant-num">${item.cantidad}</span>
-                <button class="btn-cant" data-accion="mas" data-idx="${i}" aria-label="Agregar uno">+</button>
-                <button class="btn-eliminar-item" data-accion="quitar" data-idx="${i}" title="Eliminar">&times;</button>
+
+                <button
+                    class="btn-cant"
+                    data-accion="mas"
+                    data-idx="${indice}"
+                    aria-label="Agregar uno"
+                >+</button>
+
+                <button
+                    class="btn-eliminar-item"
+                    data-accion="quitar"
+                    data-idx="${indice}"
+                    title="Eliminar"
+                >&times;</button>
             </div>
-        </div>`).join("");
+        </div>
+    `).join("");
 
-    if (totalEl) totalEl.textContent = fmt(carrito.reduce((s, i) => s + i.precio * i.cantidad, 0));
+    if (totalElemento) {
+        totalElemento.textContent = fmt(
+            carrito.reduce(
+                (suma, item) => suma + item.precio * item.cantidad,
+                0
+            )
+        );
+    }
 }
 
-function procesarCompra() {
-    if (!carrito.length) return toast("Tu carrito está vacío", "warn");
-    carrito = [];
-    guardarCarrito();
-    actualizarCarritoUI();
-    toggleModalCarrito();
-    toast("¡Gracias por tu compra en OctoERP! Pedido registrado.");
+/* ==========================================================================
+   FINALIZAR COMPRA Y GUARDAR EN POSTGRESQL A TRAVÉS DE RENDER
+   ========================================================================== */
+
+async function procesarCompra() {
+    if (!carrito.length) {
+        toast("Tu carrito está vacío", "warn");
+        return;
+    }
+
+    const token = localStorage.getItem("token");
+    const usuarioGuardado = localStorage.getItem("usuario");
+
+    if (!token || !usuarioGuardado) {
+        toast("Inicia sesión para completar tu compra.", "warn");
+        return;
+    }
+
+    let usuario;
+
+    try {
+        usuario = JSON.parse(usuarioGuardado);
+    } catch {
+        toast("Tu sesión no es válida. Inicia sesión nuevamente.", "warn");
+        return;
+    }
+
+    const rol = String(usuario?.rol || "").trim().toLowerCase();
+
+    if (rol !== "cliente") {
+        toast(
+            "Inicia sesión con una cuenta de cliente para comprar.",
+            "warn"
+        );
+        return;
+    }
+
+    const boton = $("btn-finalizar-compra");
+
+    if (boton?.disabled) return;
+
+    const textoOriginal = boton?.textContent;
+
+    if (boton) {
+        boton.disabled = true;
+        boton.textContent = "Procesando compra...";
+    }
+
+    const detalles = carrito.map((item) => ({
+        producto_id: Number(item.id),
+        cantidad: Number(item.cantidad)
+    }));
+
+    try {
+        const detallesInvalidos = detalles.some((item) =>
+            !Number.isInteger(item.producto_id) ||
+            item.producto_id <= 0 ||
+            !Number.isInteger(item.cantidad) ||
+            item.cantidad <= 0
+        );
+
+        if (detallesInvalidos) {
+            throw new Error(
+                "Hay productos con identificadores o cantidades inválidos. " +
+                "Elimina esos productos y agrégalos nuevamente."
+            );
+        }
+
+        const respuesta = await fetch(
+            "https://octo-erp.onrender.com/api/ventas/cliente",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({ detalles })
+            }
+        );
+
+        const resultado = await respuesta.json().catch(() => ({}));
+
+        if (!respuesta.ok || resultado.status !== "ok") {
+            if (respuesta.status === 401) {
+                throw new Error(
+                    "Tu sesión venció o no es válida. Inicia sesión nuevamente."
+                );
+            }
+
+            if (respuesta.status === 403) {
+                throw new Error(
+                    "Esta cuenta no tiene permiso para comprar como cliente."
+                );
+            }
+
+            throw new Error(
+                resultado.message ||
+                resultado.mensaje ||
+                `No se pudo registrar la compra. Error HTTP ${respuesta.status}.`
+            );
+        }
+
+        // Vaciar el carrito únicamente después de una respuesta exitosa.
+        carrito = [];
+        guardarCarrito();
+        actualizarCarritoUI();
+
+        const modal = $("modal-carrito");
+
+        if (modal && !modal.classList.contains("hidden")) {
+            toggleModalCarrito();
+        }
+
+        const ventaId =
+            resultado.venta_id ??
+            resultado.id_venta ??
+            resultado.venta?.id;
+
+        toast(
+            ventaId
+                ? `¡Compra registrada! Número de venta: ${ventaId}`
+                : "¡Compra registrada correctamente!"
+        );
+
+        // Actualiza las existencias que se muestran en el catálogo.
+        await cargarProductos(true);
+
+    } catch (error) {
+        console.error("Error al registrar la compra:", error);
+
+        toast(
+            error.message ||
+            "No se pudo confirmar la compra. Inténtalo de nuevo.",
+            "warn"
+        );
+    } finally {
+        if (boton) {
+            boton.disabled = false;
+            boton.textContent = textoOriginal || "Finalizar compra";
+        }
+    }
 }
 
-/* --- Notificaciones --- */
-function toast(msg, tipo = "ok") {
+/* ==========================================================================
+   NOTIFICACIONES
+   ========================================================================== */
+
+function toast(mensaje, tipo = "ok") {
     let pila = document.querySelector(".toast-stack");
+
     if (!pila) {
         pila = document.createElement("div");
         pila.className = "toast-stack";
         document.body.appendChild(pila);
     }
-    const t = document.createElement("div");
-    t.className = `toast ${tipo === "warn" ? "warn" : ""}`;
-    t.textContent = msg;
-    pila.appendChild(t);
+
+    const notificacion = document.createElement("div");
+
+    notificacion.className = `toast ${tipo === "warn" ? "warn" : ""}`;
+    notificacion.textContent = mensaje;
+
+    pila.appendChild(notificacion);
 
     setTimeout(() => {
-        t.classList.add("salida");
-        setTimeout(() => t.remove(), 300);
+        notificacion.classList.add("salida");
+
+        setTimeout(() => {
+            notificacion.remove();
+        }, 300);
     }, 2600);
 }
+
+/* ==========================================================================
+   MÚSICA SECRETA: CTRL + SHIFT + M
+   ========================================================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+    const boton = $("boton-musica-secreto");
+    const musica = $("musica-secreta");
+
+    if (!boton || !musica) return;
+
+    document.addEventListener("keydown", (evento) => {
+        if (
+            evento.ctrlKey &&
+            evento.shiftKey &&
+            evento.key.toLowerCase() === "m"
+        ) {
+            boton.classList.toggle("visible");
+        }
+    });
+
+    boton.addEventListener("click", async () => {
+        try {
+            if (musica.paused) {
+                await musica.play();
+
+                boton.textContent = "⏸️";
+                boton.title = "Pausar música";
+            } else {
+                musica.pause();
+
+                boton.textContent = "🎵";
+                boton.title = "Reproducir música";
+            }
+        } catch (error) {
+            console.error("No se pudo reproducir la música:", error);
+
+            alert(
+                "No se pudo reproducir la canción. Comprueba el archivo de audio."
+            );
+        }
+    });
+
+    musica.addEventListener("ended", () => {
+        boton.textContent = "🎵";
+        boton.title = "Reproducir música";
+    });
+});
