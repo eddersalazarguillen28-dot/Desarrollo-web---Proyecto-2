@@ -466,6 +466,38 @@ def actualizar_producto(
     finally:
         conn.close()
 
+def agregar_stock_productos(producto_id, cantidad):
+    """Agregar unidades al stock existente de un producto"""
+
+    _validar_entero_positivo(producto_id, "producto_id") 
+    cantidad =  _validar_entero_positivo(cantidad, "cantidad")
+
+    conn= obtener_conexion()
+
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                UPDATE productos 
+                SET stock = stock + %s
+                WHERE id = %s
+                RETURNING id, nombrem stock;
+                """, (cantidad, producto_id))
+            
+            producto  = cursor.fetchone()
+
+            if producto is None:
+                conn.rollback()
+                return None
+        conn.commit()
+        return producto 
+
+    except Exception:
+        conn.rollback()
+        raise
+
+    finally:
+        conn.close()
+
 def eliminar_producto(producto_id):
     """Elimina productos que no tengan detalles de ventas."""
     _validar_entero_positivo(producto_id, "producto_id")

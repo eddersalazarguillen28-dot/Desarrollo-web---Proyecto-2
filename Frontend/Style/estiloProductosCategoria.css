@@ -374,6 +374,16 @@ body#pagina-productos-categoria{
     }
 }
 
+#input-buscador-prod:focus{
+    border-color:var(--primary-purple);
+    box-shadow: 0 0 0 3px var(--border-glow);
+}
+
+#input-buscador-prod::placeholder{
+    color: var(--text-muted);
+    opacity: 0.8;
+}
+
 
 .container-categoria-productos{
     width: 100%;
@@ -411,7 +421,7 @@ body#pagina-productos-categoria{
 .btn-volver-cat{
     display: inline-block;
     background: transparent;
-    color:var(--text-primary);
+    color:white;
     border:1px solid var(--border-subtle);
     padding: 8px 18px;
     border-radius: 18px;
@@ -868,6 +878,32 @@ body#pagina-productos-categoria{
     font-size: 20px;
     font-weight: 800;
     color:var(--price-green);
+}
+
+.btn-modal-add-carrito{
+    width:100%;
+    margin-top: 18px;
+    background-color: var(--primary-purple);
+    color: #ffffff;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 700;
+    transition: background-color 0.2s ease,transform 0.2s ease,opacity 0.2s ease;
+}
+
+.btn-modal-add-carrito:hover{
+    background-color: var(--purple-hover,#5b4bc4);
+    transform: translateY(-1px);
+}
+
+.btn-modal-add-carrito:disabled{
+    background-color: var(--text-muted);
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
 }
 
 @keyframes scaleUp{

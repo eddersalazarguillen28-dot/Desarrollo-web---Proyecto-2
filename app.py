@@ -2,7 +2,7 @@ import os
 import re
 import time
 from decimal import Decimal, InvalidOperation
-
+import json
 import cloudinary
 import cloudinary.uploader
 import resend
@@ -103,7 +103,7 @@ def cloudinary_configurado():
 # MODELO DE IA
 # =========================================================
 
-MODELO_IA = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+MODELO_IA = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
 
 
 # =========================================================
@@ -200,6 +200,48 @@ def solo_administrador(funcion):
         return funcion(*args, **kwargs)
     return protegida
 
+#=========================================================
+#DECORADOR DE VENDEDOR (Y ADMIN)
+#=========================================================
+
+def solo_vendedor_o_admin(funcion):
+    @wraps(funcion)
+    def protegida(args, **kwargs):
+        autorizacion = request.headers.get("Authorization", "")
+
+        if not autorizacion.startswith("Bearer"):
+            return jsonify({"status": "error", "message": "Debes iniciar sesión"}), 401
+
+        token = autorizacion[7:]
+
+        try:
+            datos = firmador.loads(token, max_age=3600)
+        except SignatureExpired:
+            return jsonify({"status": "error", "message": "Sesion vencida"}), 401
+        except BadSignature:
+            return jsonify({"status": "error", "message": "Firma del token invalida"}), 401
+
+        conexion = None
+        try:
+            conexion = db.obtener_conexion()
+            with conexion.cursor() as cursor:
+                cursor.execute("SELECT rol FROM usuarios WHERE id = %s", (datos["id"],))
+                usuario = cursor.fetchone()
+
+                if not usuario or usuario["rol"] not in ("vendedor", "administrador"):
+                    return jsonify({
+                        "status": "error",
+                        "message": "No tienes permisos para realizar esta acción"
+                    }), 403
+        except Exception:
+            app.logger.exception("Error al verificar permisos")
+            return jsonify({"status": "error", "message": "No se pudieron verificar los permisos"}), 500
+        finally:
+            if conexion:
+                conexion.close()
+
+        return funcion(args, **kwargs)
+    return protegida
 
 # =========================================================
 # REGISTRO DE USUARIOS
@@ -409,6 +451,7 @@ def listar_productos():
 
 
 @app.route("/api/productos", methods=["POST"])
+@solo_administrador
 def crear_producto():
     imagen_url = None
     try:
@@ -514,8 +557,146 @@ def crear_producto():
             "message": "No se pudo crear el producto."
         }), 500
 
+@app.route("/api/productos/<int:p_id>", methods=["PUT"])
+def actualizar_producto(p_id):
+    try:
+        if request.is_json:
+            datos = request.get_json(silent=True) or {}
+            nombre = datos.get("nombre")
+            precio = datos.get("precio")
+            stock = datos.get("stock")
+            stoc_minimo = datos.get("stockMinimo", datos.get("stock_minimo", 5))
+            categoria = datos.get("categoria", "General")
+            ubicaciones = datos.get("ubicaciones")
+            ubicacion = datos.get("ubicacion", "productos")
+            precio_oferta = datos.get("precio_oferta")
+            imagen_url = datos.get("imagen_url")
+        else:
+            datos = request.form
+            nombre = datos.get("nombre")
+            precio = datos.get("precio")
+            stock = datos.get("stock")
+            stoc_minimo = datos.get("stockMinimo", datos.get("stock_minimo", 5))
+            categoria = datos.get("categoria", "General")
+            ubicaciones = datos.get("ubicaciones")
+            ubicacion = datos.get("ubicacion", "productos")
+            precio_oferta = datos.get("precio_oferta")
+            imagen_url = datos.get("imagen_url")
+            archivo = request.files.get("imagen")
 
+            if archivo and archivo.filename:
+                if not cloudinary_configurado():
+                    return jsonify({
+                        "status": "error",
+                        "message": "Cloudinary no esta configurado en Render"
+                    }), 500
+
+                tipos_permitidos = {
+                    "image/jpeg",
+                    "image/png",
+                    "image/webp",
+                    "image/gif"
+                }
+
+                if archivo.mimetype not in tipos_permitidos: 
+                    return jsonify({
+                        "status": "error",
+                        "message": "Formato de imagen no permitido"
+                    }), 400
+
+                resultado = cloudinary.uploader.upload(
+                    archivo,
+                    folder="octo-erp/productos",
+                    resource_type="image",
+                    allowed_formats=["jpg", "jpeg", "png", "webp", "gif"]
+                )
+
+                imagen_url = resultado("secure_url")
+
+                if not imagen_url:
+                    raise RuntimeError("Cloudinary no devolvió la URL de la imagen")
+
+        nombre = (nombre or "").strip()
+        categoria = (categoria or "General").strip()
+
+        if not nombre:
+            return jsonify({
+                "status": "error",
+                "message": "El nombre del producto es obligatoria"
+            }), 400
+
+        try:
+            precio = Decimal(str(precio))
+            stock = int(stock)
+            stock_minimo = int(stock_minimo)
+
+            if precio_oferta is not None and str(precio_oferta).strip():
+                precio_oferta = Decimal(str(precio_oferta))
+            else:
+                precio_oferta = None
+
+        except (InvalidOperation, ValueError, TypeError):
+            return jsonify({
+                "status": "error",
+                "message": "El precio, stock o precio de oferta no son validos"
+            }), 400
+
+        if not precio.is_finite() or precio < 0:
+            return jsonify({
+                "status": "error",
+                "message": "El precio no puede ser negativo"
+            }), 400
+
+        if stock < 0 or stock_minimo < 0:
+            return jsonify({
+                "status": "error",
+                "message": "El stock no puede ser negativo"
+            }), 400
+
+        if isinstance(ubicaciones, str) and ubicaciones.strip():
+            try:
+                lista_ubicaciones = json.loads(ubicaciones)
+                if isinstance(lista_ubicaciones, list) and lista_ubicaciones:
+                    ubicacion = lista_ubicaciones[0]
+            except (ValueError, TypeError):
+                ubicacion = ubicaciones.strip()
+
+        elif isinstance(ubicaciones, list) and ubicaciones:
+            ubicacion = ubicaciones[0]
+
+            actualizado = db.actualizar_producto(
+                producto_id=p_id,
+                nombre= nombre,
+                precio= precio,
+                stock= stock,
+                stoc_minimo= stock_minimo,
+                categoria= categoria,
+                imagen_url=imagen_url,
+                ubicacion= ubicacion,
+                precio_oferta= precio_oferta
+            )
+
+        if not actualizado:
+                return jsonify({
+                    "status": "error",
+                    "message": "No se encontró el producto para actualizar"
+                }), 400
+            
+        return jsonify({
+            "status": "ok",
+            "message": "Producto actualizado correctamente"
+        }), 200
+
+    except Exception:
+        app.logger.exception("Error al actualizar producto")
+        return jsonify({
+            "status": "error",
+            "message": "No se pudo actualizar el producto"
+        }), 500
+
+                
 @app.route("/api/productos/<int:p_id>", methods=["DELETE"])
+@solo_administrador
 def borrar_producto(p_id):
     try:
         resultado = db.eliminar_producto(p_id)
@@ -596,6 +777,7 @@ def borrar_cliente(cliente_id):
 # =========================================================
 
 @app.route("/api/dashboard", methods=["GET"])
+@solo_administrador
 def dashboard():
     try:
         productos = db.obtener_productos()
