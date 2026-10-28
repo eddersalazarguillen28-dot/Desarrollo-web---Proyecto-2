@@ -207,7 +207,7 @@ async function cargarCategoriasDesdeAPI() {
                 categoriasMap[catNombre] ={
                     nombre:catNombre,
                     key:catKey,
-                    imagenPortada:prod.imagen_url || imagenDefault,
+                    imagenPortada:imagenDefault,
                     productos:[]
                 };
             }
