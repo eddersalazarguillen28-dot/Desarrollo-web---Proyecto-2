@@ -771,3 +771,57 @@ body{
         transform: translateY(0);
     }
 }
+
+
+.precios-categoria {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0;
+}
+
+.precio-anterior-categoria {
+    color: var(--text-muted);
+    text-decoration: line-through;
+    font-size: 0.85rem;
+}
+
+.precio-oferta-categoria {
+    color: #ef4444;
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+
+.precio-normal-categoria {
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.badge-descuento-categoria,
+.etiqueta-oferta-categoria {
+    background: #ef4444;
+    color: #fff;
+    font-weight: 800;
+    border-radius: 6px;
+    padding: 4px 7px;
+    font-size: 0.75rem;
+}
+
+.etiqueta-oferta-categoria {
+    position: absolute;
+    top: 38px;
+    right: 5px;
+    z-index: 2;
+}
+
+.contenido-producto-categoria {
+    padding: 10px;
+}
+
+.footer-card-prod {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+}

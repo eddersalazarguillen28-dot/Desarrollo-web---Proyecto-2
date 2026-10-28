@@ -577,3 +577,22 @@ body {
     .nav-container { padding: 15px 20px; flex-wrap: wrap; }
     .nav-links { order: 3; width: 100%; justify-content: center; gap: 18px; margin-top: 10px; }
 }
+
+
+
+
+/* Corregir el espacio superior del banner de soporte */
+.soporte-container {
+    padding-top: 7px;
+}
+
+.soporte-hero {
+    position: relative;
+    z-index: 1;
+    margin-top: 20px;
+}
+
+.navbar-octo {
+    position: relative;
+    z-index: 100;
+}
