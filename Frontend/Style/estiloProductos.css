@@ -42,11 +42,8 @@
 /* Área principal */
 
 #page-productos .main-wrapper {
-    width: 100%;
+    width: 87%;
     min-width: 0;
-    background:
-        radial-gradient(ellipse at 80% 0%, rgba(56, 135, 190, .10), transparent 45%),
-        var(--fondo);
 }
 
 #page-productos .catalogo-principal {
@@ -136,7 +133,7 @@
     width: 78px;
     height: 78px;
     margin-right: 10px;
-    background: rgba(72, 189, 245, .08);
+    background: rgba(6, 142, 206, 0.08);
     border: 1px solid rgba(72, 189, 245, .3);
     border-radius: 17px;
     transform: rotate(-5deg);
@@ -337,7 +334,7 @@
     margin: 0 auto 11px !important;
     padding: 7px;
     object-fit: contain;
-    background: #f0f4f8;
+    background: #1a81e7;
     border-radius: 7px;
 }
 
@@ -691,236 +688,6 @@
     line-height: 1.6;
 }
 
-/* Chat */
-
-#page-productos .chat-trigger {
-    position: fixed;
-    z-index: 1500;
-    right: 22px;
-    bottom: 22px;
-    display: grid;
-    place-items: center;
-    width: 50px;
-    height: 50px;
-    padding: 0;
-    background: var(--azul);
-    border: 0;
-    border-radius: 50%;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, .3);
-    transition: transform .2s;
-}
-
-#page-productos .chat-trigger:hover {
-    transform: translateY(-3px);
-}
-
-#page-productos .chat-trigger img {
-    width: 29px;
-    height: 29px;
-    object-fit: contain;
-}
-
-#page-productos .chat-window {
-    position: fixed;
-    z-index: 1501;
-    right: 22px;
-    bottom: 83px;
-    display: flex;
-    flex-direction: column;
-    width: min(350px, calc(100vw - 24px));
-    height: min(460px, calc(100dvh - 110px));
-    min-height: 280px;
-    overflow: hidden;
-    color: var(--texto);
-    background: var(--panel);
-    border: 1px solid var(--borde);
-    border-radius: 13px;
-    box-shadow: 0 15px 50px rgba(0, 0, 0, .4);
-}
-
-#page-productos .chat-window.oculta {
-    display: none;
-}
-
-#page-productos .chat-header {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 13px;
-    background: var(--tarjeta);
-    border-bottom: 1px solid var(--borde);
-}
-
-#page-productos .header-perfil {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-}
-
-#page-productos .avatar {
-    display: grid;
-    flex-shrink: 0;
-    place-items: center;
-    width: 38px;
-    height: 38px;
-    overflow: hidden;
-    background: #f0f4f8;
-    border-radius: 50%;
-}
-
-#page-productos .avatar img {
-    width: 30px;
-    height: 30px;
-    object-fit: contain;
-}
-
-#page-productos .chat-header .info {
-    min-width: 0;
-}
-
-#page-productos .chat-header .info h3 {
-    margin: 0;
-    font-size: 14px;
-}
-
-#page-productos .chat-header .info h3 span {
-    color: var(--azul);
-    font-size: 12px;
-}
-
-#page-productos .chat-header .estado {
-    display: block;
-    margin-top: 3px;
-    color: var(--verde);
-    font-size: 12px;
-}
-
-#page-productos .btn-cerrar {
-    width: 32px;
-    height: 32px;
-    color: var(--texto-secundario);
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 7px;
-    font-size: 21px;
-}
-
-#page-productos .btn-cerrar:hover {
-    background: var(--borde);
-}
-
-#page-productos .chat-mensajes {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    gap: 12px;
-    min-height: 0;
-    padding: 14px;
-    overflow-y: auto;
-}
-
-#page-productos .mensaje {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    max-width: 100%;
-}
-
-#page-productos .avatar-pequeno {
-    display: grid;
-    flex-shrink: 0;
-    place-items: center;
-    width: 28px;
-    height: 28px;
-    overflow: hidden;
-    background: #f0f4f8;
-    border-radius: 50%;
-}
-
-#page-productos .avatar-pequeno img {
-    width: 21px;
-    height: 21px;
-    object-fit: contain;
-}
-
-#page-productos .burbuja {
-    max-width: 85%;
-    padding: 10px 12px;
-    color: var(--texto);
-    background: var(--tarjeta);
-    border: 1px solid var(--borde);
-    border-radius: 3px 11px 11px 11px;
-    font-size: 14px;
-    line-height: 1.6;
-    overflow-wrap: anywhere;
-    white-space: pre-wrap;
-}
-
-#page-productos .mensaje.usuario {
-    justify-content: flex-end;
-}
-
-#page-productos .mensaje.usuario .burbuja {
-    color: #082032;
-    background: var(--azul);
-    border-color: var(--azul);
-    border-radius: 11px 3px 11px 11px;
-}
-
-#page-productos .chat-input-container {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    gap: 8px;
-    padding: 12px;
-    background: var(--tarjeta);
-    border-top: 1px solid var(--borde);
-}
-
-#page-productos #chat-input {
-    width: 100%;
-    min-width: 0;
-    height: 40px;
-    padding: 0 11px;
-    color: var(--texto);
-    background: #111c29;
-    border: 1px solid var(--borde);
-    border-radius: 8px;
-    outline: none;
-    font-size: 14px;
-}
-
-#page-productos #chat-input:focus {
-    border-color: var(--azul);
-}
-
-#page-productos #chat-input::placeholder {
-    color: #91a2b6;
-}
-
-#page-productos .btn-enviar {
-    display: grid;
-    flex-shrink: 0;
-    place-items: center;
-    width: 40px;
-    height: 40px;
-    color: #082032;
-    background: var(--azul);
-    border: 0;
-    border-radius: 8px;
-    font-size: 18px;
-}
-
-/* Accesibilidad */
-
-#page-productos button:focus-visible,
-#page-productos input:focus-visible {
-    outline: 2px solid var(--azul);
-    outline-offset: 3px;
-}
 
 /* Pantallas medianas */
 
@@ -1043,18 +810,6 @@
     #page-productos #modal-precio {
         font-size: 21px;
     }
-
-    #page-productos .chat-trigger {
-        right: 14px;
-        bottom: 14px;
-    }
-
-    #page-productos .chat-window {
-        right: 10px;
-        bottom: 73px;
-        width: calc(100vw - 20px);
-        height: min(450px, calc(100dvh - 90px));
-    }
 }
 
 /* Tema claro */
@@ -1092,27 +847,22 @@ html[data-theme="light"] #page-productos .catalogo-beneficios > span {
 }
 
 html[data-theme="light"] #page-productos .seccion-productos,
-html[data-theme="light"] #page-productos .chat-window,
 html[data-theme="light"] #page-productos .modal-content {
     background: var(--panel);
     border-color: var(--borde);
 }
 
-html[data-theme="light"] #page-productos .barra-herramientas,
-html[data-theme="light"] #page-productos .chat-header,
-html[data-theme="light"] #page-productos .chat-input-container {
+html[data-theme="light"] #page-productos .barra-herramientas {
     background: #e9eff6;
     border-color: var(--borde);
 }
 
-html[data-theme="light"] #page-productos .buscador-input-wrapper,
-html[data-theme="light"] #page-productos #chat-input {
+html[data-theme="light"] #page-productos .buscador-input-wrapper {
     background: #ffffff;
     border-color: var(--borde);
 }
 
-html[data-theme="light"] #page-productos #buscador-productos,
-html[data-theme="light"] #page-productos #chat-input {
+html[data-theme="light"] #page-productos #buscador-productos {
     color: var(--texto);
 }
 
@@ -1675,7 +1425,6 @@ html[data-theme="light"] #page-productos .mensaje.usuario .burbuja {
 
 /* IMAGEN DEL PULPO */
 .catalogo-hero-pulpo {
-    display: block;
     width: 100%;
     height: 100%;
     max-width: 100%;
