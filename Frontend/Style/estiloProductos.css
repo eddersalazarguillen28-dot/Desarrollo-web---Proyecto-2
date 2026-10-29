@@ -695,6 +695,11 @@
     #page-productos .grid-productos {
         grid-template-columns: repeat(4, minmax(0, 1fr));
     }
+
+    #page-productos .main-wrapper {
+    width: 75%;
+    min-width: 0;
+    }
 }
 
 @media (max-width: 950px) {
@@ -713,6 +718,11 @@
 
     #page-productos .catalogo-hero-icono > span {
         font-size: 37px;
+    }
+
+    #page-productos .main-wrapper {
+    width: 100%;
+    min-width: 0;
     }
 }
 
@@ -809,6 +819,11 @@
 
     #page-productos #modal-precio {
         font-size: 21px;
+    }
+
+    #page-productos .main-wrapper {
+    width: 100%;
+    min-width: 0;
     }
 }
 
@@ -1131,6 +1146,11 @@ html[data-theme="light"] #page-productos .mensaje.usuario .burbuja {
     #page-productos .producto-card .card-precios {
         min-height: 45px;
     }
+
+    #page-productos .main-wrapper {
+    width: 100%;
+    min-width: 0;
+    }
 }
 
 /* =====================================================
@@ -1332,6 +1352,11 @@ html[data-theme="light"] #page-productos .mensaje.usuario .burbuja {
     #page-productos .grid-productos {
         grid-template-columns: repeat(4, minmax(0, 1fr));
     }
+
+    #page-productos .main-wrapper {
+    width: 100%;
+    min-width: 0;
+    }
 }
 
 /* Tabletas */
@@ -1352,6 +1377,11 @@ html[data-theme="light"] #page-productos .mensaje.usuario .burbuja {
         flex-basis: 130px;
         height: 130px;
         min-height: 130px;
+    }
+
+    #page-productos .main-wrapper {
+    width: 100%;
+    min-width: 0;
     }
 }
 
@@ -1386,6 +1416,11 @@ html[data-theme="light"] #page-productos .mensaje.usuario .burbuja {
 
     #page-productos .card-producto .card-precio {
         font-size: 14px;
+    }
+
+    #page-productos .main-wrapper {
+    width: 100%;
+    min-width: 0;
     }
 }
 
@@ -1488,6 +1523,11 @@ html[data-theme="light"] #page-productos .mensaje.usuario .burbuja {
         border-radius: 23px;
         margin-bottom: 16px;
     }
+
+    #page-productos .main-wrapper {
+    width: 100%;
+    min-width: 0;
+    }
 }
 
 /* Accesibilidad: reducir movimiento si el usuario lo prefiere */
@@ -1497,5 +1537,10 @@ html[data-theme="light"] #page-productos .mensaje.usuario .burbuja {
     .catalogo-hero-icono:hover .catalogo-hero-pulpo {
         animation: none;
         transition: none;
+    }
+
+    #page-productos .main-wrapper {
+    width: 100%;
+    min-width: 0;
     }
 }
