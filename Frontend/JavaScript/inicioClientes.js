@@ -1130,7 +1130,7 @@ async function cargarOfertas() {
         }
 
         // 2. Tomar solo las primeras 4 ofertas
-        const ofertasMostradas = todasLasOfertas.slice(0, 4);
+        const ofertasMostradas = todasLasOfertas.slice(0, 6);
 
         // 3. Renderizar las 4 ofertas
         contenedor.innerHTML = ofertasMostradas.map(producto => {
@@ -1190,7 +1190,7 @@ async function cargarOfertas() {
 
         // 4. Mostrar el botón "Ver todas las ofertas" si hay más de 4 ofertas
         if (contenedorBoton) {
-            if (todasLasOfertas.length > 4) {
+            if (todasLasOfertas.length > 6) {
                 contenedorBoton.style.display = "block"; // Hay más, mostrar botón
             } else {
                 contenedorBoton.style.display = "none";  // Solo hay 4 o menos, ocultar botón
