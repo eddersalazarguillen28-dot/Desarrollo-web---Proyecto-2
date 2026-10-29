@@ -775,6 +775,84 @@ def crear_cliente():
         app.logger.exception("Error al crear cliente.")
         return jsonify({"status": "error", "message": "No se pudo crear el cliente."}), 500
 
+@app.route("/api/clientes/<int:cliente_id>", methods=["PUT"])
+def actualizar_cliente(cliente_id):
+    conexion = None
+
+    try:
+        datos = request.get_json(silent=True) or {}
+
+        nombre = (datos.get("nombre") or "").strip()
+        telefono = (datos.get("telefono") or "").strip() or None
+        correo = (datos.get("correo") or "").strip() or None
+        direccion = (datos.get("direccion") or "").strip() or None
+        estado = (datos.get("estado") or "Activo").strip()
+
+        if not nombre:
+            return jsonify({
+                "status": "error",
+                "message": "El nombre del cliente es obligatorio."
+            }), 400
+
+        if estado not in ("Activo", "Inactivo"):
+            return jsonify({
+                "status": "error",
+                "message": "El estado del cliente no es válido."
+            }), 400
+
+        conexion = db.obtener_conexion()
+
+        with conexion.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute("""
+                UPDATE clientes
+                SET nombre = %s,
+                    telefono = %s,
+                    correo = %s,
+                    direccion = %s,
+                    estado = %s
+                WHERE id = %s
+                RETURNING id, nombre, telefono, correo, direccion, estado;
+            """, (
+                nombre,
+                telefono,
+                correo,
+                direccion,
+                estado,
+                cliente_id
+            ))
+
+            cliente = cursor.fetchone()
+
+            if not cliente:
+                conexion.rollback()
+                return jsonify({
+                    "status": "error",
+                    "message": "No se encontró el cliente."
+                }), 404
+
+        conexion.commit()
+
+        return jsonify({
+            "status": "ok",
+            "message": "Cliente actualizado correctamente.",
+            "cliente": dict(cliente)
+        }), 200
+
+    except Exception:
+        if conexion:
+            conexion.rollback()
+
+        app.logger.exception("Error al actualizar cliente.")
+
+        return jsonify({
+            "status": "error",
+            "message": "No se pudo actualizar el cliente."
+        }), 500
+
+    finally:
+        if conexion:
+            conexion.close()      
+
 @app.route("/api/clientes/<int:cliente_id>", methods=["DELETE"])
 def borrar_cliente(cliente_id):
     try:
