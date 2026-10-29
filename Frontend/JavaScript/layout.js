@@ -62,7 +62,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     procesarDatosUsuarioEnSidebar();
 });
 
-
 function procesarDatosUsuarioEnSidebar() {
     const usuarioGuardado = localStorage.getItem("usuario");
     if (!usuarioGuardado) return;
@@ -71,20 +70,31 @@ function procesarDatosUsuarioEnSidebar() {
         const usuario = JSON.parse(usuarioGuardado);
         const nombreUsuario = usuario.nombre || "Usuario";
         const rolUsuario = usuario.rol || usuario.rango || "Cliente";
-        const esAdmin = rolUsuario.toLowerCase() === "administrador";
-        const esVendedor = rolUsuario.toLowerCase() === "vendedor";
+        const rolLower = rolUsuario.toLowerCase();
         
+        const esAdmin = rolLower === "administrador" || rolLower === "admin";
+        const esVendedor = rolLower === "vendedor";
+        
+        // Obtener la foto de perfil
         const fotoUsuario = usuario.foto || usuario.imagen || usuario.foto_url || usuario.imagen_url;
 
+        // --- ACTUALIZAR MENÚ LATERAL (SIDEBAR) ---
         const nombreSpan = document.getElementById("sidebar-user-name");
         if (nombreSpan) {
             nombreSpan.textContent = nombreUsuario;
         }
 
+        // Asignar el rango/rol debajo del nombre
         const rolSpan = document.getElementById("sidebar-user-role");
         if (rolSpan) {
             rolSpan.textContent = rolUsuario;
-            rolSpan.style.color = esAdmin ? '#a5b4fc' : (esVendedor ? '#fbbf24' : '#10b981'); // Morado admin, amarillo vendedor, verde cliente
+            if (esAdmin) {
+                rolSpan.style.color = '#a5b4fc'; // Morado claro para admin
+            } else if (esVendedor) {
+                rolSpan.style.color = '#fbbf24'; // Amarillo para vendedor
+            } else {
+                rolSpan.style.color = '#10b981'; // Verde para cliente
+            }
         }
 
         const fotoImg = document.getElementById("sidebar-user-img");
@@ -92,28 +102,27 @@ function procesarDatosUsuarioEnSidebar() {
             fotoImg.src = fotoUsuario;
         }
 
+        // Ocultar botones de invitado si existieran
         const authGuest = document.getElementById("auth-guest") || document.querySelector(".auth-buttons");
         if (authGuest) {
             authGuest.style.display = "none";
         }
 
         // =====================================================
-        // NUEVO: OCULTAR OPCIONES AL VENDEDOR
+        // OCULTAR OPCIONES AL VENDEDOR
         // =====================================================
         if (esVendedor) {
-            // Ocultar en el Sidebar
+            // Ocultar Dashboard
             const linkDashboard = document.querySelector('.nav-link[data-pages="Dashboard"]');
             if (linkDashboard) linkDashboard.style.display = "none";
 
+            // Ocultar Inventario
             const linkInventario = document.querySelector('.nav-link[data-pages="inventario"]');
             if (linkInventario) linkInventario.style.display = "none";
 
-            // Ocultar en la página de Inicio (index)
-            const btnDashboard = document.querySelector('.grid-menu a[href="dashboard.html"]');
-            if (btnDashboard) btnDashboard.style.display = "none";
-
-            const btnReportes = document.querySelector('.grid-menu a[href="reportes.html"]');
-            if (btnReportes) btnReportes.style.display = "none"; // Reportes también suele ser de admin
+            // Ocultar Reportes (si el vendedor no debe verlos)
+            const linkReportes = document.querySelector('.nav-link[data-pages="reportes"]');
+            if (linkReportes) linkReportes.style.display = "none";
         }
 
     } catch (e) {

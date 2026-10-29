@@ -17,12 +17,13 @@
         <p>Selecciona un modulo</p>
       </div>
        <div class="grid-menu">
-        
+        <a href="productos.html" class="btn-menu">Productos</a>
         <a href="clientes.html" class="btn-menu">Clientes</a>
         <a href="ventas.html" class="btn-menu">Ventas</a>
-        <a href="inventario.html" class="btn-menu">Inventario</a>
-        <a href="dashboard.html" class="btn-menu">Dashboard</a>
-        <a href="reportes.html" class="btn-menu">Reportes</a>
+        <!-- ESTOS SE OCULTAN PARA EL VENDEDOR -->
+        <a href="inventario.html" class="btn-menu btn-solo-admin">Inventario</a>
+        <a href="dashboard.html" class="btn-menu btn-solo-admin">Dashboard</a>
+        <a href="reportes.html" class="btn-menu btn-solo-admin">Reportes</a>
        
       </div>
     </main>
@@ -40,17 +41,10 @@
                 const rol = (usuario.rol || usuario.rango || "").toLowerCase();
 
                 if (rol === "vendedor") {
-                    // Ocultar la tarjeta de Dashboard
-                    const btnDashboard = document.querySelector('.grid-menu a[href="dashboard.html"]');
-                    if (btnDashboard) btnDashboard.style.display = "none";
-
-                    // Ocultar la tarjeta de Inventario
-                    const btnInventario = document.querySelector('.grid-menu a[href="inventario.html"]');
-                    if (btnInventario) btnInventario.style.display = "none";
-                    
-                    // Ocultar la tarjeta de Reportes (si el vendedor no debe verla)
-                    const btnReportes = document.querySelector('.grid-menu a[href="reportes.html"]');
-                    if (btnReportes) btnReportes.style.display = "none";
+                    const botonesAdmin = document.querySelectorAll('.btn-solo-admin');
+                    botonesAdmin.forEach(boton => {
+                        boton.style.display = "none";
+                    });
                 }
             } catch (e) {
                 console.error("Error al leer los datos del usuario:", e);

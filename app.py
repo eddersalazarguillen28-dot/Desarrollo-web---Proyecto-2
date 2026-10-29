@@ -463,6 +463,10 @@ def actualizar_perfil():
 def listar_productos():
     try:
         productos = db.obtener_productos()
+        for p in productos:
+            if "ubicaciones" not in p or not p["ubicaciones"]:
+                p["ubicaciones"] = [p.get("ubicacion", "productos")]
+
         return jsonify({"status": "ok", "productos": productos}), 200
     except Exception:
         app.logger.exception("Error al consultar productos.")
