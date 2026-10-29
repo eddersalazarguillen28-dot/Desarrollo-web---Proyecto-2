@@ -1170,6 +1170,36 @@ def crear_venta():
             "message": "No se pudo registrar la venta."
         }), 500
 
+@app.route("/api/ventas/<int:venta_id>", methods=["DELETE"])
+@solo_administrador
+def eliminar_venta_api(venta_id):
+    try:
+        eliminado = db.eliminar_venta(venta_id)
+
+        if not eliminado:
+            return jsonify({
+                "status": "error",
+                "message": "No se pudo eliminar la venta"
+            }), 400
+
+        return jsonify({
+            "status": "ok",
+            "message": "Venta eliminada"
+        }), 200
+
+    except ValueError as error:
+        return jsonify({
+            "status": "error",
+            "message": "str(error)"
+        }), 400
+
+    except Exception:
+        app.logger.exception("Error al eliminar la venta %s", venta_id)
+
+        return jsonify({
+            "status": "error",
+            "message": "No se pudo eliminar la venta"
+        }), 500
 
 # =========================================================
 # COMPRAS DESDE LA TIENDA
