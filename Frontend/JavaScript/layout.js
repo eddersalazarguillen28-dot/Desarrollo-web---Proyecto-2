@@ -115,10 +115,14 @@ function procesarDatosUsuarioEnSidebar() {
             // Ocultar Dashboard
             const linkDashboard = document.querySelector('.nav-link[data-pages="Dashboard"]');
             if (linkDashboard) linkDashboard.style.display = "none";
-
+            
+            // Ocultar Productos
+            const linkProductos = document.querySelector('.nav-link[data-pages="productos"]');
+            if (linkProductos) linkProductos.style.display = "none";
+            
             // Ocultar Inventario
-            const linkInventario = document.querySelector('.nav-link[data-pages="inventario"]');
-            if (linkInventario) linkInventario.style.display = "none";
+            //const linkInventario = document.querySelector('.nav-link[data-pages="inventario"]');
+            //if (linkInventario) linkInventario.style.display = "none";
 
             // Ocultar Reportes (si el vendedor no debe verlos)
             const linkReportes = document.querySelector('.nav-link[data-pages="reportes"]');
