@@ -137,7 +137,7 @@ if (campoContrasena && botonMostrarConstrasena) {
         const mostrar = campoContrasena.type === "password";
         campoContrasena.type = mostrar ? "text" : "password";
         
-        botonMostrarConstrasena.textContent = mostrar ? "°" : "|"; 
+        botonMostrarConstrasena.textContent = mostrar ? "👁" : "👁"; 
 
         botonMostrarConstrasena.setAttribute("aria-label", mostrar ? "Ocultar contraseña" : "Mostrar contraseña");
         botonMostrarConstrasena.setAttribute("aria-pressed", String(mostrar));
